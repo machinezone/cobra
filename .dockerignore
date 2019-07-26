@@ -1,0 +1,12 @@
+venv/*
+.git
+tools/
+dist/
+tests/
+attic/
+bench/
+doc/
+docker-compose.yml
+Procfile
+__pycache__
+makefile

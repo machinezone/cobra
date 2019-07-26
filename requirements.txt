@@ -1,0 +1,14 @@
+sentry-sdk==0.3.0
+tabulate==0.8.2
+click==6.6
+asyncio-redis==0.15.1
+hiredis==0.2.0
+statsd==3.2.1
+psutil==5.4.6
+PyYAML==5.1.1
+ujson==1.35
+byteformat==0.2a0
+uvloop==0.12.2
+uhashring==1.1
+websockets==7.0
+coloredlogs==10.0

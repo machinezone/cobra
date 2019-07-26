@@ -1,0 +1,32 @@
+apps:
+    # Internal stats; see server_stats.py
+    AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB:
+        roles:
+            stats_subscriber:
+                secret: CCCCCCCCCCCCCDDDDDDDDDDDDDDDDDDD
+                permission: subscribe
+
+    # SMS
+    eeeeeeeeeeeeeeeeffffffffffffffff:
+        batch_publish: true
+        roles:
+            client_publisher:
+                secret: ggggggggggggggggggghhhhhhhhhhhhH
+                permission: publish
+            subscriber_republished_v1_neo:
+                secret: eB429a27BE2353BD8d6ed0C0C4ae3eBe
+                permission: subscribe
+
+    # Payload validation
+    aaaaaaaaaaaaaaaabbbbbbbbbbbbbbbb:
+        roles:
+            payload_tool:
+                secret: e3Ae82633cd59b22daea958bbb82ac92
+                permission: publish_subscribe
+
+    # health check, default app
+    _health:
+        roles:
+            health:
+                secret: e3Ae82633cd59b22daea958bbb82ac92
+                permission: publish_subscribe
