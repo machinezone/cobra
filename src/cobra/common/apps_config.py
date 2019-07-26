@@ -30,7 +30,9 @@ class AppsConfig():
 
             self.validateConfig()
         else:
-            logging.warning(f'Apps config file does not exists: "{path}"')
+            msg = f'Apps config file does not exists: "{path}". '
+            msg += 'Use `cobra init` to create a default config file'
+            logging.warning(msg)
 
     def validateConfig(self):
         if self.apps is None:

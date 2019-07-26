@@ -9,22 +9,19 @@ import urllib.request
 import click
 import uvloop
 
-from cobra.client.credentials import (getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
 from cobra.client.health_check import (getDefaultHealthCheckChannel,
                                        getDefaultHealthCheckHttpUrl,
                                        getDefaultHealthCheckUrl, healthCheck)
 from cobra.runner.superuser import preventRootUsage
 
 
+@click.command()
 @click.option('--url', default=getDefaultHealthCheckUrl())
 @click.option('--http_url', default=getDefaultHealthCheckHttpUrl)
 @click.option('--http', is_flag=True)
-@click.option('--role', default=getDefaultRoleForApp('health'))
-@click.option('--secret', default=getDefaultSecretForApp('health'))
 @click.option('--channel', default=getDefaultHealthCheckChannel())
-@click.command()
-def health(url, http_url, http, role, secret, channel):
+@click.pass_obj
+def health(auth, url, http_url, http, channel):
     '''Health check
 
     \b
@@ -42,6 +39,6 @@ def health(url, http_url, http, role, secret, channel):
             html = response.read()
             print(html.decode('utf8'), end='')
     else:
-        healthCheck(url, role, secret, channel)
+        healthCheck(url, auth.role, auth.secret, channel)
 
     print('System is healthy')

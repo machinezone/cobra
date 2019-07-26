@@ -57,7 +57,7 @@ async def start(url, credentials, verbose, method, params):
 @click.option('--verbose', is_flag=True)
 @click.option('--method', default='close_all')
 @click.option('--params', default='{}')
-def admin(url, role, secret, verbose, method, params):
+def admin(auth, url, verbose, method, params):
     '''Admin
 
     \b
@@ -67,7 +67,7 @@ def admin(url, role, secret, verbose, method, params):
     preventRootUsage()
     uvloop.install()
 
-    credentials = createCredentials(role, secret)
+    credentials = createCredentials(auth.role, auth.secret)
 
     asyncio.get_event_loop().run_until_complete(start(url, credentials,
                                                       verbose, method, params))

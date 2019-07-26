@@ -16,8 +16,7 @@ import click
 import uvloop
 
 from cobra.client.client import client
-from cobra.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
+from cobra.client.credentials import createCredentials
 from cobra.client.publish import computeEventTimeDeltas
 from cobra.common.apps_config import PUBSUB_APPKEY
 from cobra.runner.superuser import preventRootUsage
@@ -154,8 +153,6 @@ def run(url, channel, path, credentials, verbose, repeat, delay, limit):
 @click.option('--url', default=DEFAULT_URL)
 @click.option('--channel', default=DEFAULT_CHANNEL)
 @click.option('--path', default=DEFAULT_PATH)
-@click.option('--role', default=getDefaultRoleForApp('pubsub'))
-@click.option('--secret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--verbose', is_flag=True)
 @click.option('--repeat', is_flag=True)
 @click.option('--batch', is_flag=True)
@@ -163,7 +160,8 @@ def run(url, channel, path, credentials, verbose, repeat, delay, limit):
               help='An archive (tar.gz, etc...) of events files')
 @click.option('--limit', default=256)
 @click.option('--delay', default=0.1)
-def publish(url, channel, path, role, secret, batch, batch_events_path,
+@click.pass_obj
+def publish(auth, url, channel, path, batch, batch_events_path,
             limit, verbose, repeat, delay):
     '''Publish to a channel
     '''
@@ -174,6 +172,6 @@ def publish(url, channel, path, role, secret, batch, batch_events_path,
     if batch:
         path = batch_events_path
 
-    credentials = createCredentials(role, secret)
+    credentials = createCredentials(auth.role, auth.secret)
 
     run(url, channel, path, credentials, verbose, repeat, delay, limit)
