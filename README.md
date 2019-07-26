@@ -32,15 +32,15 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  admin         Run admin commands.
-  health        Health check
-  init          Setup cobra
-  monitor       Monitor cobra
-  publish       Publish to a channel
-  run           Run the cobra server
-  secret        Generate secrets used for authentication...
-  subscribe     Subscribe to a channel (with redis)
-  ws_subscribe  Publish to a channel
+  admin            Run admin commands.
+  health           Health check
+  init             Setup cobra
+  monitor          Monitor cobra
+  publish          Publish to a channel
+  run              Run the cobra server
+  redis_subscribe  Subscribe to a channel (with redis)
+  subscribe        Subscribe to a channel
+  secret           Generate secrets used for authentication...
 ```
 
 To run the server use `cobra run`. You can run a health-check against the server with `cobra health`.

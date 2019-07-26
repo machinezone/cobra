@@ -3,30 +3,38 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import asyncio
+import json
+
 import click
 import uvloop
 
+from cobra.client.client import subscribeClient
+from cobra.client.credentials import createCredentials
+from cobra.common.apps_config import PUBSUB_APPKEY
 from cobra.common.throttle import Throttle
 from cobra.runner.superuser import preventRootUsage
-from cobra.server.redis_connections import RedisConnections
-from cobra.server.subscribe import runSubscriber
+
+DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={PUBSUB_APPKEY}'
 
 
 class MessageHandlerClass:
-    def __init__(self, obj):
+    def __init__(self, websockets, args):
         self.cnt = 0
         self.cntPerSec = 0
         self.throttle = Throttle(seconds=1)
+        self.verbose = args['verbose']
 
-    def log(self, msg):
-        print(msg)
-
-    async def on_init(self, redisConnection):
+    async def on_init(self):
         pass
 
-    async def handleMsg(self, msg: str, payloadSize: int) -> bool:
+    async def handleMsg(self, msg: str) -> bool:
         self.cnt += 1
         self.cntPerSec += 1
+
+        if self.verbose >= 1:
+            data = json.loads(msg)
+            print(data['body']['messages'][0])
 
         if self.throttle.exceedRate():
             return True
@@ -38,27 +46,21 @@ class MessageHandlerClass:
 
 
 @click.command()
-@click.option('--redis_urls', default='redis://localhost')
-@click.option('--redis_password')
-@click.option('--channel')
-@click.option('--appkey')
-def subscribe(redis_urls, redis_password, channel, appkey):
+@click.option('--url', default=DEFAULT_URL)
+@click.option('--channel', default='sms_republished_v1_neo')
+@click.option('--verbose', '-v', count=True)
+@click.option('--stream_sql')
+@click.pass_obj
+def ws_subscribe(auth, url, channel, stream_sql, verbose):
     '''Subscribe to a channel
-
-    \b
-    cobra subscribe --redis_urls redis://localhost:7379 --channel foo --appkey bar  # noqa
-
-    \b
-    cobra subscribe --redis_urls redis://redis:6379 --channel foo --appkey bar
-    [From a bench container]
-
-    \b
-    cobra subscribe --redis_urls 'redis://localhost:7001;redis://localhost:7002' --channel foo --appkey bar  # noqa
     '''
 
     preventRootUsage()
     uvloop.install()
 
-    appChannel = '{}::{}'.format(appkey, channel)
-    redisConnections = RedisConnections(redis_urls, redis_password)
-    runSubscriber(redisConnections, appChannel, MessageHandlerClass)
+    credentials = createCredentials(auth.role, auth.secret)
+
+    asyncio.get_event_loop().run_until_complete(
+            subscribeClient(url, credentials, channel,
+                            stream_sql, MessageHandlerClass,
+                            {'verbose': verbose}))

@@ -14,10 +14,10 @@ from cobra.runner.commands.health import health
 from cobra.runner.commands.init import init
 from cobra.runner.commands.monitor import monitor
 from cobra.runner.commands.publish import publish
+from cobra.runner.commands.redis_subscribe import redis_subscribe
 from cobra.runner.commands.run import run
 from cobra.runner.commands.secret import secret
 from cobra.runner.commands.subscribe import subscribe
-from cobra.runner.commands.ws_subscribe import ws_subscribe
 
 from cobra.client.credentials import (getDefaultRoleForApp,
                                       getDefaultSecretForApp)
@@ -45,9 +45,9 @@ def cli(ctx, role, secret):
 
 
 cli.add_command(run)
-cli.add_command(subscribe)
-cli.add_command(ws_subscribe)
 cli.add_command(publish)
+cli.add_command(subscribe)
+cli.add_command(redis_subscribe)
 cli.add_command(monitor)
 cli.add_command(health)
 cli.add_command(secret)
