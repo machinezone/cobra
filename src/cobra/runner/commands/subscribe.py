@@ -10,7 +10,8 @@ import click
 import uvloop
 
 from cobra.client.client import subscribeClient
-from cobra.client.credentials import createCredentials
+from cobra.client.credentials import (createCredentials, getDefaultRoleForApp,
+                                      getDefaultSecretForApp)
 from cobra.common.apps_config import PUBSUB_APPKEY
 from cobra.common.throttle import Throttle
 from cobra.runner.superuser import preventRootUsage
@@ -47,18 +48,19 @@ class MessageHandlerClass:
 
 @click.command()
 @click.option('--url', default=DEFAULT_URL)
+@click.option('--role', default=getDefaultRoleForApp('pubsub'))
+@click.option('--secret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--channel', default='sms_republished_v1_neo')
 @click.option('--verbose', '-v', count=True)
 @click.option('--stream_sql')
-@click.pass_obj
-def subscribe(auth, url, channel, stream_sql, verbose):
+def subscribe(url, role, secret, channel, stream_sql, verbose):
     '''Subscribe to a channel
     '''
 
     preventRootUsage()
     uvloop.install()
 
-    credentials = createCredentials(auth.role, auth.secret)
+    credentials = createCredentials(role, secret)
 
     asyncio.get_event_loop().run_until_complete(
             subscribeClient(url, credentials, channel,

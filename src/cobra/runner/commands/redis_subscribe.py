@@ -42,7 +42,7 @@ class MessageHandlerClass:
 @click.option('--redis_password')
 @click.option('--channel')
 @click.option('--appkey')
-def subscribe(redis_urls, redis_password, channel, appkey):
+def redis_subscribe(redis_urls, redis_password, channel, appkey):
     '''Subscribe to a channel
 
     \b
