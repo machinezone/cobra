@@ -30,6 +30,9 @@ flake:
 test:
 	py.test --disable-warnings tests/*.py
 
+test_server:
+	./venv/bin/py.test tests/test_app.py::test_server
+
 mypy:
 	mypy --ignore-missing-imports src/cobra/server/*.py src/cobra/common/*.py
 
