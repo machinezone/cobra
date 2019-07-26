@@ -2,17 +2,21 @@
 
 import asyncio
 import gc
+import tempfile
+import os
+
+import pytest
 
 from cobra.client.credentials import (getDefaultRoleForApp,
                                       getDefaultSecretForApp)
 from cobra.client.health_check import (getDefaultHealthCheckHttpUrl,
                                        getDefaultHealthCheckUrl, healthCheck)
-from cobra.common.apps_config import getDefaultAppsConfigPath
+from cobra.common.apps_config import AppsConfig
 from cobra.common.memory_debugger import MemoryDebugger
 from cobra.server.app import AppRunner
 
 
-def createAppRunner(debugMemory=False):
+def makeRunner(debugMemory=False):
     host = 'localhost'
     port = '5678'
     redisUrls = 'redis://localhost'
@@ -23,16 +27,39 @@ def createAppRunner(debugMemory=False):
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause
 
+    appsConfigPath = tempfile.mktemp()
+    appsConfig = AppsConfig(appsConfigPath)
+    appsConfig.generateDefaultConfig()
+    os.environ['COBRA_APPS_CONFIG'] = appsConfigPath
+
     runner = AppRunner(host, port, redisUrls, redisPassword,
-                       getDefaultAppsConfigPath(), verbose, debugMemory,
+                       appsConfigPath, verbose, debugMemory,
                        plugins, enableStats, maxSubscriptions, idleTimeout)
     asyncio.get_event_loop().run_until_complete(runner.setup())
-    return runner, port
+    return runner, appsConfigPath
 
 
-def test_server():
+@pytest.fixture()
+def runner():
+    runner, appsConfigPath = makeRunner(debugMemory=False)
+    yield runner
+
+    runner.terminate()
+    os.unlink(appsConfigPath)
+
+
+@pytest.fixture()
+def debugMemoryRunner():
+    runner, appsConfigPath = makeRunner(debugMemory=True)
+    yield runner
+
+    runner.terminate()
+    os.unlink(appsConfigPath)
+
+
+def test_server(runner):
     '''Starts a server, then run a health check'''
-    runner, port = createAppRunner()
+    port = runner.port
 
     url = getDefaultHealthCheckUrl(None, port)
     role = getDefaultRoleForApp('health')
@@ -43,14 +70,12 @@ def test_server():
     healthCheck(url, role, secret, channel)
     healthCheck(url, role, secret, channel)
 
-    runner.terminate()
 
-
-def test_server_again():
+def test_server_again(debugMemoryRunner):
     '''This make sure that we cleanup our server properly,
     and to run the debugMemory code
     '''
-    runner, port = createAppRunner(debugMemory=True)
+    port = debugMemoryRunner.port
 
     url = getDefaultHealthCheckUrl(None, port)
     role = getDefaultRoleForApp('health')
@@ -59,12 +84,8 @@ def test_server_again():
 
     healthCheck(url, role, secret, channel)
 
-    runner.terminate()
 
-
-def runTest():
-    runner, port = createAppRunner(debugMemory=True)
-
+def runTest(port):
     url = getDefaultHealthCheckUrl(None, port)
     role = getDefaultRoleForApp('health')
     secret = getDefaultSecretForApp('health')
@@ -73,16 +94,14 @@ def runTest():
     for i in range(5):
         healthCheck(url, role, secret, channel)
 
-    runner.terminate()
 
-
-def test_server_mem():
+def test_server_mem(debugMemoryRunner):
     '''This make sure that we cleanup our server properly,
     and to run the debugMemory code
     '''
     memoryDebugger = MemoryDebugger(0.1, 2, 'traceback')
     memoryDebugger.collect_stats()
-    runTest()
+    runTest(debugMemoryRunner.port)
 
     gc.collect()
     memoryDebugger.collect_stats()

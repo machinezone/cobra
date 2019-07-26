@@ -32,6 +32,7 @@ test:
 
 test_server:
 	./venv/bin/py.test tests/test_app.py::test_server
+	# ./venv/bin/py.test tests/test_app.py::test_server_mem
 
 mypy:
 	mypy --ignore-missing-imports src/cobra/server/*.py src/cobra/common/*.py
