@@ -51,7 +51,7 @@ class MessageHandlerClass:
 @click.option('--verbose', '-v', count=True)
 @click.option('--stream_sql')
 @click.pass_obj
-def ws_subscribe(auth, url, channel, stream_sql, verbose):
+def subscribe(auth, url, channel, stream_sql, verbose):
     '''Subscribe to a channel
     '''
 

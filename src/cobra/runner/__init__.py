@@ -4,7 +4,6 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
-import collections
 import click
 import coloredlogs
 
@@ -19,29 +18,15 @@ from cobra.runner.commands.run import run
 from cobra.runner.commands.secret import secret
 from cobra.runner.commands.subscribe import subscribe
 
-from cobra.client.credentials import (getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
-
 coloredlogs.install()
-
-Auth = collections.namedtuple(
-    'Auth', [
-        'role',
-        'secret'
-    ]
-)
 
 
 @click.group()
 @click.version_option(version=getVersion())
-@click.option('--role', default=getDefaultRoleForApp('pubsub'))
-@click.option('--secret', default=getDefaultSecretForApp('pubsub'))
-@click.pass_context
-def cli(ctx, role, secret):
+def cli():
     '''Cobra is a realtime messaging server using
     Python3, WebSockets and Redis.'''
-
-    ctx.obj = Auth(role, secret)
+    pass
 
 
 cli.add_command(run)

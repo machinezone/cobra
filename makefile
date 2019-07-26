@@ -31,7 +31,7 @@ test:
 	py.test --disable-warnings tests/*.py
 
 test_server:
-	./venv/bin/py.test --disable-warnings tests/test_app.py::test_server
+	./venv/bin/py.test tests/test_app.py::test_server
 	# ./venv/bin/py.test tests/test_app.py::test_server_mem
 
 mypy:
