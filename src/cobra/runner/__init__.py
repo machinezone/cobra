@@ -18,7 +18,7 @@ from cobra.runner.commands.run import run
 from cobra.runner.commands.secret import secret
 from cobra.runner.commands.subscribe import subscribe
 
-coloredlogs.install()
+coloredlogs.install(level='WARNING')
 
 
 @click.group()
