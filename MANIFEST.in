@@ -1,2 +1,2 @@
 include setup.py DOCKER_VERSION README.md MANIFEST.in requirements.txt
-recursive-include src/cobra/data *
+recursive-include src/cobras/data *

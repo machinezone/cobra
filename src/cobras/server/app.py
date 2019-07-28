@@ -13,15 +13,15 @@ import traceback
 
 import websockets
 
-from cobra.common.apps_config import STATS_APPKEY, AppsConfig
-from cobra.common.memory_debugger import MemoryDebugger
-from cobra.common.task_cleanup import addTaskCleanup
-from cobra.common.version import getVersion
-from cobra.server.connection_state import ConnectionState
-from cobra.server.pipelined_publishers import PipelinedPublishers
-from cobra.server.protocol import parseAppKey, processCobraMessage
-from cobra.server.redis_connections import RedisConnections
-from cobra.server.stats import ServerStats
+from cobras.common.apps_config import STATS_APPKEY, AppsConfig
+from cobras.common.memory_debugger import MemoryDebugger
+from cobras.common.task_cleanup import addTaskCleanup
+from cobras.common.version import getVersion
+from cobras.server.connection_state import ConnectionState
+from cobras.server.pipelined_publishers import PipelinedPublishers
+from cobras.server.protocol import parseAppKey, processCobraMessage
+from cobras.server.redis_connections import RedisConnections
+from cobras.server.stats import ServerStats
 
 
 async def cobraHandler(websocket,

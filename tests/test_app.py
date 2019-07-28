@@ -7,13 +7,13 @@ import os
 
 import pytest
 
-from cobra.client.credentials import (getDefaultRoleForApp,
+from cobras.client.credentials import (getDefaultRoleForApp,
                                       getDefaultSecretForApp)
-from cobra.client.health_check import (getDefaultHealthCheckHttpUrl,
+from cobras.client.health_check import (getDefaultHealthCheckHttpUrl,
                                        getDefaultHealthCheckUrl, healthCheck)
-from cobra.common.apps_config import AppsConfig
-from cobra.common.memory_debugger import MemoryDebugger
-from cobra.server.app import AppRunner
+from cobras.common.apps_config import AppsConfig
+from cobras.common.memory_debugger import MemoryDebugger
+from cobras.server.app import AppRunner
 
 
 def makeRunner(debugMemory=False):

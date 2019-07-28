@@ -15,12 +15,12 @@ import uuid
 import click
 import uvloop
 
-from cobra.client.client import client
-from cobra.client.credentials import (createCredentials, getDefaultRoleForApp,
+from cobras.client.client import client
+from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                       getDefaultSecretForApp)
-from cobra.client.publish import computeEventTimeDeltas
-from cobra.common.apps_config import PUBSUB_APPKEY
-from cobra.runner.superuser import preventRootUsage
+from cobras.client.publish import computeEventTimeDeltas
+from cobras.common.apps_config import PUBSUB_APPKEY
+from cobras.runner.superuser import preventRootUsage
 
 root = os.path.dirname(os.path.realpath(__file__))
 dataDir = os.path.join(root, '..', '..', 'data')

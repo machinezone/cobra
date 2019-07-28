@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from cobra.common.apps_config import AppsConfig
+from cobras.common.apps_config import AppsConfig
 
 
 def test_answer():

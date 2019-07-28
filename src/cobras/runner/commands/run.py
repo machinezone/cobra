@@ -9,9 +9,9 @@ import click
 import sentry_sdk
 import uvloop
 
-from cobra.common.apps_config import getDefaultAppsConfigPath
-from cobra.runner.superuser import preventRootUsage
-from cobra.server.app import AppRunner
+from cobras.common.apps_config import getDefaultAppsConfigPath
+from cobras.runner.superuser import preventRootUsage
+from cobras.server.app import AppRunner
 
 
 @click.command()

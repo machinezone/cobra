@@ -5,7 +5,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import os
 
-from cobra.common.apps_config import AppsConfig, getDefaultAppsConfigPath
+from cobras.common.apps_config import AppsConfig, getDefaultAppsConfigPath
 
 
 def createCredentials(role, secret):

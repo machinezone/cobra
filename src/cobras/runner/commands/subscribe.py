@@ -9,12 +9,12 @@ import json
 import click
 import uvloop
 
-from cobra.client.client import subscribeClient
-from cobra.client.credentials import (createCredentials, getDefaultRoleForApp,
+from cobras.client.client import subscribeClient
+from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                       getDefaultSecretForApp)
-from cobra.common.apps_config import PUBSUB_APPKEY
-from cobra.common.throttle import Throttle
-from cobra.runner.superuser import preventRootUsage
+from cobras.common.apps_config import PUBSUB_APPKEY
+from cobras.common.throttle import Throttle
+from cobras.runner.superuser import preventRootUsage
 
 DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={PUBSUB_APPKEY}'
 

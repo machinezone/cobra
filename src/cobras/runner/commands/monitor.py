@@ -6,11 +6,11 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import click
 import uvloop
 
-from cobra.client.credentials import (createCredentials, getDefaultRoleForApp,
+from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                       getDefaultSecretForApp)
-from cobra.client.monitor import runMonitor
-from cobra.common.apps_config import STATS_APPKEY
-from cobra.runner.superuser import preventRootUsage
+from cobras.client.monitor import runMonitor
+from cobras.common.apps_config import STATS_APPKEY
+from cobras.runner.superuser import preventRootUsage
 
 DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={STATS_APPKEY}'
 

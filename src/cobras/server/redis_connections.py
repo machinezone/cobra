@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 import asyncio_redis
 from uhashring import HashRing
 
-from cobra.server.redis_publisher import create_redis_publisher
+from cobras.server.redis_publisher import create_redis_publisher
 
 
 class RedisConnections():

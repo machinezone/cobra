@@ -38,13 +38,14 @@ with open('requirements.txt') as f:
     install_requires = f.read().splitlines()
 
 setup(
-    name='cobra',
+    name='cobras',
     version=VERSION,
     author='Benjamin Sergeant',
     author_email='bsergean@gmail.com',
     url='https://github.com/machinezone/cobra',
     description='A realtime messaging server using WebSockets and Redis.',
     long_description=open(os.path.join(ROOT, 'README.md')).read(),
+    long_description_content_type='text/markdown',
     package_dir={'': 'src'},
     packages=find_packages('src'),
     zip_safe=False,
@@ -57,11 +58,10 @@ setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'cobra = cobra.runner:cli'
+            'cobra = cobras.runner:cli'
         ],
     },
     classifiers=[
-        'Framework :: Flask',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Operating System :: POSIX :: Linux',

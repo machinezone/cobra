@@ -7,7 +7,7 @@ import os
 
 import psutil
 
-from cobra.common.memoize import memoize
+from cobras.common.memoize import memoize
 
 
 @memoize

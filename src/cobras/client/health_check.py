@@ -7,9 +7,9 @@ import asyncio
 import json
 import uuid
 
-from cobra.client.client import subscribeClient
-from cobra.client.credentials import createCredentials
-from cobra.common.apps_config import HEALTH_APPKEY
+from cobras.client.client import subscribeClient
+from cobras.client.credentials import createCredentials
+from cobras.common.apps_config import HEALTH_APPKEY
 
 
 def getDefaultHealthCheckChannel():

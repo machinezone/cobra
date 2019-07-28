@@ -4,10 +4,10 @@ import asyncio
 import json
 import uuid
 
-from cobra.common.task_cleanup import addTaskCleanup
-from cobra.server.pipelined_publisher import PipelinedPublisher
-from cobra.server.redis_connections import RedisConnections
-from cobra.server.subscribe import redisSubscriber
+from cobras.common.task_cleanup import addTaskCleanup
+from cobras.server.pipelined_publisher import PipelinedPublisher
+from cobras.server.redis_connections import RedisConnections
+from cobras.server.subscribe import redisSubscriber
 
 
 async def subscribeCoroutine():

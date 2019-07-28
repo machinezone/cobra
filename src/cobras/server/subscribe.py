@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 
 import ujson
 
-from cobra.server.redis_connections import RedisConnections
+from cobras.server.redis_connections import RedisConnections
 
 
 class RedisSubscriberMessageHandlerClass(ABC):

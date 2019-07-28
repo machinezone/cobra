@@ -7,7 +7,11 @@ Cobra is a realtime messaging server using Python3, WebSockets and Redis PubSub.
 
 # Installation
 
-To setup cobra run those commands:
+```
+pip install cobras
+```
+
+Alternatively, if you want to develop:
 
 ```
 git clone <url>

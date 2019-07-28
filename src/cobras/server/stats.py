@@ -12,7 +12,7 @@ import os
 import platform
 import time
 
-from cobra.common.memory_usage import (getContainerMemoryLimit,
+from cobras.common.memory_usage import (getContainerMemoryLimit,
                                        getProcessUsedMemory)
 
 DEFAULT_STATS_CHANNEL = '/stats'

@@ -5,7 +5,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import os
 
-from cobra.common.memoize import memoize
+from cobras.common.memoize import memoize
 
 
 @memoize

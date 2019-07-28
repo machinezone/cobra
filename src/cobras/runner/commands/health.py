@@ -9,12 +9,12 @@ import urllib.request
 import click
 import uvloop
 
-from cobra.client.credentials import (getDefaultRoleForApp,
+from cobras.client.credentials import (getDefaultRoleForApp,
                                       getDefaultSecretForApp)
-from cobra.client.health_check import (getDefaultHealthCheckChannel,
+from cobras.client.health_check import (getDefaultHealthCheckChannel,
                                        getDefaultHealthCheckHttpUrl,
                                        getDefaultHealthCheckUrl, healthCheck)
-from cobra.runner.superuser import preventRootUsage
+from cobras.runner.superuser import preventRootUsage
 
 
 @click.option('--url', default=getDefaultHealthCheckUrl())

@@ -2,7 +2,7 @@
 
 import os
 
-from cobra.client.publish import computeEventTimeDeltas
+from cobras.client.publish import computeEventTimeDeltas
 
 
 def test_computeEventTimeDeltas():

@@ -11,7 +11,7 @@ import json
 import click
 import websockets
 
-from cobra.common.auth_hash import computeHash
+from cobras.common.auth_hash import computeHash
 
 
 class AuthException(Exception):

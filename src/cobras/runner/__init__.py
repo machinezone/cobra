@@ -7,22 +7,22 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import click
 import coloredlogs
 
-from cobra.common.version import getVersion
-from cobra.runner.commands.admin import admin
-from cobra.runner.commands.health import health
-from cobra.runner.commands.init import init
-from cobra.runner.commands.monitor import monitor
-from cobra.runner.commands.publish import publish
-from cobra.runner.commands.redis_subscribe import redis_subscribe
-from cobra.runner.commands.run import run
-from cobra.runner.commands.secret import secret
-from cobra.runner.commands.subscribe import subscribe
+from cobras.common.version import getVersion
+from cobras.runner.commands.admin import admin
+from cobras.runner.commands.health import health
+from cobras.runner.commands.init import init
+from cobras.runner.commands.monitor import monitor
+from cobras.runner.commands.publish import publish
+from cobras.runner.commands.redis_subscribe import redis_subscribe
+from cobras.runner.commands.run import run
+from cobras.runner.commands.secret import secret
+from cobras.runner.commands.subscribe import subscribe
 
 coloredlogs.install(level='WARNING')
 
 
 @click.group()
-@click.version_option(version=getVersion())
+@click.version_option()
 def cli():
     '''Cobra is a realtime messaging server using
     Python3, WebSockets and Redis.'''

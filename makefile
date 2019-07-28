@@ -9,10 +9,10 @@ install-python:
 	pip install -U pip
 	pip install --requirement /tmp/requirements.txt
 	pip install -e .
-	pip install "file://`pwd`#egg=cobra[dev]"
+	pip install "file://`pwd`#egg=cobras[dev]"
 
 install-python-tests:
-	pip install "file://`pwd`#egg=cobra[dev,tests]"
+	pip install "file://`pwd`#egg=cobras[dev,tests]"
 
 develop-only: install-python install-python-tests 
 
@@ -20,7 +20,7 @@ dev: develop
 develop: develop-only install-python-tests
 
 upload:
-	python setup.py sdist upload -r pypi-local
+	python setup.py sdist upload
 
 lint: flake
 
@@ -35,11 +35,11 @@ test_server:
 	# ./venv/bin/py.test tests/test_app.py::test_server_mem
 
 mypy:
-	mypy --ignore-missing-imports src/cobra/server/*.py src/cobra/common/*.py
+	mypy --ignore-missing-imports src/cobras/server/*.py src/cobras/common/*.py
 
 
 coverage:
-	py.test --disable-warnings --cov=cobra.server --cov=cobra.common --cov-report html --cov-report term tests
+	py.test --disable-warnings --cov=cobras.server --cov=cobras.common --cov-report html --cov-report term tests
 
 isort:
 	isort `find src tests -name '*.py'`

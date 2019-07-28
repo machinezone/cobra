@@ -5,8 +5,8 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import click
 
-from cobra.common.apps_config import genSecret
-from cobra.runner.superuser import preventRootUsage
+from cobras.common.apps_config import genSecret
+from cobras.runner.superuser import preventRootUsage
 
 
 @click.command()

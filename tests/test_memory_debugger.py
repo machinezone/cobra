@@ -2,7 +2,7 @@
 
 import asyncio
 
-from cobra.common.memory_debugger import MemoryDebugger
+from cobras.common.memory_debugger import MemoryDebugger
 
 
 def test_memory_debugger():

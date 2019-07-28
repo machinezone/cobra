@@ -2,7 +2,7 @@
 
 import time
 
-from cobra.common.throttle import Throttle
+from cobras.common.throttle import Throttle
 
 
 def test_throttle():

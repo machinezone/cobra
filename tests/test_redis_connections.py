@@ -2,7 +2,7 @@
 
 import asyncio
 
-from cobra.server.redis_connections import RedisConnections
+from cobras.server.redis_connections import RedisConnections
 
 
 async def passwordTestCoroutine():

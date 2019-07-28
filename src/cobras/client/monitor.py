@@ -11,10 +11,10 @@ import byteformat
 import click
 import tabulate
 
-from cobra.client.client import subscribeClient
-from cobra.common.algorithm import transpose
-from cobra.common.throttle import Throttle
-from cobra.server.stats import DEFAULT_STATS_CHANNEL
+from cobras.client.client import subscribeClient
+from cobras.common.algorithm import transpose
+from cobras.common.throttle import Throttle
+from cobras.server.stats import DEFAULT_STATS_CHANNEL
 
 
 def writeJson(data):

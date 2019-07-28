@@ -15,16 +15,16 @@ from urllib.parse import parse_qs, urlparse
 import ujson
 import websockets
 
-from cobra.common.apps_config import generateNonce
-from cobra.common.auth_hash import computeHash
-from cobra.common.cobra_types import JsonDict
-from cobra.common.task_cleanup import addTaskCleanup
-from cobra.common.throttle import Throttle
-from cobra.common.version import getVersion
-from cobra.server.connection_state import ConnectionState
-from cobra.server.redis_connections import RedisConnections
-from cobra.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
-from cobra.server.subscribe import (RedisSubscriberMessageHandlerClass,
+from cobras.common.apps_config import generateNonce
+from cobras.common.auth_hash import computeHash
+from cobras.common.cobra_types import JsonDict
+from cobras.common.task_cleanup import addTaskCleanup
+from cobras.common.throttle import Throttle
+from cobras.common.version import getVersion
+from cobras.server.connection_state import ConnectionState
+from cobras.server.redis_connections import RedisConnections
+from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
+from cobras.server.subscribe import (RedisSubscriberMessageHandlerClass,
                                     redisSubscriber)
 
 

@@ -1,6 +1,6 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
 
-from cobra.server.stream_sql import match_stream_sql_filter
+from cobras.server.stream_sql import match_stream_sql_filter
 
 
 def test_answer():

@@ -5,8 +5,8 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 
-from cobra.server.pipelined_publisher import PipelinedPublisher
-from cobra.server.redis_connections import RedisConnections
+from cobras.server.pipelined_publisher import PipelinedPublisher
+from cobras.server.redis_connections import RedisConnections
 
 
 class PipelinedPublishers():
