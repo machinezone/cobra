@@ -24,7 +24,8 @@ dev_requires = [
     'isort',
     'honcho',
     'mypy',
-    'aiojobs==0.1.0'
+    'aiojobs==0.1.0',
+    'twine'
 ]
 
 tests_require = [
