@@ -6,10 +6,8 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import logging
 from urllib.parse import urlparse
 
-import asyncio_redis
+import aioredis
 from uhashring import HashRing
-
-from cobras.server.redis_publisher import create_redis_publisher
 
 
 class RedisConnections():
@@ -34,13 +32,8 @@ class RedisConnections():
         else:
             port = 6379
 
-        if useAioRedis:
-            redis = await create_redis_publisher(host, port, self.password)
-        else:
-            redis = \
-                await asyncio_redis.Connection.create(host=host, port=port,
-                                                      password=self.password)
-
+        redis = await aioredis.create_redis(url, password=self.password)
+        redis.host = host
         return redis
 
     def hashChannel(self, appChannel: str):

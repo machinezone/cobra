@@ -34,28 +34,28 @@ async def redisSubscriber(redisConnections: RedisConnections,
                           messageHandlerClass: RedisSubscriberMessageHandlerClass,  # noqa
                           obj):
     # Create connection
-    connection = await redisConnections.create(pattern, useAioRedis=False)
-
-    # Create subscriber.
-    subscriber = await connection.start_subscribe()
-
-    # Subscribe to channel.
-    await subscriber.subscribe([pattern])
+    connection = await redisConnections.create(pattern)
 
     messageHandler = messageHandlerClass(obj)
     await messageHandler.on_init(connection)
 
+    lastId = '0-0'
+
     try:
         # wait for incoming events.
         while True:
-            reply = await subscriber.next_published()
-            msg = reply.value
+            results = await connection.xread([pattern], timeout=0, latest_ids=[lastId])
 
-            payloadSize = len(msg)
-            msg = ujson.loads(msg)
-            ret = await messageHandler.handleMsg(msg, payloadSize)
-            if not ret:
-                break
+            for result in results:
+                lastId = result[1]
+                msg = result[2]
+                data = msg[b'json']
+
+                payloadSize = len(data)
+                msg = ujson.loads(data)
+                ret = await messageHandler.handleMsg(msg, payloadSize)
+                if not ret:
+                    break
 
     except asyncio.CancelledError:
         messageHandler.log('Cancelling redis subscription')
@@ -72,6 +72,7 @@ async def redisSubscriber(redisConnections: RedisConnections,
         # When finished, close the connection.
         connection.close()
 
+        return messageHandler
 
 def runSubscriber(redisConnections: RedisConnections,
                   channel: str, messageHandlerClass, obj=None):

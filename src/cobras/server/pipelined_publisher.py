@@ -18,6 +18,7 @@ class PipelinedPublisher():
         self.lock = asyncio.Lock()
 
     async def publishAll(self):
+        pipe = self.redis.pipeline()
         async with self.lock:
             while True:
                 try:
@@ -25,26 +26,24 @@ class PipelinedPublisher():
                 except asyncio.QueueEmpty:
                     break
                 else:
-                    self.publish(job)
+                    self.publish(pipe, job)
                     self.queue.task_done()
 
-        await self.redis.execute()
+        await pipe.execute()
 
     def enqueue(self, job):
         self.queue.put_nowait(job)
 
-    def publish(self, job):
+    def publish(self, pipe, job):
         appkey, channel, data = job
         appChannel = '{}::{}'.format(appkey, channel)
-        self.redis.publish(appChannel, data)
-
-    async def flush(self):
-        await self.redis.execute()
+        pipe.xadd(appChannel, {'json': data})
 
     async def publishNow(self, job):
         async with self.lock:
-            self.publish(job)
-            await self.flush()
+            pipe = self.redis.pipeline()
+            self.publish(pipe, job)
+            await pipe.execute()
 
     async def push(self, job, batchPublish=False):
         if not batchPublish:
