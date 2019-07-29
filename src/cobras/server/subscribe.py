@@ -39,7 +39,8 @@ async def redisSubscriber(redisConnections: RedisConnections,
     messageHandler = messageHandlerClass(obj)
     await messageHandler.on_init(connection)
 
-    lastId = '0-0'
+    # lastId = '0-0'
+    lastId = '$'
 
     try:
         # wait for incoming events.
