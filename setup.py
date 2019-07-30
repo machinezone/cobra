@@ -47,8 +47,7 @@ setup(
     description='A realtime messaging server using WebSockets and Redis.',
     long_description=open(os.path.join(ROOT, 'README.md')).read(),
     long_description_content_type='text/markdown',
-    package_dir={'': 'src'},
-    packages=find_packages('src'),
+    packages=find_packages(exclude=['tests']),
     zip_safe=False,
     install_requires=install_requires,
     extras_require={
