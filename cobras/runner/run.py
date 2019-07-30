@@ -10,7 +10,7 @@ import sentry_sdk
 import uvloop
 
 from cobras.common.apps_config import getDefaultAppsConfigPath
-from cobras.runner.superuser import preventRootUsage
+from cobras.common.superuser import preventRootUsage
 from cobras.server.app import AppRunner
 
 

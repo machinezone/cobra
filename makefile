@@ -20,7 +20,9 @@ dev: develop
 develop: develop-only install-python-tests
 
 upload:
-	python setup.py sdist upload
+	rm dist/*
+	python setup.py sdist
+	twine upload dist/*
 
 lint: flake
 
@@ -62,11 +64,14 @@ IMG    := ${NAME}:${TAG}
 BUILD  := ${NAME}:build
 PROD   := ${NAME}:production
 
-docker_tag:
+bump:
+	python tools/bump_docker_version.py
+
+docker_tag: bump
 	docker tag ${IMG} ${PROD}
 	docker push ${PROD}
 	oc import-image -n cobra-live cobra:production
-	oc import-image -n cobra-perf cobra:production
+	oc import-image -n cobra-internal cobra:production
 
 docker:
 	docker build -t ${IMG} .
@@ -74,6 +79,5 @@ docker:
 	docker tag ${IMG} ${PROD}
 
 docker_push: docker_tag
-	python tools/bump_docker_version.py
 
 dummy: docker

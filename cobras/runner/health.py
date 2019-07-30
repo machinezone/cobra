@@ -14,7 +14,7 @@ from cobras.client.credentials import (getDefaultRoleForApp,
 from cobras.client.health_check import (getDefaultHealthCheckChannel,
                                        getDefaultHealthCheckHttpUrl,
                                        getDefaultHealthCheckUrl, healthCheck)
-from cobras.runner.superuser import preventRootUsage
+from cobras.common.superuser import preventRootUsage
 
 
 @click.option('--url', default=getDefaultHealthCheckUrl())

@@ -24,7 +24,8 @@ dev_requires = [
     'isort',
     'honcho',
     'mypy',
-    'aiojobs==0.1.0'
+    'aiojobs==0.1.0',
+    'twine'
 ]
 
 tests_require = [
@@ -46,8 +47,7 @@ setup(
     description='A realtime messaging server using WebSockets and Redis.',
     long_description=open(os.path.join(ROOT, 'README.md')).read(),
     long_description_content_type='text/markdown',
-    package_dir={'': 'src'},
-    packages=find_packages('src'),
+    packages=find_packages(exclude=['tests']),
     zip_safe=False,
     install_requires=install_requires,
     extras_require={
@@ -58,7 +58,7 @@ setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'cobra = cobras.runner:cli'
+            'cobra = cobras.runner:main'
         ],
     },
     classifiers=[

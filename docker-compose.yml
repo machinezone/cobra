@@ -1,0 +1,62 @@
+version: "3"
+services:
+  web:
+    image: ${DOCKER_REPO}/cobra:build
+    ports:
+      - "8765:8765"
+    environment:
+      - COBRA_REDIS_URLS=redis://redis1;redis://redis2;redis://redis3;redis://redis4;redis://redis5
+      - COBRA_HOST=0.0.0.0
+      - COBRA_PORT=8765
+      - COBRA_APPS_CONFIG=/etc/secret-volume/apps.yaml
+      - COBRA_SENTRY=1
+      - COBRA_SENTRY_URL=https://e7b24c13a32e4435ad94b5788de00cb2:b96d4bafa3e24f86bf3c19ecee584a47@sentry.addsrv.com/47
+      - PYTHONUNBUFFERED=1
+      - COBRA_PLUGINS=republish
+      - PYTHONPATH=/etc/secret-volume
+    volumes:
+      #
+      # To run in an environment similar to kubernete:
+      # 1. mkdir /tmp/volume_cobra
+      # 2. make sure /tmp is 'mountable' in Docker desktop
+      # 3. run: cobra init
+      # 4. cp $HOME/.cobra.yaml /tmp/volume_cobra/apps.yaml
+      #    That file will be seen as /etc/secret-volume/apps.yaml in the container ran by docker-compose
+      #
+      - /tmp/volume_cobra:/etc/secret-volume
+    networks:
+      - cobra-net
+    depends_on:
+      - redis1
+      - redis2
+      - redis3
+      - redis4
+      - redis5
+
+  redis1:
+    image: redis:alpine
+    networks:
+      - cobra-net
+
+  redis2:
+    image: redis:alpine
+    networks:
+      - cobra-net
+
+  redis3:
+    image: redis:alpine
+    networks:
+      - cobra-net
+
+  redis4:
+    image: redis:alpine
+    networks:
+      - cobra-net
+
+  redis5:
+    image: redis:alpine
+    networks:
+      - cobra-net
+        
+networks:
+  cobra-net:

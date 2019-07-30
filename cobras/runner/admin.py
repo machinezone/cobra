@@ -14,7 +14,7 @@ from cobras.client.client import client
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                       getDefaultSecretForApp)
 from cobras.common.apps_config import ADMIN_APPKEY
-from cobras.runner.superuser import preventRootUsage
+from cobras.common.superuser import preventRootUsage
 
 DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={ADMIN_APPKEY}'
 
