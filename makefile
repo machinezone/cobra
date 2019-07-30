@@ -71,7 +71,7 @@ docker_tag: bump
 	docker tag ${IMG} ${PROD}
 	docker push ${PROD}
 	oc import-image -n cobra-live cobra:production
-	oc import-image -n cobra-perf cobra:production
+	oc import-image -n cobra-internal cobra:production
 
 docker:
 	docker build -t ${IMG} .

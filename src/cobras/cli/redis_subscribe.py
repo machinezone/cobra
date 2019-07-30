@@ -7,7 +7,7 @@ import click
 import uvloop
 
 from cobras.common.throttle import Throttle
-from cobras.runner.superuser import preventRootUsage
+from cobras.common.superuser import preventRootUsage
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.subscribe import runSubscriber
 

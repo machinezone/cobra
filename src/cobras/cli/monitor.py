@@ -10,7 +10,7 @@ from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                       getDefaultSecretForApp)
 from cobras.client.monitor import runMonitor
 from cobras.common.apps_config import STATS_APPKEY
-from cobras.runner.superuser import preventRootUsage
+from cobras.common.superuser import preventRootUsage
 
 DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={STATS_APPKEY}'
 

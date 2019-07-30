@@ -20,7 +20,7 @@ from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                       getDefaultSecretForApp)
 from cobras.client.publish import computeEventTimeDeltas
 from cobras.common.apps_config import PUBSUB_APPKEY
-from cobras.runner.superuser import preventRootUsage
+from cobras.common.superuser import preventRootUsage
 
 root = os.path.dirname(os.path.realpath(__file__))
 dataDir = os.path.join(root, '..', '..', 'data')
