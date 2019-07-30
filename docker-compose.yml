@@ -15,6 +15,14 @@ services:
       - COBRA_PLUGINS=republish
       - PYTHONPATH=/etc/secret-volume
     volumes:
+      #
+      # To run in an environment similar to kubernete:
+      # 1. mkdir /tmp/volume_cobra
+      # 2. make sure /tmp is 'mountable' in Docker desktop
+      # 3. run: cobra init
+      # 4. cp $HOME/.cobra.yaml /tmp/volume_cobra/apps.yaml
+      #    That file will be seen as /etc/secret-volume/apps.yaml in the container ran by docker-compose
+      #
       - /tmp/volume_cobra:/etc/secret-volume
     networks:
       - cobra-net
