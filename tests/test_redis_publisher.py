@@ -2,7 +2,8 @@
 
 import asyncio
 
-from cobras.server.redis_publisher import RedisPublisher, create_redis_publisher
+from cobras.server.redis_publisher import (RedisPublisher,
+                                           create_redis_publisher)
 
 
 async def start():

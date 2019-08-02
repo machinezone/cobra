@@ -2,15 +2,15 @@
 
 import asyncio
 import gc
-import tempfile
 import os
+import tempfile
 
 import pytest
 
 from cobras.client.credentials import (getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
+                                       getDefaultSecretForApp)
 from cobras.client.health_check import (getDefaultHealthCheckHttpUrl,
-                                       getDefaultHealthCheckUrl, healthCheck)
+                                        getDefaultHealthCheckUrl, healthCheck)
 from cobras.common.apps_config import AppsConfig
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.server.app import AppRunner
