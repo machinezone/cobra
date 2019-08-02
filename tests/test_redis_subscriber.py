@@ -7,7 +7,7 @@ import uuid
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.server.pipelined_publisher import PipelinedPublisher
 from cobras.server.redis_connections import RedisConnections
-from cobras.server.redis_subscriber import redisSubscriber
+from cobras.server.redis_subscriber import redisSubscriber, RedisSubscriberMessageHandlerClass
 
 
 async def subscribeCoroutine():
@@ -22,7 +22,7 @@ async def subscribeCoroutine():
     # Start publishing on a random channel
     channel = uuid.uuid4().hex
 
-    class MessageHandlerClass:
+    class MessageHandlerClass(RedisSubscriberMessageHandlerClass):
         def __init__(self, obj):
             self.cnt = 0
             self.cntPerSec = 0
@@ -39,7 +39,7 @@ async def subscribeCoroutine():
             self.redis.publish(self.channel, self.message)
             await self.redis.execute()
 
-        async def handleMsg(self, msg: str, payloadSize: int) -> bool:
+        async def handleMsg(self, msg: str, position: str, payloadSize: int) -> bool:
             print('Received message from redis')
             message = json.dumps(msg)
             assert message == self.message
