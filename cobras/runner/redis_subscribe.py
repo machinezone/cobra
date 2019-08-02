@@ -9,7 +9,7 @@ import uvloop
 from cobras.common.throttle import Throttle
 from cobras.common.superuser import preventRootUsage
 from cobras.server.redis_connections import RedisConnections
-from cobras.server.subscribe import runSubscriber
+from cobras.server.redis_subscriber import runSubscriber
 
 
 class MessageHandlerClass:

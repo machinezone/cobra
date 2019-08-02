@@ -24,8 +24,8 @@ from cobras.common.version import getVersion
 from cobras.server.connection_state import ConnectionState
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
-from cobras.server.subscribe import (RedisSubscriberMessageHandlerClass,
-                                    redisSubscriber)
+from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
+                                            redisSubscriber)
 
 
 async def respond(state: ConnectionState, ws, app: Dict, data: JsonDict):
