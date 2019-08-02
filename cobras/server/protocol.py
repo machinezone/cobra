@@ -268,6 +268,8 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict,
     if hasFilter:
         channel = streamSQLFilter.channel
 
+    position = body.get('position')
+
     response = {
         "action": "rtm/subscribe/ok",
         "id": pdu.get('id', 1),
@@ -302,7 +304,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict,
             response['body']['redis_node'] = redisConnection.host
             await respond(self.state, self.ws, self.app, response)
 
-        async def handleMsg(self, msg: dict, payloadSize: int) -> bool:
+        async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:
 
             # Input msg is the full serialized publish pdu.
             # Extract the real message out of it.
@@ -323,11 +325,11 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict,
                 "body": {
                     "subscription_id": self.subscriptionId,
                     "messages": [msg],
-                    "position": "1519190184:568807785938"  # FIXME
+                    "position": position
                 },
             }
             if self.verbose:
-                self.state.log(f"> {json.dumps(pdu)}")
+                self.state.log(f"> {json.dumps(pdu)} at position {position}")
 
             await self.ws.send(json.dumps(pdu))
 
@@ -348,8 +350,8 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict,
                                         app['redis_password'])
 
     task = asyncio.create_task(
-        redisSubscriber(redisConnections,
-                        appChannel, MessageHandlerClass,
+        redisSubscriber(redisConnections, appChannel, position,
+                        MessageHandlerClass,
                         {
                             'ws': ws,
                             'subscription_id': subscriptionId,

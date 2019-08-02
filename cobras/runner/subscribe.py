@@ -35,7 +35,10 @@ class MessageHandlerClass:
 
         if self.verbose >= 1:
             data = json.loads(msg)
-            print(data['body']['messages'][0])
+            body = data['body']
+            message = body['messages'][0]
+            position = body['position']
+            print(f'{message} at position {position}')
 
         if self.throttle.exceedRate():
             return True
@@ -51,9 +54,10 @@ class MessageHandlerClass:
 @click.option('--role', default=getDefaultRoleForApp('pubsub'))
 @click.option('--secret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--channel', default='sms_republished_v1_neo')
+@click.option('--position')
 @click.option('--verbose', '-v', count=True)
 @click.option('--stream_sql')
-def subscribe(url, role, secret, channel, stream_sql, verbose):
+def subscribe(url, role, secret, channel, position, stream_sql, verbose):
     '''Subscribe to a channel
     '''
 
@@ -63,6 +67,6 @@ def subscribe(url, role, secret, channel, stream_sql, verbose):
     credentials = createCredentials(role, secret)
 
     asyncio.get_event_loop().run_until_complete(
-            subscribeClient(url, credentials, channel,
+            subscribeClient(url, credentials, channel, position,
                             stream_sql, MessageHandlerClass,
                             {'verbose': verbose}))

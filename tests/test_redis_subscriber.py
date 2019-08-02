@@ -1,5 +1,7 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
 
+# FIXME: this test does nothing !!!
+
 import asyncio
 import json
 import uuid
@@ -40,7 +42,7 @@ async def subscribeCoroutine():
             await self.redis.execute()
 
         async def handleMsg(self, msg: str, position: str, payloadSize: int) -> bool:
-            print('Received message from redis')
+            print(f'Received message from redis at position {position}')
             message = json.dumps(msg)
             assert message == self.message
             print('Expected message received')
@@ -48,7 +50,7 @@ async def subscribeCoroutine():
             return False
 
     task = asyncio.create_task(
-        redisSubscriber(redisConnections, channel,
+        redisSubscriber(redisConnections, channel, None,
                         MessageHandlerClass, {
                             'redis_urls': redisUrls,
                             'channel': channel,

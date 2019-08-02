@@ -69,7 +69,6 @@ def healthCheck(url, role, secret, channel):
                 "body": {
                     "channel": self.channel,
                     "message": {
-                        "position": "1519190184:547873030411",  # FIXME
                         "messages": [self.content]
                     }
                 }
@@ -91,6 +90,7 @@ def healthCheck(url, role, secret, channel):
 
     credentials = createCredentials(role, secret)
 
+    position = None
     magicNumber = 666
     refAndroidId = uuid.uuid4().hex
     content = {
@@ -108,7 +108,7 @@ def healthCheck(url, role, secret, channel):
                          magic = {magicNumber}
     """
     messageHandler = asyncio.get_event_loop().run_until_complete(
-        subscribeClient(url, credentials, channel,
+        subscribeClient(url, credentials, channel, position,
                         fsqlFilter, MessageHandlerClass,
                         {'channel': channel, 'content': content}))
 

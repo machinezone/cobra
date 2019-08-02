@@ -6,6 +6,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import asyncio
 import traceback
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import ujson
 
@@ -25,12 +26,13 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def handleMsg(self, msg: dict, payloadSize: int) -> bool:
+    async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:
         return True  # pragma: no cover
 
 
 async def redisSubscriber(redisConnections: RedisConnections,
                           pattern: str,
+                          position: Optional[str],
                           messageHandlerClass: RedisSubscriberMessageHandlerClass,  # noqa
                           obj):
     # Create connection
@@ -40,7 +42,7 @@ async def redisSubscriber(redisConnections: RedisConnections,
     await messageHandler.on_init(connection)
 
     # lastId = '0-0'
-    lastId = '$'
+    lastId = '$' if position is None else position
 
     try:
         # wait for incoming events.
@@ -54,7 +56,7 @@ async def redisSubscriber(redisConnections: RedisConnections,
 
                 payloadSize = len(data)
                 msg = ujson.loads(data)
-                ret = await messageHandler.handleMsg(msg, payloadSize)
+                ret = await messageHandler.handleMsg(msg, lastId.decode(), payloadSize)
                 if not ret:
                     break
 
@@ -76,7 +78,7 @@ async def redisSubscriber(redisConnections: RedisConnections,
         return messageHandler
 
 def runSubscriber(redisConnections: RedisConnections,
-                  channel: str, messageHandlerClass, obj=None):
+                  channel: str, position: str, messageHandlerClass, obj=None):
     asyncio.get_event_loop().run_until_complete(
-        redisSubscriber(redisConnections, channel,
+        redisSubscriber(redisConnections, channel, position,
                         messageHandlerClass, obj))

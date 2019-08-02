@@ -113,6 +113,7 @@ async def client(url, creds, clientCallback):
 
 async def subscribeHandler(websocket, **args):
     channel = args['channel']
+    position = args['position']
     fsqlFilter = args['fsqlFilter']
     messageHandlerClass = args['messageHandlerClass']
     messageHandlerArgs = args['messageHandlerArgs']
@@ -129,6 +130,10 @@ async def subscribeHandler(websocket, **args):
         },
         "id": 3  # FIXME
     }
+
+    if position is not None:
+        subscription['body']['position'] = position
+
     print(f"> {subscription}")
     await websocket.send(json.dumps(subscription))
 
@@ -146,11 +151,11 @@ async def subscribeHandler(websocket, **args):
     return messageHandler
 
 
-async def subscribeClient(url, credentials, channel,
+async def subscribeClient(url, credentials, channel, position,
                           fsqlFilter, messageHandlerClass,
                           messageHandlerArgs):
     subscribeHandlerPartial = functools.partial(
-        subscribeHandler, channel=channel,
+        subscribeHandler, channel=channel, position=position,
         fsqlFilter=fsqlFilter, messageHandlerClass=messageHandlerClass,
         messageHandlerArgs=messageHandlerArgs)
 

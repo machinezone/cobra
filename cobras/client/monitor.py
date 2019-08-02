@@ -179,10 +179,11 @@ class MessageHandlerClass:
 
 
 def runMonitor(url, credentials, raw, roleFilter, showNodes, subscribers):
+    position = None
     asyncio.get_event_loop().run_until_complete(
-            subscribeClient(url, credentials, DEFAULT_STATS_CHANNEL,
-                            '', MessageHandlerClass,
-                            {'raw': raw,
-                             'role_filter': roleFilter,
-                             'show_nodes': showNodes,
-                             'subscribers': subscribers}))
+        subscribeClient(url, credentials, DEFAULT_STATS_CHANNEL, position,
+                        '', MessageHandlerClass,
+                        {'raw': raw,
+                         'role_filter': roleFilter,
+                         'show_nodes': showNodes,
+                         'subscribers': subscribers}))

@@ -42,7 +42,8 @@ class MessageHandlerClass(RedisSubscriberMessageHandlerClass):
 @click.option('--redis_password')
 @click.option('--channel')
 @click.option('--appkey')
-def redis_subscribe(redis_urls, redis_password, channel, appkey):
+@click.option('--position')
+def redis_subscribe(redis_urls, redis_password, channel, position, appkey):
     '''Subscribe to a channel
 
     \b
@@ -61,4 +62,4 @@ def redis_subscribe(redis_urls, redis_password, channel, appkey):
 
     appChannel = '{}::{}'.format(appkey, channel)
     redisConnections = RedisConnections(redis_urls, redis_password)
-    runSubscriber(redisConnections, appChannel, MessageHandlerClass)
+    runSubscriber(redisConnections, appChannel, position, MessageHandlerClass)
