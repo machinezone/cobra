@@ -9,7 +9,8 @@ import uuid
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.server.pipelined_publisher import PipelinedPublisher
 from cobras.server.redis_connections import RedisConnections
-from cobras.server.redis_subscriber import redisSubscriber, RedisSubscriberMessageHandlerClass
+from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
+                                            redisSubscriber)
 
 
 async def subscribeCoroutine():

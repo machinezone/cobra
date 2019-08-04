@@ -4,10 +4,10 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+from pkgutil import walk_packages
+
 import click
 import coloredlogs
-
-from pkgutil import walk_packages
 
 coloredlogs.install(level='WARNING')
 

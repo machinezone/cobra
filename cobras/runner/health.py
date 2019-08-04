@@ -10,10 +10,10 @@ import click
 import uvloop
 
 from cobras.client.credentials import (getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
+                                       getDefaultSecretForApp)
 from cobras.client.health_check import (getDefaultHealthCheckChannel,
-                                       getDefaultHealthCheckHttpUrl,
-                                       getDefaultHealthCheckUrl, healthCheck)
+                                        getDefaultHealthCheckHttpUrl,
+                                        getDefaultHealthCheckUrl, healthCheck)
 from cobras.common.superuser import preventRootUsage
 
 

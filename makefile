@@ -27,7 +27,7 @@ upload:
 lint: flake
 
 flake:
-	flake8 `find src -name '*.py'`
+	flake8 `find cobras -name '*.py'`
 
 test:
 	py.test --disable-warnings tests/*.py
@@ -44,7 +44,7 @@ coverage:
 	py.test --disable-warnings --cov=cobras.server --cov=cobras.common --cov-report html --cov-report term tests
 
 isort:
-	isort `find src tests -name '*.py'`
+	isort `find cobras tests -name '*.py'`
 
 # this is helpful to remove trailing whitespaces
 trail:

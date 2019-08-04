@@ -17,7 +17,7 @@ import uvloop
 
 from cobras.client.client import client
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
+                                       getDefaultSecretForApp)
 from cobras.client.publish import computeEventTimeDeltas
 from cobras.common.apps_config import PUBSUB_APPKEY
 from cobras.common.superuser import preventRootUsage

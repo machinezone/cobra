@@ -9,10 +9,10 @@ import asyncio
 import click
 import uvloop
 
-from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
 # from cobras.client.kv_store import readClient
 from cobras.client.client import readClient
+from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
+                                       getDefaultSecretForApp)
 from cobras.common.apps_config import PUBSUB_APPKEY
 from cobras.common.superuser import preventRootUsage
 

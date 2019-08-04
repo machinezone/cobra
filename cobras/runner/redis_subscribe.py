@@ -6,10 +6,11 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import click
 import uvloop
 
-from cobras.common.throttle import Throttle
 from cobras.common.superuser import preventRootUsage
+from cobras.common.throttle import Throttle
 from cobras.server.redis_connections import RedisConnections
-from cobras.server.redis_subscriber import runSubscriber, RedisSubscriberMessageHandlerClass
+from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
+                                            runSubscriber)
 
 
 class MessageHandlerClass(RedisSubscriberMessageHandlerClass):

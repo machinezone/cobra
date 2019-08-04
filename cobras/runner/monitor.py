@@ -7,7 +7,7 @@ import click
 import uvloop
 
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
+                                       getDefaultSecretForApp)
 from cobras.client.monitor import runMonitor
 from cobras.common.apps_config import STATS_APPKEY
 from cobras.common.superuser import preventRootUsage

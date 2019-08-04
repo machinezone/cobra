@@ -12,7 +12,7 @@ import uvloop
 
 from cobras.client.client import client
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
+                                       getDefaultSecretForApp)
 from cobras.common.apps_config import ADMIN_APPKEY
 from cobras.common.superuser import preventRootUsage
 

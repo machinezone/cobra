@@ -23,10 +23,10 @@ from cobras.common.throttle import Throttle
 from cobras.common.version import getVersion
 from cobras.server.connection_state import ConnectionState
 from cobras.server.redis_connections import RedisConnections
-from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
+from cobras.server.redis_kv_store import kvStoreRead
 from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
                                             redisSubscriber)
-from cobras.server.redis_kv_store import kvStoreRead
+from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 
 
 async def respond(state: ConnectionState, ws, app: Dict, data: JsonDict):
