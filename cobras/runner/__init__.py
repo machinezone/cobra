@@ -11,6 +11,7 @@ import coloredlogs
 
 coloredlogs.install(level='WARNING')
 
+
 @click.group()
 @click.version_option()
 def main():
@@ -20,7 +21,7 @@ def main():
  / /  / _ \| '_ \| '__/ _` |
 / /__| (_) | |_) | | | (_| |
 \____/\___/|_.__/|_|  \__,_|
-		
+
 Cobra is a realtime messaging server using Python3, WebSockets and Redis.
 """
 

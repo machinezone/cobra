@@ -25,7 +25,8 @@ class MessageHandlerClass(RedisSubscriberMessageHandlerClass):
     async def on_init(self, redisConnection):
         pass
 
-    async def handleMsg(self, msg: str, position: str, payloadSize: int) -> bool:
+    async def handleMsg(self, msg: str, position: str,
+                        payloadSize: int) -> bool:
         self.cnt += 1
         self.cntPerSec += 1
 

@@ -26,7 +26,8 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:
+    async def handleMsg(self, msg: dict, position: str,
+                        payloadSize: int) -> bool:
         return True  # pragma: no cover
 
 
@@ -47,7 +48,8 @@ async def redisSubscriber(redisConnections: RedisConnections,
     try:
         # wait for incoming events.
         while True:
-            results = await connection.xread([pattern], timeout=0, latest_ids=[lastId])
+            results = await connection.xread([pattern], timeout=0,
+                                             latest_ids=[lastId])
 
             for result in results:
                 lastId = result[1]
@@ -56,7 +58,8 @@ async def redisSubscriber(redisConnections: RedisConnections,
 
                 payloadSize = len(data)
                 msg = ujson.loads(data)
-                ret = await messageHandler.handleMsg(msg, lastId.decode(), payloadSize)
+                ret = await messageHandler.handleMsg(msg, lastId.decode(),
+                                                     payloadSize)
                 if not ret:
                     break
 

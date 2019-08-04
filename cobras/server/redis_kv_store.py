@@ -1,4 +1,7 @@
-'''Key Value store operations (set, get, delete), but that are using streams for storage
+'''Key Value store operations (set, get, delete),
+but that are using streams for storage
+
+Copyright (c) 2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import asyncio
@@ -34,7 +37,6 @@ async def kvStoreRead(redisConnections: RedisConnections,
         msg = result[1]
         data = msg[b'json']
 
-        payloadSize = len(data)
         msg = ujson.loads(data)
         msg['body']['position'] = position.decode()
         return msg

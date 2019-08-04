@@ -305,7 +305,8 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict,
             response['body']['redis_node'] = redisConnection.host
             await respond(self.state, self.ws, self.app, response)
 
-        async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:
+        async def handleMsg(self, msg: dict, position: str,
+                            payloadSize: int) -> bool:
 
             # Input msg is the full serialized publish pdu.
             # Extract the real message out of it.
@@ -497,7 +498,8 @@ async def handleRead(state: ConnectionState, ws, app: Dict,
     redisConnections = RedisConnections(app['redis_urls'],
                                         app['redis_password'])
 
-    message = await kvStoreRead(redisConnections, appChannel, position, state.log)
+    message = await kvStoreRead(redisConnections, appChannel,
+                                position, state.log)
 
     # Correct path
     response = {
