@@ -77,6 +77,7 @@ async def redisSubscriber(redisConnections: RedisConnections,
 
         return messageHandler
 
+
 def runSubscriber(redisConnections: RedisConnections,
                   channel: str, position: str, messageHandlerClass, obj=None):
     asyncio.get_event_loop().run_until_complete(

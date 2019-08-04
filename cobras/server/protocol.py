@@ -26,6 +26,7 @@ from cobras.server.redis_connections import RedisConnections
 from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
                                             redisSubscriber)
+from cobras.server.redis_kv_store import kvStoreRead
 
 
 async def respond(state: ConnectionState, ws, app: Dict, data: JsonDict):
@@ -483,6 +484,32 @@ async def handleAdminRpc(state: ConnectionState, ws, app: Dict,
     await respond(state, ws, app, response)
 
 
+# FIXME error handling
+async def handleRead(state: ConnectionState, ws, app: Dict,
+                     pdu: JsonDict, serializedPdu: str):
+
+    body = pdu.get('body', {})
+    position = body.get('position')
+    channel = body.get('channel')
+
+    appChannel = '{}::{}'.format(state.appkey, channel)
+
+    redisConnections = RedisConnections(app['redis_urls'],
+                                        app['redis_password'])
+
+    message = await kvStoreRead(redisConnections, appChannel, position, state.log)
+
+    # Correct path
+    response = {
+        "action": "rtm/read/ok",
+        "id": pdu.get('id', 1),
+        "body": {
+            "message": message
+        }
+    }
+    await respond(state, ws, app, response)
+
+
 AUTH_PREFIX = 'auth'
 ACTION_HANDLERS_LUT = {
     f'{AUTH_PREFIX}/handshake': handleHandshake,
@@ -490,6 +517,7 @@ ACTION_HANDLERS_LUT = {
     'rtm/publish': handlePublish,
     'rtm/subscribe': handleSubscribe,
     'rtm/unsubscribe': handleUnSubscribe,
+    'rtm/read': handleRead,
     'rpc/admin': handleAdminRpc
 }
 

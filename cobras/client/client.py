@@ -161,3 +161,39 @@ async def subscribeClient(url, credentials, channel, position,
 
     ret = await client(url, credentials, subscribeHandlerPartial)
     return ret
+
+
+async def readHandler(websocket, **args):
+    position = args.get('position')
+    channel = args.get('channel')
+    handler = args.get('handler')
+
+    readPdu = {
+        "action": "rtm/read",
+        "body": {
+            "channel": channel,
+        },
+        "id": 3  # FIXME
+    }
+
+    if position is not None:
+        readPdu['body']['position'] = position
+
+    print(f"> {readPdu}")
+    await websocket.send(json.dumps(readPdu))
+
+    readResponse = await websocket.recv()
+    print(f"< {readResponse}")
+
+    data = json.loads(readResponse)
+    msg = data['body']['message']  # FIXME data missing
+    await handler(msg)
+
+
+async def readClient(url, credentials, channel, position, handler):
+    readHandlerPartial = functools.partial(
+        readHandler, channel=channel, position=position,
+        handler=handler)
+
+    ret = await client(url, credentials, readHandlerPartial)
+    return ret
