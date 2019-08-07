@@ -17,6 +17,7 @@ class ConnectionState:
         self.ok = True
         self.role = 'na'
         self.authenticated = False
+        self.permissions = []
 
         self.nonce = None
         self.error = 'na'

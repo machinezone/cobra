@@ -20,10 +20,12 @@ DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={STATS_APPKEY}'
 @click.option('--role', default=getDefaultRoleForApp('stats'))
 @click.option('--secret', default=getDefaultSecretForApp('stats'))
 @click.option('--raw', is_flag=True)
-@click.option('--tidy', is_flag=True)
+@click.option('--hide_nodes', is_flag=True)
+@click.option('--hide_roles', is_flag=True)
 @click.option('--subscribers', is_flag=True)
 @click.option('--role_filter')
-def monitor(url, role, secret, raw, role_filter, tidy, subscribers):
+@click.option('--system', is_flag=True)
+def monitor(url, role, secret, raw, role_filter, hide_nodes, hide_roles, subscribers, system):
     '''Monitor cobra
     '''
 
@@ -31,5 +33,5 @@ def monitor(url, role, secret, raw, role_filter, tidy, subscribers):
     uvloop.install()
 
     credentials = createCredentials(role, secret)
-    displayNodes = not tidy
-    runMonitor(url, credentials, raw, role_filter, displayNodes, subscribers)
+    runMonitor(url, credentials, raw, role_filter,
+               not hide_nodes, not hide_roles, subscribers, system)

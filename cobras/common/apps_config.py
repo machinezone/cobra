@@ -8,6 +8,7 @@ import logging
 import os
 from pathlib import Path
 from random import getrandbits, randint
+from typing import List
 
 import yaml
 
@@ -65,6 +66,19 @@ class AppsConfig():
             raise KeyError
 
         return secret.encode('ascii')
+
+    def getPermissions(self, appkey: str, role: str) -> List[str]:
+        if not self.isAppKeyValid(appkey):
+            logging.warning(f'Missing appkey: "{appkey}"')
+            raise KeyError
+
+        roles = self.apps.get(appkey, {}).get('roles')
+        if roles is None:
+            logging.warning(f'Missing roles')
+            raise KeyError
+
+        permissions = roles.get(role, {}).get('permissions', [])
+        return permissions
 
     def isBatchPublishEnabled(self, appkey: str) -> bytes:
         if not self.isAppKeyValid(appkey):

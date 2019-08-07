@@ -33,7 +33,9 @@ class MessageHandlerClass:
         self.raw = args['raw']
         self.roleFilter = args['role_filter']
         self.showNodes = args['show_nodes']
+        self.showRoles = args['show_roles']
         self.subscribers = args['subscribers']
+        self.system = args['system']
 
         self.roleMetrics = []
 
@@ -68,6 +70,15 @@ class MessageHandlerClass:
 
             cobraData = data['data']['cobra']
             for key in sorted(cobraData.keys()):
+
+                if self.system:
+                    skip = False
+                    for keyName in ('published', 'subscribed', 'subscriptions'):
+                        if keyName in key:
+                            skip = True
+                    if skip:
+                        continue
+
                 s = sum(cobraData[key].values())
                 self.metrics[key] += s
 
@@ -124,7 +135,8 @@ class MessageHandlerClass:
                                     tablefmt="simple",
                                     headers="firstrow"))
 
-        self.displayRoleMetrics()
+        if self.showRoles:
+            self.displayRoleMetrics()
 
         self.resetMetrics()
         return True
@@ -178,7 +190,8 @@ class MessageHandlerClass:
                                 headers="firstrow"))
 
 
-def runMonitor(url, credentials, raw, roleFilter, showNodes, subscribers):
+def runMonitor(url, credentials, raw, roleFilter,
+               showNodes, showRoles, subscribers, system):
     position = None
     asyncio.get_event_loop().run_until_complete(
         subscribeClient(url, credentials, DEFAULT_STATS_CHANNEL, position,
@@ -186,4 +199,6 @@ def runMonitor(url, credentials, raw, roleFilter, showNodes, subscribers):
                         {'raw': raw,
                          'role_filter': roleFilter,
                          'show_nodes': showNodes,
-                         'subscribers': subscribers}))
+                         'show_roles': showRoles,
+                         'subscribers': subscribers,
+                         'system': system}))

@@ -4,6 +4,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 Subscribe to a channel, publish and make sure a message is received
 '''
+import sys
 import urllib.request
 
 import click
@@ -42,6 +43,10 @@ def health(url, http_url, http, role, secret, channel):
             html = response.read()
             print(html.decode('utf8'), end='')
     else:
-        healthCheck(url, role, secret, channel)
+        try:
+            healthCheck(url, role, secret, channel)
+        except ValueError as e:
+            click.secho(f'System is unhealthy !!: {e}', fg='red')
+            sys.exit(1)
 
-    print('System is healthy')
+    click.secho('System is healthy', fg='green')

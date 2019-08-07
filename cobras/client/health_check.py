@@ -80,7 +80,12 @@ def healthCheck(url, role, secret, channel):
 
         async def handleMsg(self, msg: str) -> bool:
             print('Received', msg)
-            self.parsedMessage = json.loads(msg)
+            data = json.loads(msg)
+
+            if data.get('action') == 'rtm/publish/error':
+                raise ValueError(data.get('body', {}).get('error'))
+
+            self.parsedMessage = data
 
             await self.unsubscribe()
 
@@ -113,7 +118,26 @@ def healthCheck(url, role, secret, channel):
                         {'channel': channel, 'content': content}))
 
     data = messageHandler.parsedMessage
-    messages = data['body']['messages']
+    body = data['body']
+    if body is None:
+        raise ValueError(f'missing body: {data}')
+
+    messages = body.get('messages')
+    if messages is None:
+        raise ValueError(f'missing messages: {data}')
+
+    if not isinstance(messages, list):
+        raise ValueError(f'messages is not a list: {type(messages)} {data}')
+
+    if len(messages) == 0:
+        raise ValueError(f'messages is empty: {data}')
+
     message = messages[0]
-    assert message['device.android_id'] == refAndroidId
-    assert magicNumber == message['magic']
+    if not isinstance(message, dict):
+        raise ValueError(f'message is not a dict: {type(message)} {data}')
+
+    if message.get('device.android_id') != refAndroidId:
+        raise ValueError(f'incorrect android_id: {data}')
+
+    if magicNumber != message['magic']:
+        raise ValueError(f'incorrect magic: {data}')

@@ -66,7 +66,10 @@ async def handleAuth(state: ConnectionState, ws, app: Dict,
             "id": pdu.get('id', 1),
             "body": {},
         }
+
         state.authenticated = True
+        state.permissions = app['apps_config'].getPermissions(state.appkey,
+                                                              state.role)
     else:
         logging.warning(f'auth error: {reason}')
         response = {
@@ -396,7 +399,7 @@ async def handleUnSubscribe(state: ConnectionState, ws, app: Dict,
         return
 
     key = subscriptionId + state.connection_id
-    item = state.subscriptions.get(key)
+    item = state.subscriptions.get(key, (None, None))
     task, _ = item
     if task is None:
         errMsg = f'Invalid subscriptionId: {subscriptionId}'
@@ -512,6 +515,16 @@ async def handleRead(state: ConnectionState, ws, app: Dict,
     await respond(state, ws, app, response)
 
 
+def validatePermissions(permissions, action):
+    if action == 'rtm/publish' and not 'publish' in permissions:
+        return False
+
+    if action == 'rtm/subscribe' and not 'subscribe' in permissions:
+        return False
+
+    return True
+
+
 AUTH_PREFIX = 'auth'
 ACTION_HANDLERS_LUT = {
     f'{AUTH_PREFIX}/handshake': handleHandshake,
@@ -546,6 +559,20 @@ async def processCobraMessage(state: ConnectionState, ws,
     # Make sure the user is authenticated
     if not state.authenticated and not action.startswith(AUTH_PREFIX):
         errMsg = f'action "{action}" needs authentication'
+        logging.warning(errMsg)
+        response = {
+            "action": f"{action}/error",
+            "id": pdu.get('id', 1),
+            "body": {
+                "error": errMsg
+            }
+        }
+        await respond(state, ws, app, response)
+        return
+
+    # Make sure the user has permission to access given endpoint
+    if not validatePermissions(state.permissions, action):
+        errMsg = f'action "{action}": permission denied'
         logging.warning(errMsg)
         response = {
             "action": f"{action}/error",

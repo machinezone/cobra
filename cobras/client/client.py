@@ -140,6 +140,11 @@ async def subscribeHandler(websocket, **args):
     subscribeResponse = await websocket.recv()
     print(f"< {subscribeResponse}")
 
+    # validate response
+    data = json.loads(subscribeResponse)
+    if data.get('action') != 'rtm/subscribe/ok':
+        raise ValueError(data.get('body', {}).get('error'))
+
     messageHandler = messageHandlerClass(websocket, messageHandlerArgs)
     await messageHandler.on_init()
 
