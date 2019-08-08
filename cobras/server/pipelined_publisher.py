@@ -17,6 +17,8 @@ class PipelinedPublisher():
         self.batchSize = batchSize or 100
         self.lock = asyncio.Lock()
 
+        self.xaddMaxLength = 1000
+
     async def publishAll(self):
         pipe = self.redis.pipeline()
         async with self.lock:
@@ -38,7 +40,7 @@ class PipelinedPublisher():
         appkey, channel, data = job
         appChannel = '{}::{}'.format(appkey, channel)
         pipe.xadd(appChannel, {'json': data},
-                  max_len=100, exact_len=False)
+                  max_len=self.xaddMaxLength, exact_len=False)
 
     async def publishNow(self, job):
         async with self.lock:
