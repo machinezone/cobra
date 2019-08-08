@@ -3,7 +3,6 @@ sentry-sdk==0.10.2
 tabulate==0.8.2
 click==6.6
 hiredis==0.2.0
-statsd==3.2.1
 psutil==5.4.6
 PyYAML==5.1.1
 ujson==1.35
