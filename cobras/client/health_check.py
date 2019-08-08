@@ -45,6 +45,7 @@ def healthCheck(url, role, secret, channel):
             self.content = args['content']
             self.subscriptionId = self.channel
             self.msg = None
+            self.parsedMessage = None
 
         async def on_init(self):
             await self.publishHealthMsg()
@@ -118,6 +119,9 @@ def healthCheck(url, role, secret, channel):
                         {'channel': channel, 'content': content}))
 
     data = messageHandler.parsedMessage
+    if data is None:
+        raise ValueError(f'no message received')
+
     body = data['body']
     if body is None:
         raise ValueError(f'missing body: {data}')

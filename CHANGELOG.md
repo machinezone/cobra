@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [1.1.1] - 2019-08-07
 ### Changed
 - Use a more elegant way to retrieve cobras version number, with pkg_resources module.
+- (health-check client) handle publish that triggers a server error (when redis is misconfigured)
 
 ## [1.1.0] - 2019-08-03
 
