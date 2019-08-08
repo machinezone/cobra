@@ -69,8 +69,7 @@ cobra health --url 'ws://jeanserge.com/v2?appkey=_health' --secret A5a3BdEfbc6Df
 
 # Setup
 
-To run in production you will need a redis instance, with version > 5 since redis is using [Streams](https://redis.io/topics/streams-intro). Here are 
-environment variables that you will likely want to tweak. Here we use 2 redis instances, and we bind on 0.0.0.0 so that the internet can see us.
+To run in production you will need a redis (version > 5) instance. Here are environment variables that you will likely want to tweak, to connect to 2 redis instances (for scalabity), and to bind on 0.0.0.0 so that the internet can see your instance.
 
 ```
 - name: COBRA_HOST
@@ -81,8 +80,8 @@ environment variables that you will likely want to tweak. Here we use 2 redis in
 
 # Thank you
 
-There would be no cobra without some other amazing open-source projects and tech.
+There would be no cobra without some other amazing open-source projects and tech. Here are 3 very remarkable ones.
 
 - [Python](https://www.python.org/) (and [asyncio](https://realpython.com/async-io-python/), one of the killer python3 feature !)
-- [Redis](https://redis.io/), the swiss army knife of the internet which provide a very scalable publish/subscribe to dispatch messages.
+- [Redis](https://redis.io/), the swiss army knife of the internet which provide a very scalable publish/subscribe feature to dispatch messages while retaining them and allowing lookups of old messages (see [Redis Streams] (https://redis.io/topics/streams-intro).
 - The python [websockets](https://websockets.readthedocs.io/en/stable/intro.html) library, very elegantly implementing the [WebSockets](https://tools.ietf.org/html/rfc6455) protocol.
