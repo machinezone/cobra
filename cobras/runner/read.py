@@ -25,7 +25,7 @@ DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={PUBSUB_APPKEY}'
 @click.option('--channel', default='sms_republished_v1_neo')
 @click.option('--position')
 def read(url, role, secret, channel, position):
-    '''Monitor cobra
+    '''Read a value
     '''
 
     preventRootUsage()
