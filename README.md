@@ -1,5 +1,8 @@
 # General
 
+[![Build Status](https://travis-ci.org/machinezone/cobra.svg?branch=master)](https://travis-ci.org/machinezone/cobra)
+[![PyPI version](https://badge.fury.io/py/cobras.svg)](https://badge.fury.io/py/cobras)
+
 Cobra is a realtime messaging server using Python3, WebSockets and Redis PubSub. It was presented in great details during [RedisConf 2019](https://events.redislabs.com/redis-conf/redis-conf-2019/).
 
 * [slides](https://bsergean.github.io/redis_conf_2019/slides.html)
@@ -38,6 +41,8 @@ make test
 
 # Usage
 
+## Cobra server and test clients
+
 ```
 $ cobra
 Usage: cobra [OPTIONS] COMMAND [ARGS]...
@@ -64,8 +69,23 @@ Commands:
 To run the server use `cobra run`. You can run a health-check against the server with `cobra health`.
 
 ```
-cobra health --url 'ws://jeanserge.com/v2?appkey=_health' --secret A5a3BdEfbc6Df5AAFFcadE7F9Dd7F17E --role health
+cobra health --url 'ws://cobra.jeanserge.com/v2?appkey=_health' --secret A5a3BdEfbc6Df5AAFFcadE7F9Dd7F17E --role health
 ```
+
+## bavarde
+
+*bavarde* is a chat client that runs against the public cobra server. Bring up 2 terminals, runs the 2 commands below and start typing.
+
+```
+$ bavarde client
+...
+```
+
+```
+$ bavarde client --username bob
+...
+```
+
 
 # Setup
 
