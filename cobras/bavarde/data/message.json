@@ -1,0 +1,1 @@
+{"action": "rtm/publish", "body": {"channel": "lobby", "message": {"data": {"user": "zizou", "text": "Griezman will score"}}}}

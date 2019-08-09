@@ -58,7 +58,8 @@ setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'cobra = cobras.runner:main'
+            'cobra = cobras.runner:main',
+            'bavarde = cobras.bavarde.runner:main'
         ],
     },
     classifiers=[

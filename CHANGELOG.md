@@ -1,7 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2019-08-09
+
+### Changed
+- Add example code for a chat command line interactive client named bavarde. The chat connects to a public cobra server. Many features from a decent chat are missing, Most of the interactive chat code was taken from the websockets library.
+
 ## [1.1.1] - 2019-08-07
+
 ### Changed
 - Use a more elegant way to retrieve cobras version number, with pkg_resources module.
 - (health-check client) handle publish that triggers a server error (when redis is misconfigured)
