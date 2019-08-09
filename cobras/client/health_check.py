@@ -37,7 +37,6 @@ def getDefaultHealthCheckUrl(host=None, port=None):
 
 def healthCheck(url, role, secret, channel):
     '''Perform a health check'''
-
     class MessageHandlerClass:
         def __init__(self, websocket, args):
             self.websocket = websocket
@@ -114,9 +113,11 @@ def healthCheck(url, role, secret, channel):
                          magic = {magicNumber}
     """
     messageHandler = asyncio.get_event_loop().run_until_complete(
-        subscribeClient(url, credentials, channel, position,
-                        fsqlFilter, MessageHandlerClass,
-                        {'channel': channel, 'content': content}))
+        subscribeClient(url, credentials, channel, position, fsqlFilter,
+                        MessageHandlerClass, {
+                            'channel': channel,
+                            'content': content
+                        }))
 
     data = messageHandler.parsedMessage
     if data is None:

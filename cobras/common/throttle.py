@@ -8,13 +8,11 @@ from datetime import datetime, timedelta
 
 
 class Throttle(object):
-    def __init__(self,
-                 seconds: int = 1,
-                 minutes: int = 0,
+    def __init__(self, seconds: int = 1, minutes: int = 0,
                  hours: int = 0) -> None:
-        self.throttle_period = timedelta(
-            seconds=seconds, minutes=minutes, hours=hours
-        )
+        self.throttle_period = timedelta(seconds=seconds,
+                                         minutes=minutes,
+                                         hours=hours)
         self.time_of_last_call = datetime.min
 
     def exceedRate(self) -> bool:

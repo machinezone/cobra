@@ -24,6 +24,6 @@ def computeEventTimeDeltas(events: str) -> list:
 
         deltas.append((lines[i - 1], delta))
 
-    deltas.append((lines[N-1], 0))
+    deltas.append((lines[N - 1], 0))
 
     return deltas

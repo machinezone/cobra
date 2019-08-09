@@ -40,7 +40,8 @@ class PipelinedPublisher():
         appkey, channel, data = job
         appChannel = '{}::{}'.format(appkey, channel)
         pipe.xadd(appChannel, {'json': data},
-                  max_len=self.xaddMaxLength, exact_len=False)
+                  max_len=self.xaddMaxLength,
+                  exact_len=False)
 
     async def publishNow(self, job):
         async with self.lock:

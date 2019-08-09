@@ -24,11 +24,7 @@ from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
 
 
-async def cobraHandler(websocket,
-                       path,
-                       app,
-                       redisUrls: str,
-                       verbose: bool):
+async def cobraHandler(websocket, path, app, redisUrls: str, verbose: bool):
     start = time.time()
     msgCount = 0
     appkey = parseAppKey(path)  # appkey must have been validated
@@ -94,18 +90,17 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
             return http.HTTPStatus.OK, [], bytes(getVersion(), 'utf8') + b'\n'
 
         appkey = parseAppKey(path)
-        if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(appkey):  # noqa
+        if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(
+                appkey):  # noqa
             return http.HTTPStatus.FORBIDDEN, [], b'KO\n'
 
 
 class AppRunner():
     '''From aiohttp
     '''
-
-    def __init__(self, host, port, redisUrls,
-                 redisPassword, appsConfigPath, verbose,
-                 debugMemory, plugins, enableStats,
-                 maxSubscriptions, idleTimeout):
+    def __init__(self, host, port, redisUrls, redisPassword, appsConfigPath,
+                 verbose, debugMemory, plugins, enableStats, maxSubscriptions,
+                 idleTimeout):
         self.app = {}
         self.app['connections'] = {}
         self.app['apps_config_path'] = appsConfigPath

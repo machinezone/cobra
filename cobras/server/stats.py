@@ -106,7 +106,8 @@ class ServerStats():
                     'system': {
                         'connections': self.connectionCount,
                         'mem_bytes': getProcessUsedMemory(),
-                        'container_memory_limit_bytes': getContainerMemoryLimit(),  # noqa
+                        'container_memory_limit_bytes':
+                        getContainerMemoryLimit(),  # noqa
                         'uptime': uptime,
                         'uptime_minutes': uptimeMinutes,
                         'tasks': len(asyncio.all_tasks()),
@@ -119,7 +120,8 @@ class ServerStats():
 
             chan = self.statsChannel
             appkey = self.internalAppKey
-            pipelinedPublisher = await self.pipelinedPublishers.get(appkey, chan)  # noqa
+            pipelinedPublisher = await self.pipelinedPublishers.get(
+                appkey, chan)  # noqa
             await pipelinedPublisher.publishNow((appkey, chan, data))
 
             self.resetCounterByPeriod()

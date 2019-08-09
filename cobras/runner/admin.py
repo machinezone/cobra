@@ -45,8 +45,7 @@ async def start(url, credentials, verbose, method, params):
                                  method=method,
                                  params=params)
 
-    task = asyncio.create_task(
-        client(url, credentials, callback))
+    task = asyncio.create_task(client(url, credentials, callback))
     await task
 
 
@@ -69,5 +68,5 @@ def admin(url, role, secret, verbose, method, params):
 
     credentials = createCredentials(role, secret)
 
-    asyncio.get_event_loop().run_until_complete(start(url, credentials,
-                                                      verbose, method, params))
+    asyncio.get_event_loop().run_until_complete(
+        start(url, credentials, verbose, method, params))

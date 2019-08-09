@@ -29,10 +29,12 @@ def test_answer():
                                       'client_publisher')
     assert secret == b'ggggggggggggggggggghhhhhhhhhhhhH'
 
-    batchPublish = appsConfig.isBatchPublishEnabled('AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB')
+    batchPublish = appsConfig.isBatchPublishEnabled(
+        'AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB')
     assert not batchPublish
 
-    batchPublish = appsConfig.isBatchPublishEnabled('eeeeeeeeeeeeeeeeffffffffffffffff')
+    batchPublish = appsConfig.isBatchPublishEnabled(
+        'eeeeeeeeeeeeeeeeffffffffffffffff')
     assert batchPublish
 
 

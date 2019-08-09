@@ -52,15 +52,15 @@ class MemoryDebugger():
         snapshot = self.snapshots[-1]
         kind = self.mode
         stats = snapshot.filter_traces(self.filters).compare_to(
-                    old_snapshot.filter_traces(self.filters), kind)
+            old_snapshot.filter_traces(self.filters), kind)
 
         print('\n\n== Memory report ==')
         for stat in stats[:10]:
             fmt = "{} new {} total / {} new {} total memory blocks: "
-            print(fmt.format(byteformat.format(stat.size_diff),
-                             byteformat.format(stat.size),
-                             stat.count_diff,
-                             stat.count))
+            print(
+                fmt.format(byteformat.format(stat.size_diff),
+                           byteformat.format(stat.size), stat.count_diff,
+                           stat.count))
             for line in stat.traceback.format():
                 print(line)
             print()

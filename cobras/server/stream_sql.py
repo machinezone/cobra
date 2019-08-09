@@ -6,16 +6,10 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import collections
 import logging
 
-StreamSQLExpression = collections.namedtuple(
-    'StreamSQLExpression', [
-        'components', 'val', 'length',
-        'equalExpression',
-        'likeExpression',
-        'differentExpression',
-        'largerThanExpression',
-        'lowerThanExpression'
-    ]
-)
+StreamSQLExpression = collections.namedtuple('StreamSQLExpression', [
+    'components', 'val', 'length', 'equalExpression', 'likeExpression',
+    'differentExpression', 'largerThanExpression', 'lowerThanExpression'
+])
 
 
 class InvalidStreamSQLError(Exception):
@@ -133,15 +127,14 @@ class StreamSqlFilter:
 
         components = self.jsonExpr.split('.')
         return StreamSQLExpression(components, val, len(components),
-                                   equalExpression,
-                                   likeExpression,
-                                   differentExpression,
-                                   largerThanExpression,
+                                   equalExpression, likeExpression,
+                                   differentExpression, largerThanExpression,
                                    lowerThanExpression)
 
     def matchExpression(self, msg, expression):
         if expression.length == 2:
-            val = msg.get(expression.components[0], {}).get(expression.components[1])  # noqa
+            val = msg.get(expression.components[0],
+                          {}).get(expression.components[1])  # noqa
             return self.matchOperand(val, expression)
         elif expression.length == 1:
             val = msg.get(expression.components[0])
@@ -178,12 +171,16 @@ class StreamSqlFilter:
             return False
 
         if self.andExpr:
-            if not all(self.matchExpression(msg, expression) for expression in self.expressions):  # noqa
+            if not all(
+                    self.matchExpression(msg, expression)
+                    for expression in self.expressions):  # noqa
                 return False
             else:
                 return self.transform(msg)
         else:
-            if not any(self.matchExpression(msg, expression) for expression in self.expressions):  # noqa
+            if not any(
+                    self.matchExpression(msg, expression)
+                    for expression in self.expressions):  # noqa
                 return False
             else:
                 return self.transform(msg)

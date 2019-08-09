@@ -10,8 +10,7 @@ from cobras.server.redis_connections import RedisConnections
 
 
 class PipelinedPublishers():
-    def __init__(self,
-                 redisConnections: RedisConnections,
+    def __init__(self, redisConnections: RedisConnections,
                  batchPublishSize: int) -> None:
         self.redisConnections = redisConnections
         self.pipelinedPublishers: dict = {}

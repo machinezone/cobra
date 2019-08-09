@@ -32,9 +32,9 @@ def makeRunner(debugMemory=False):
     appsConfig.generateDefaultConfig()
     os.environ['COBRA_APPS_CONFIG'] = appsConfigPath
 
-    runner = AppRunner(host, port, redisUrls, redisPassword,
-                       appsConfigPath, verbose, debugMemory,
-                       plugins, enableStats, maxSubscriptions, idleTimeout)
+    runner = AppRunner(host, port, redisUrls, redisPassword, appsConfigPath,
+                       verbose, debugMemory, plugins, enableStats,
+                       maxSubscriptions, idleTimeout)
     asyncio.get_event_loop().run_until_complete(runner.setup())
     return runner, appsConfigPath
 

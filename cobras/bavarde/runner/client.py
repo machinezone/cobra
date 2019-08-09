@@ -6,10 +6,10 @@ Lot of code borrowed from websockets cli.
 '''
 
 import asyncio
-import os
-import threading
-import pprint
 import getpass
+import os
+import pprint
+import threading
 
 import click
 
@@ -21,17 +21,22 @@ DEFAULT_URL = 'ws://chat.jeanserge.com/v2?appkey=_pubsub'
 DEFAULT_ROLE = 'pubsub'
 DEFAULT_SECRET = 'ccc02DE4Ed8CAB9aEfC8De3e13BfBE5E'
 
+
 @click.command()
 @click.option('--url', default=DEFAULT_URL)
 @click.option('--role', envvar='BAVARDE_DEFAULT_ROLE', default=DEFAULT_ROLE)
-@click.option('--secret', envvar='BAVARDE_DEFAULT_SECRET', default=DEFAULT_SECRET, required=True)
+@click.option('--secret',
+              envvar='BAVARDE_DEFAULT_SECRET',
+              default=DEFAULT_SECRET,
+              required=True)
 @click.option('--channel', envvar='BAVARDE_DEFAULT_CHANNEL', default='lobby')
 @click.option('--position', default='0-0')
 @click.option('--username', default=getpass.getuser())
 @click.option('--verbose', '-v', count=True)
 @click.option('--dev', '-v', count=True)
 @click.option('--stream_sql')
-def client(url, role, secret, channel, position, username, stream_sql, verbose, dev):
+def client(url, role, secret, channel, position, username, stream_sql, verbose,
+           dev):
     '''WRITEME'''
 
     if os.getenv('DEBUG') is not None or verbose:
@@ -55,9 +60,9 @@ def client(url, role, secret, channel, position, username, stream_sql, verbose, 
     stop: asyncio.Future[None] = loop.create_future()
 
     # Schedule the task that will manage the connection.
-    asyncio.ensure_future(runClient(url, role, secret, channel,
-                                    position, stream_sql, verbose,
-                                    username, loop, inputs, stop),
+    asyncio.ensure_future(runClient(url, role, secret, channel, position,
+                                    stream_sql, verbose, username, loop,
+                                    inputs, stop),
                           loop=loop)
 
     # Start the event loop in a background thread.

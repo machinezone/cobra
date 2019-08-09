@@ -163,7 +163,7 @@ def genSecret():
 
     secret = ''
     for _ in range(32):
-        c = randint(0, N-1)
+        c = randint(0, N - 1)
         secret += chars[c]
 
     return secret

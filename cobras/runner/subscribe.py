@@ -67,6 +67,5 @@ def subscribe(url, role, secret, channel, position, stream_sql, verbose):
     credentials = createCredentials(role, secret)
 
     asyncio.get_event_loop().run_until_complete(
-            subscribeClient(url, credentials, channel, position,
-                            stream_sql, MessageHandlerClass,
-                            {'verbose': verbose}))
+        subscribeClient(url, credentials, channel, position, stream_sql,
+                        MessageHandlerClass, {'verbose': verbose}))

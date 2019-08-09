@@ -39,12 +39,12 @@ import yaml
 dataA = yaml.load(eventA, Loader=yaml.FullLoader)
 dataB = yaml.load(eventB, Loader=yaml.FullLoader)
 
+
 class Foo():
     def __init__(self):
         self.data = {}
-        self.entries = [((
-            'Node', 'Connections', 'Published bytes', 'Published bytes per second', 'Published count'
-        ))]
+        self.entries = [(('Node', 'Connections', 'Published bytes',
+                          'Published bytes per second', 'Published count'))]
 
     def add(self, data):
         for key in data.keys():

@@ -13,8 +13,7 @@ import ujson
 from cobras.server.redis_connections import RedisConnections
 
 
-async def kvStoreRead(redisConnections: RedisConnections,
-                      pattern: str,
+async def kvStoreRead(redisConnections: RedisConnections, pattern: str,
                       position: Optional[str], logger):
     # Create connection
     connection = await redisConnections.create(pattern)

@@ -27,7 +27,6 @@ dataDir = os.path.join(root, '..', 'data')
 DEFAULT_PATH = os.path.join(dataDir, 'publish.jsonl')
 DEFAULT_BATCH_PATH = os.path.join(dataDir, 'niso_events.tar.bz')
 
-
 # Default channel when pushing from redis
 DEFAULT_CHANNEL = 'sms_republished_v1_neo'
 
@@ -91,8 +90,8 @@ async def clientCallback(websocket, **args):
             break
 
 
-async def publishTask(url, credentials, items, channel,
-                      verbose, repeat, delay):
+async def publishTask(url, credentials, items, channel, verbose, repeat,
+                      delay):
     tasks = []
     for item in items:
         publishClientCallback = functools.partial(clientCallback,
@@ -159,12 +158,13 @@ def run(url, channel, path, credentials, verbose, repeat, delay, limit):
 @click.option('--verbose', is_flag=True)
 @click.option('--repeat', is_flag=True)
 @click.option('--batch', is_flag=True)
-@click.option('--batch_events_path', envvar='COBRA_PUBLISH_BATCH_EVENTS_PATH',
+@click.option('--batch_events_path',
+              envvar='COBRA_PUBLISH_BATCH_EVENTS_PATH',
               help='An archive (tar.gz, etc...) of events files')
 @click.option('--limit', default=256)
 @click.option('--delay', default=0.1)
-def publish(url, channel, path, role, secret, batch, batch_events_path,
-            limit, verbose, repeat, delay):
+def publish(url, channel, path, role, secret, batch, batch_events_path, limit,
+            verbose, repeat, delay):
     '''Publish to a channel
     '''
 

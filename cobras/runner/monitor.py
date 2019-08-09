@@ -25,7 +25,8 @@ DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={STATS_APPKEY}'
 @click.option('--subscribers', is_flag=True)
 @click.option('--role_filter')
 @click.option('--system', is_flag=True)
-def monitor(url, role, secret, raw, role_filter, hide_nodes, hide_roles, subscribers, system):
+def monitor(url, role, secret, raw, role_filter, hide_nodes, hide_roles,
+            subscribers, system):
     '''Monitor cobra
     '''
 
@@ -33,5 +34,5 @@ def monitor(url, role, secret, raw, role_filter, hide_nodes, hide_roles, subscri
     uvloop.install()
 
     credentials = createCredentials(role, secret)
-    runMonitor(url, credentials, raw, role_filter,
-               not hide_nodes, not hide_roles, subscribers, system)
+    runMonitor(url, credentials, raw, role_filter, not hide_nodes,
+               not hide_roles, subscribers, system)

@@ -25,7 +25,8 @@ dev_requires = [
     'honcho',
     'mypy',
     'aiojobs==0.1.0',
-    'twine'
+    'twine',
+    'yapf'
 ]
 
 tests_require = [

@@ -41,8 +41,8 @@ async def respond(state: ConnectionState, ws, app: Dict, data: JsonDict):
         logging.warning(f'Trying to write in a closed connection: {e}')
 
 
-async def handleAuth(state: ConnectionState, ws, app: Dict,
-                     pdu: JsonDict, serializedPdu: str):
+async def handleAuth(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                     serializedPdu: str):
     try:
         secret = app['apps_config'].getRoleSecret(state.appkey, state.role)
     except KeyError:
@@ -68,8 +68,8 @@ async def handleAuth(state: ConnectionState, ws, app: Dict,
         }
 
         state.authenticated = True
-        state.permissions = app['apps_config'].getPermissions(state.appkey,
-                                                              state.role)
+        state.permissions = app['apps_config'].getPermissions(
+            state.appkey, state.role)
     else:
         logging.warning(f'auth error: {reason}')
         response = {
@@ -84,12 +84,7 @@ async def handleAuth(state: ConnectionState, ws, app: Dict,
 
 
 async def badFormat(state: ConnectionState, ws, app: Dict, reason: str):
-    response = {
-        "body": {
-            "error": "bad_schema",
-            "reason": reason
-        }
-    }
+    response = {"body": {"error": "bad_schema", "reason": reason}}
     state.ok = False
     state.error = response
     await respond(state, ws, app, response)
@@ -110,8 +105,8 @@ def parseAppKey(path):
     return appkey
 
 
-async def handleHandshake(state: ConnectionState, ws, app: Dict,
-                          pdu: JsonDict, serializedPdu: str):
+async def handleHandshake(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                          serializedPdu: str):
     authMethod = pdu.get('body', {}).get('method')
     if authMethod != 'role_secret':
         errMsg = f'invalid auth method: {authMethod}'
@@ -145,8 +140,8 @@ async def handleHandshake(state: ConnectionState, ws, app: Dict,
     await respond(state, ws, app, response)
 
 
-async def handlePublish(state: ConnectionState, ws, app: Dict,
-                        pdu: JsonDict, serializedPdu: str):
+async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                        serializedPdu: str):
     '''Here we don't write back a result to the client for efficiency.
     Client doesn't really needs it.
     '''
@@ -204,8 +199,8 @@ async def handlePublish(state: ConnectionState, ws, app: Dict,
     app['stats'].updatePublished(state.role, len(serializedPdu))
 
 
-async def handleSubscribe(state: ConnectionState, ws, app: Dict,
-                          pdu: JsonDict, serializedPdu: str):
+async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                          serializedPdu: str):
     '''
     Client doesn't really needs it.
     '''
@@ -318,7 +313,8 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict,
             self.serverStats.updateSubscribed(self.state.role, payloadSize)
 
             if self.hasFilter:
-                filterOutput = self.streamSQLFilter.match(msg.get('messages') or msg)  # noqa
+                filterOutput = self.streamSQLFilter.match(
+                    msg.get('messages') or msg)  # noqa
                 if not filterOutput:
                     return True
                 else:
@@ -355,20 +351,19 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict,
                                         app['redis_password'])
 
     task = asyncio.create_task(
-        redisSubscriber(redisConnections, appChannel, position,
-                        MessageHandlerClass,
-                        {
-                            'ws': ws,
-                            'subscription_id': subscriptionId,
-                            'has_filter': hasFilter,
-                            'stream_sql_filter': streamSQLFilter,
-                            'appkey': state.appkey,
-                            'stats': app['stats'],
-                            'verbose': app['verbose'],
-                            'state': state,
-                            'subscribe_response': response,
-                            'app': app
-                        }))
+        redisSubscriber(
+            redisConnections, appChannel, position, MessageHandlerClass, {
+                'ws': ws,
+                'subscription_id': subscriptionId,
+                'has_filter': hasFilter,
+                'stream_sql_filter': streamSQLFilter,
+                'appkey': state.appkey,
+                'stats': app['stats'],
+                'verbose': app['verbose'],
+                'state': state,
+                'subscribe_response': response,
+                'app': app
+            }))
     addTaskCleanup(task)
 
     key = subscriptionId + state.connection_id
@@ -415,17 +410,13 @@ async def handleUnSubscribe(state: ConnectionState, ws, app: Dict,
         return
 
     # Correct path
-    response = {
-        "action": "rtm/unsubscribe/ok",
-        "id": pdu.get('id', 1)
-    }
+    response = {"action": "rtm/unsubscribe/ok", "id": pdu.get('id', 1)}
     await respond(state, ws, app, response)
 
     task.cancel()
 
 
-async def closeAll(state: ConnectionState, app: Dict,
-                   params: JsonDict):
+async def closeAll(state: ConnectionState, app: Dict, params: JsonDict):
     websocketLists = []
     for connectionId, (state, websocket) in app['connections'].items():
         if connectionId != state.connection_id:
@@ -449,16 +440,13 @@ async def toggleFileLogging(state: ConnectionState, app: Dict,
 
 
 # FIXME: make sure that 'write' commands are coming from 'localhost'
-async def handleAdminRpc(state: ConnectionState, ws, app: Dict,
-                         pdu: JsonDict, serializedPdu: str):
+async def handleAdminRpc(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                         serializedPdu: str):
     body = pdu.get('body', {})
     method = body.get('method')
     params = body.get('params', {})
 
-    methods = {
-        'close_all': closeAll,
-        'toggle_file_logging': toggleFileLogging
-    }
+    methods = {'close_all': closeAll, 'toggle_file_logging': toggleFileLogging}
 
     if method is None or method not in methods:
         errMsg = f'Invalid method'
@@ -476,9 +464,7 @@ async def handleAdminRpc(state: ConnectionState, ws, app: Dict,
     func = methods.get(method)  # lookup callback
     response = await func(state, app, params)  # execute it
 
-    responseBody = {
-        "data": response
-    }
+    responseBody = {"data": response}
 
     response = {
         "action": "rpc/admin/ok",
@@ -489,8 +475,8 @@ async def handleAdminRpc(state: ConnectionState, ws, app: Dict,
 
 
 # FIXME error handling
-async def handleRead(state: ConnectionState, ws, app: Dict,
-                     pdu: JsonDict, serializedPdu: str):
+async def handleRead(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                     serializedPdu: str):
 
     body = pdu.get('body', {})
     position = body.get('position')
@@ -501,8 +487,8 @@ async def handleRead(state: ConnectionState, ws, app: Dict,
     redisConnections = RedisConnections(app['redis_urls'],
                                         app['redis_password'])
 
-    message = await kvStoreRead(redisConnections, appChannel,
-                                position, state.log)
+    message = await kvStoreRead(redisConnections, appChannel, position,
+                                state.log)
 
     # Correct path
     response = {
@@ -537,8 +523,7 @@ ACTION_HANDLERS_LUT = {
 }
 
 
-async def processCobraMessage(state: ConnectionState, ws,
-                              app: Dict, msg: str):
+async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: str):
     try:
         pdu: JsonDict = ujson.loads(msg)
     except ValueError:

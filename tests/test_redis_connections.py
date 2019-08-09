@@ -39,10 +39,12 @@ async def hashingDistributionCoroutine(redisUrls):
 
 def test_hashing_distribution():
     redisUrls = 'redis://A;redis://B'
-    asyncio.get_event_loop().run_until_complete(hashingDistributionCoroutine(redisUrls))
+    asyncio.get_event_loop().run_until_complete(
+        hashingDistributionCoroutine(redisUrls))
 
     redisUrls = 'redis://A;redis://B;redis://C'
-    asyncio.get_event_loop().run_until_complete(hashingDistributionCoroutine(redisUrls))
+    asyncio.get_event_loop().run_until_complete(
+        hashingDistributionCoroutine(redisUrls))
 
 
 async def hashingConsistencyTestCoroutine(redisUrls):
@@ -82,4 +84,5 @@ async def hashingConsistencyTestCoroutine(redisUrls):
 
 def test_validate_hashing_consistency():
     redisUrls = 'redis://A;redis://B;redis://C'
-    asyncio.get_event_loop().run_until_complete(hashingConsistencyTestCoroutine(redisUrls))
+    asyncio.get_event_loop().run_until_complete(
+        hashingConsistencyTestCoroutine(redisUrls))

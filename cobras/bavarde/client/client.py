@@ -6,30 +6,28 @@ Lot of code borrowed from websockets cli.
 '''
 
 import asyncio
+import datetime
 import json
-import sys
 import os
 import pprint
-import datetime
 import signal
+import sys
 import threading
 import uuid
 from typing import Any, Set
 
 import click
-
-from cobras.client.client import subscribeClient
-from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                      getDefaultSecretForApp)
-from cobras.common.throttle import Throttle
-
 import websockets
 from websockets.exceptions import format_close
 
+from cobras.client.client import subscribeClient
+from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
+                                       getDefaultSecretForApp)
+from cobras.common.throttle import Throttle
 
-def exit_from_event_loop_thread(
-    loop: asyncio.AbstractEventLoop, stop: "asyncio.Future[None]"
-) -> None:
+
+def exit_from_event_loop_thread(loop: asyncio.AbstractEventLoop,
+                                stop: "asyncio.Future[None]") -> None:
     loop.stop()
     if not stop.done():
         # When exiting the thread that runs the event loop, raise
@@ -56,8 +54,7 @@ def print_during_input(string: str) -> None:
         # Restore cursor position
         "\N{ESC}8"
         # Move cursor down
-        "\N{ESC}[B"
-    )
+        "\N{ESC}[B")
     sys.stdout.flush()
 
 
@@ -68,8 +65,7 @@ def print_over_input(string: str) -> None:
         # Delete current line
         "\N{ESC}[K"
         # Print string
-        f"{string}\N{LINE FEED}"
-    )
+        f"{string}\N{LINE FEED}")
     sys.stdout.flush()
 
 
@@ -118,14 +114,11 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
 
     q: asyncio.Queue[str] = asyncio.Queue(loop=loop)
 
-    args = {
-        'verbose': verbose,
-        'queue': q
-    }
+    args = {'verbose': verbose, 'queue': q}
 
     task = asyncio.create_task(
-            subscribeClient(url, credentials, channel, position,
-                            stream_sql, MessageHandlerClass, args))
+        subscribeClient(url, credentials, channel, position, stream_sql,
+                        MessageHandlerClass, args))
 
     try:
         while True:
@@ -134,8 +127,8 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
             done: Set[asyncio.Future[Any]]
             pending: Set[asyncio.Future[Any]]
             done, pending = await asyncio.wait(
-                [incoming, outgoing, stop], return_when=asyncio.FIRST_COMPLETED
-            )
+                [incoming, outgoing, stop],
+                return_when=asyncio.FIRST_COMPLETED)
 
             # Cancel pending tasks to avoid leaking them.
             if incoming in pending:

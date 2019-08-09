@@ -46,6 +46,9 @@ coverage:
 isort:
 	isort `find cobras tests -name '*.py'`
 
+yapf:
+	yapf -i `find cobras tests -name '*.py'`
+
 # this is helpful to remove trailing whitespaces
 trail:
 	test `uname` = Linux || sed -E -i '' -e 's/[[:space:]]*$$//' `find src tests -name '*.py'`

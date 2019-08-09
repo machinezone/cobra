@@ -156,12 +156,14 @@ async def subscribeHandler(websocket, **args):
     return messageHandler
 
 
-async def subscribeClient(url, credentials, channel, position,
-                          fsqlFilter, messageHandlerClass,
-                          messageHandlerArgs):
+async def subscribeClient(url, credentials, channel, position, fsqlFilter,
+                          messageHandlerClass, messageHandlerArgs):
     subscribeHandlerPartial = functools.partial(
-        subscribeHandler, channel=channel, position=position,
-        fsqlFilter=fsqlFilter, messageHandlerClass=messageHandlerClass,
+        subscribeHandler,
+        channel=channel,
+        position=position,
+        fsqlFilter=fsqlFilter,
+        messageHandlerClass=messageHandlerClass,
         messageHandlerArgs=messageHandlerArgs)
 
     ret = await client(url, credentials, subscribeHandlerPartial)
@@ -196,9 +198,10 @@ async def readHandler(websocket, **args):
 
 
 async def readClient(url, credentials, channel, position, handler):
-    readHandlerPartial = functools.partial(
-        readHandler, channel=channel, position=position,
-        handler=handler)
+    readHandlerPartial = functools.partial(readHandler,
+                                           channel=channel,
+                                           position=position,
+                                           handler=handler)
 
     ret = await client(url, credentials, readHandlerPartial)
     return ret
