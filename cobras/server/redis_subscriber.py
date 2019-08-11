@@ -4,6 +4,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import asyncio
+import re
 import traceback
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -11,6 +12,15 @@ from typing import Optional
 import ujson
 
 from cobras.server.redis_connections import RedisConnections
+
+POSITION_PATTERN = re.compile('^(?P<id1>[0-9]+)-(?P<id2>[0-9]+)')
+
+
+def validatePosition(position):
+    if position is None or position == '$':
+        return True
+
+    return POSITION_PATTERN.match(position)
 
 
 class RedisSubscriberMessageHandlerClass(ABC):

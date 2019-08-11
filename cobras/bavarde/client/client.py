@@ -14,6 +14,7 @@ import signal
 import sys
 import threading
 import uuid
+import datetime
 from typing import Any, Set
 
 import click
@@ -83,9 +84,10 @@ class MessageHandlerClass:
     async def handleMsg(self, msg: str) -> bool:
         data = json.loads(msg)
         message = data['body']['messages'][0]
+        position = data['body']['position']
 
         if isinstance(message, dict):
-            self.q.put_nowait(message)
+            self.q.put_nowait((message, position))
 
         return True
 
@@ -138,7 +140,7 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
 
             if incoming in done:
                 try:
-                    message = incoming.result()
+                    (message, position) = incoming.result()
                 except websockets.ConnectionClosed:
                     break
                 else:
@@ -146,8 +148,14 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
                     user = data.get('user', 'unknown user')
                     text = data.get('text', '<invalid message>')
                     messageId = message.get('id')
+
+                    # breakpoint()
+                    timestamp = position.split('-')[0]
+                    dt = datetime.datetime.fromtimestamp(int(timestamp) / 1000)
+                    dtFormatted = dt.strftime('[%H:%M:%S]')
+
                     if messageId not in sentMessages:
-                        print_during_input(f'{user}> {text}')
+                        print_during_input(f'{dtFormatted} {user}: {text}')
 
             if outgoing in done:
                 text = outgoing.result()

@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.3] - 2019-08-10
+
+### Changed
+- bavarde client displays a time indication
+
+```
+[18:43:06] bsergeant> sdc
+[18:43:06] bsergeant> adc
+[18:45:17] bsergeant> dddddddddddd
+```
+
+## [1.2.2] - 2019-08-09
+
+### Changed
+- cobra server will reject invalid position when subscribing instead of ignoring it, which seems to trigger a hang when calling XREAD on a stream (needs to investigate)
+
 ## [1.2.0] - 2019-08-09
 
 ### Changed

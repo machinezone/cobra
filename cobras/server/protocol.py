@@ -25,7 +25,7 @@ from cobras.server.connection_state import ConnectionState
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.redis_kv_store import kvStoreRead
 from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
-                                            redisSubscriber)
+                                            redisSubscriber, validatePosition)
 from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 
 
@@ -268,6 +268,20 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         channel = streamSQLFilter.channel
 
     position = body.get('position')
+    if not validatePosition(position):
+        errMsg = f'Invalid position: {position}'
+        logging.warning(errMsg)
+        response = {
+            "action": "rtm/subscribe/error",
+            "id": pdu.get('id', 1),
+            "body": {
+                "error": errMsg
+            }
+        }
+        state.ok = False
+        state.error = response
+        await respond(state, ws, app, response)
+        return
 
     response = {
         "action": "rtm/subscribe/ok",

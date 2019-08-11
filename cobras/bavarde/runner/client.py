@@ -10,6 +10,7 @@ import getpass
 import os
 import pprint
 import threading
+import datetime
 
 import click
 
@@ -73,7 +74,12 @@ def client(url, role, secret, channel, position, username, stream_sql, verbose,
     try:
         while True:
             # Since there's no size limit, put_nowait is identical to put.
-            message = input(f"{username}> ")
+
+            dt = datetime.datetime.now()
+            dtFormatted = dt.strftime('[%H:%M:%S]')
+            prompt = f'{dtFormatted} {username}: '
+
+            message = input(prompt)
             loop.call_soon_threadsafe(inputs.put_nowait, message)
     except (KeyboardInterrupt, EOFError):  # ^C, ^D
         loop.call_soon_threadsafe(stop.set_result, None)
