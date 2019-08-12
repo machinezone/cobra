@@ -1,10 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.5] - 2019-08-12
+
+### Changed
+- bavarde client: first prompt line is not displayed with a regular prompt
+
 ## [1.2.4] - 2019-08-12
 
 ### Changed
 - bavarde client: exiting with Ctrl-C cancel the subscription. Get rid of the message: `Task was destroyed but it is pending!`
+- bavarde client: first prompt line is not displayed with a regular prompt
 
 ## [1.2.3] - 2019-08-10
 

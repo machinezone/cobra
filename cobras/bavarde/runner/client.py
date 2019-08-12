@@ -10,7 +10,7 @@ import getpass
 import os
 import pprint
 import threading
-import datetime
+import sys
 
 import click
 
@@ -73,13 +73,18 @@ def client(url, role, secret, channel, position, username, stream_sql, verbose,
     # Read from stdin in the main thread in order to receive signals.
     try:
         while True:
+            message = input('> ')
+
+            # Erase that line we just typed. FIXME: handle multi-lines inputs
+            sys.stdout.write(
+                # Move cursor up
+                "\N{ESC}[A"
+                # Move cursor to beginning of line
+                "\N{CARRIAGE RETURN}"
+                # Delete current line
+                "\N{ESC}[K")
+
             # Since there's no size limit, put_nowait is identical to put.
-
-            dt = datetime.datetime.now()
-            dtFormatted = dt.strftime('[%H:%M:%S]')
-            prompt = f'{dtFormatted} {username}: '
-
-            message = input(prompt)
             loop.call_soon_threadsafe(inputs.put_nowait, message)
     except (KeyboardInterrupt, EOFError):  # ^C, ^D
         loop.call_soon_threadsafe(stop.set_result, None)

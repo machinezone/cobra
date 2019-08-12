@@ -112,7 +112,6 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
     '''
 
     credentials = createCredentials(role, secret)
-    sentMessages = set()
 
     q: asyncio.Queue[str] = asyncio.Queue(loop=loop)
 
@@ -149,19 +148,20 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
                     text = data.get('text', '<invalid message>')
                     messageId = message.get('id')
 
-                    # breakpoint()
+                    # Use redis position to get a datetime
                     timestamp = position.split('-')[0]
                     dt = datetime.datetime.fromtimestamp(int(timestamp) / 1000)
                     dtFormatted = dt.strftime('[%H:%M:%S]')
 
-                    if messageId not in sentMessages:
-                        print_during_input(f'{dtFormatted} {user}: {text}')
+                    maxUserNameLength = 12
+                    padding = (maxUserNameLength - len(user)) * ' '
+
+                    print_during_input(f'{dtFormatted} {padding} {user}: {text}')
 
             if outgoing in done:
                 text = outgoing.result()
 
-                messageId = uuid.uuid4().hex
-                sentMessages.add(messageId)
+                messageId = uuid.uuid4().hex  # FIXME needed ?
 
                 message = {
                     'data': {
