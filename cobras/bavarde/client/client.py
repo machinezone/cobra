@@ -81,14 +81,8 @@ class MessageHandlerClass:
         '''Get a connection to the DB'''
         print('Ready to receive messages')
 
-    async def handleMsg(self, msg: str) -> bool:
-        data = json.loads(msg)
-        message = data['body']['messages'][0]
-        position = data['body']['position']
-
-        if isinstance(message, dict):
-            self.q.put_nowait((message, position))
-
+    async def handleMsg(self, message: dict, position: str) -> bool:
+        self.q.put_nowait((message, position))
         return True
 
 

@@ -6,6 +6,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import asyncio
 import json
 import uuid
+from typing import Dict
 
 from cobras.client.client import subscribeClient
 from cobras.client.credentials import createCredentials
@@ -78,14 +79,8 @@ def healthCheck(url, role, secret, channel):
             print(f"> {data}")
             await self.websocket.send(data)
 
-        async def handleMsg(self, msg: str) -> bool:
-            print('Received', msg)
-            data = json.loads(msg)
-
-            if data.get('action') == 'rtm/publish/error':
-                raise ValueError(data.get('body', {}).get('error'))
-
-            self.parsedMessage = data
+        async def handleMsg(self, message: Dict, position: str) -> bool:
+            self.parsedMessage = message
 
             await self.unsubscribe()
 
@@ -119,27 +114,7 @@ def healthCheck(url, role, secret, channel):
                             'content': content
                         }))
 
-    data = messageHandler.parsedMessage
-    if data is None:
-        raise ValueError(f'no message received')
-
-    body = data['body']
-    if body is None:
-        raise ValueError(f'missing body: {data}')
-
-    messages = body.get('messages')
-    if messages is None:
-        raise ValueError(f'missing messages: {data}')
-
-    if not isinstance(messages, list):
-        raise ValueError(f'messages is not a list: {type(messages)} {data}')
-
-    if len(messages) == 0:
-        raise ValueError(f'messages is empty: {data}')
-
-    message = messages[0]
-    if not isinstance(message, dict):
-        raise ValueError(f'message is not a dict: {type(message)} {data}')
+    message = messageHandler.parsedMessage
 
     if message.get('device.android_id') != refAndroidId:
         raise ValueError(f'incorrect android_id: {data}')

@@ -6,6 +6,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import asyncio
 import collections
 import json
+from typing import Dict
 
 import byteformat
 import click
@@ -57,9 +58,9 @@ class MessageHandlerClass:
     def shouldProcessNode(self, node):
         return 'subscriber' in node if self.subscribers else True
 
-    async def handleMsg(self, msg: str) -> bool:
+    async def handleMsg(self, message: Dict, position: str) -> bool:
 
-        data = json.loads(msg)['body']['messages'][0]
+        data = message
         node = data['node']
 
         if node not in self.nodes and self.shouldProcessNode(node):

@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.6] - 2019-08-12
+
+### Changed
+- client subscriber API changed, takes a parsed json message + position
+
 ## [1.2.5] - 2019-08-12
 
 ### Changed

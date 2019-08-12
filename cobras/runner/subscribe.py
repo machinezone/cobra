@@ -5,6 +5,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 import json
+from typing import Dict
 
 import click
 import uvloop
@@ -29,15 +30,11 @@ class MessageHandlerClass:
     async def on_init(self):
         pass
 
-    async def handleMsg(self, msg: str) -> bool:
+    async def handleMsg(self, message: Dict, position: str) -> bool:
         self.cnt += 1
         self.cntPerSec += 1
 
         if self.verbose >= 1:
-            data = json.loads(msg)
-            body = data['body']
-            message = body['messages'][0]
-            position = body['position']
             print(f'{message} at position {position}')
 
         if self.throttle.exceedRate():

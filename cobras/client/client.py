@@ -149,7 +149,12 @@ async def subscribeHandler(websocket, **args):
     await messageHandler.on_init()
 
     async for msg in websocket:
-        ret = await messageHandler.handleMsg(msg)
+
+        data = json.loads(msg)
+        message = data['body']['messages'][0]
+        position = data['body']['position']
+
+        ret = await messageHandler.handleMsg(message, position)
         if not ret:
             break
 
