@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.4] - 2019-08-12
+
+### Changed
+- bavarde client: exiting with Ctrl-C cancel the subscription. Get rid of the message: `Task was destroyed but it is pending!`
+
 ## [1.2.3] - 2019-08-10
 
 ### Changed

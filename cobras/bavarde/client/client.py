@@ -183,4 +183,7 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
 
         print_over_input(f"Connection closed: {close_status}.")
 
+        task.cancel()
+        await task
+
         exit_from_event_loop_thread(loop, stop)
