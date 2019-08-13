@@ -20,10 +20,11 @@ class HandshakeException(Exception):
 
 
 class Connection(object):
-    def __init__(self, url, creds):
+    def __init__(self, url, creds, verbose=False):
         self.url = url
         self.creds = creds
         self.idIterator = itertools.count()
+        self.verbose = verbose
 
     async def connect(self):
         self.websocket = await websockets.connect(self.url)
@@ -112,7 +113,6 @@ class Connection(object):
         await messageHandler.on_init()
 
         async for msg in self.websocket:
-
             data = json.loads(msg)
             message = data['body']['messages'][0]
             position = data['body']['position']
@@ -150,14 +150,15 @@ class Connection(object):
             "id": next(self.idIterator),
             "body": {
                 "channel": channel,
-                "message": {
-                    "messages": [msg]
-                }
+                "message": msg
             }
         }
 
         data = json.dumps(publishPdu)
-        print(f"> {data}")
+
+        if self.verbose:
+            print(f"> {data}")
+
         await self.websocket.send(data)
 
     async def close(self):

@@ -86,19 +86,6 @@ class MessageHandlerClass:
         return True
 
 
-async def publish(websocket, msg, channel):
-    publishPdu = {
-        "action": "rtm/publish",
-        "body": {
-            "channel": channel,
-            "message": msg
-        }
-    }
-
-    data = json.dumps(publishPdu)
-    await websocket.send(data)
-
-
 async def runClient(url, role, secret, channel, position, stream_sql, verbose,
                     username, loop, inputs, stop):
     credentials = createCredentials(role, secret)
@@ -161,16 +148,15 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
                     'id': messageId
                 }
 
-                await publish(args['connection'].websocket, message, channel)
+                await args['connection'].publish(channel, message)
 
             if stop in done:
                 break
 
     finally:
-        await args['connection'].websocket.close()
-        close_status = format_close(args['connection'].websocket.close_code,
-                                    args['connection'].websocket.close_reason)
-
+        websocket = args['connection'].websocket
+        await websocket.close()
+        close_status = format_close(websocket.close_code, websocket.close_reason)
         print_over_input(f"Connection closed: {close_status}.")
 
         task.cancel()
