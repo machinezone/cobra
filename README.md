@@ -1,7 +1,8 @@
 # General
 
-[![Build Status](https://travis-ci.org/machinezone/cobra.svg?branch=master)](https://travis-ci.org/machinezone/cobra)
 [![PyPI version](https://badge.fury.io/py/cobras.svg)](https://badge.fury.io/py/cobras)
+[![Build Status](https://travis-ci.org/machinezone/cobra.svg?branch=master)](https://travis-ci.org/machinezone/cobra)
+[![License](https://img.shields.io/pypi/l/cobras.svg)](https://img.shields.io/pypi/l/cobras)
 
 Cobra is a realtime messaging server using Python3, WebSockets and Redis Streams. It was presented in great details during [RedisConf 2019](https://events.redislabs.com/redis-conf/redis-conf-2019/).
 
