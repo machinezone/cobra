@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [1.2.6] - 2019-08-12
 
 ### Changed
+- bavarde: colorize output
 - client API changed, new connection class (wip)
 - client subscriber API changed, takes a parsed json message + position
 

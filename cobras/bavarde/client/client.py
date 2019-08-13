@@ -70,6 +70,20 @@ def print_over_input(string: str) -> None:
     sys.stdout.flush()
 
 
+def colorize(name):
+    colors = [
+        'red',
+        'green',
+        'yellow',
+        'blue',
+        'magenta',
+        'cyan'
+    ]
+    idx = hash(name) % len(colors)
+    color = colors[idx]
+    return click.style(name, fg=color)
+
+
 class MessageHandlerClass:
     def __init__(self, connection, args):
         self.verbose = args['verbose']
@@ -133,6 +147,7 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
                     maxUserNameLength = 12
                     padding = (maxUserNameLength - len(user)) * ' '
 
+                    user = colorize(user)
                     print_during_input(f'{dtFormatted} {padding} {user}: {text}')
 
             if outgoing in done:
