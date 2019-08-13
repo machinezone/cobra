@@ -11,80 +11,20 @@ import json
 import click
 import websockets
 
-from cobras.common.auth_hash import computeHash
+from cobras.client.connection import Connection, AuthException, HandshakeException
 
 
-class AuthException(Exception):
-    pass
-
-
-class HandshakeException(Exception):
-    pass
-
-
-async def clientInternal(url, creds, clientCallback):
+async def client(url, creds, clientCallback):
     '''Main client. Does authenticate then invoke the clientCallback which
     takes control.
     '''
 
-    async with websockets.connect(url) as websocket:
-
-        idIterator = itertools.count()
-        role = creds['role']
-
-        handshake = {
-            "action": "auth/handshake",
-            "id": next(idIterator),
-            "body": {
-                "data": {
-                    "role": role
-                },
-                "method": "role_secret"
-            }
-        }
-        print(f"> {handshake}")
-        await websocket.send(json.dumps(handshake))
-
-        handshakeResponse = await websocket.recv()
-        print(f"< {handshakeResponse}")
-
-        response = json.loads(handshakeResponse)
-        if response.get('action') != 'auth/handshake/ok':
-            raise HandshakeException('Handshake error.')
-
-        reply = json.loads(handshakeResponse)
-        nonce = bytearray(reply['body']['data']['nonce'], 'utf8')
-
-        secret = bytearray(creds['secret'], 'utf8')
-
-        challenge = {
-            "action": "auth/authenticate",
-            "id": next(idIterator),
-            "body": {
-                "method": "role_secret",
-                "credentials": {
-                    "hash": computeHash(secret, nonce)
-                }
-            }
-        }
-        print(f"> {challenge}")
-        await websocket.send(json.dumps(challenge))
-
-        challengeResponse = await websocket.recv()
-        print(f"< {challengeResponse}")
-
-        response = json.loads(challengeResponse)
-        if response.get('action') != 'auth/authenticate/ok':
-            raise AuthException('Authentication error.')
-
-        return await clientCallback(websocket)
-
-
-async def client(url, creds, clientCallback):
-
     while True:
         try:
-            return await clientInternal(url, creds, clientCallback)
+            connection = Connection(url, creds)
+            await connection.connect()
+            return await clientCallback(connection)
+
         except TimeoutError as e:
             click.secho(str(e), fg='red')
             await asyncio.sleep(1)
@@ -111,7 +51,7 @@ async def client(url, creds, clientCallback):
             pass
 
 
-async def subscribeHandler(websocket, **args):
+async def subscribeHandler(connection, **args):
     channel = args['channel']
     position = args['position']
     fsqlFilter = args['fsqlFilter']
@@ -120,45 +60,12 @@ async def subscribeHandler(websocket, **args):
     subscriptionId = args.get('subscription_id', channel)
     messageHandlerArgs['subscription_id'] = subscriptionId
 
-    subscription = {
-        "action": "rtm/subscribe",
-        "body": {
-            "subscription_id": subscriptionId,
-            "channel": channel,
-            "fast_forward": True,
-            "filter": fsqlFilter
-        },
-        "id": 3  # FIXME
-    }
-
-    if position is not None:
-        subscription['body']['position'] = position
-
-    print(f"> {subscription}")
-    await websocket.send(json.dumps(subscription))
-
-    subscribeResponse = await websocket.recv()
-    print(f"< {subscribeResponse}")
-
-    # validate response
-    data = json.loads(subscribeResponse)
-    if data.get('action') != 'rtm/subscribe/ok':
-        raise ValueError(data.get('body', {}).get('error'))
-
-    messageHandler = messageHandlerClass(websocket, messageHandlerArgs)
-    await messageHandler.on_init()
-
-    async for msg in websocket:
-
-        data = json.loads(msg)
-        message = data['body']['messages'][0]
-        position = data['body']['position']
-
-        ret = await messageHandler.handleMsg(message, position)
-        if not ret:
-            break
-
-    return messageHandler
+    return await connection.subscribe(channel,
+                                      position,
+                                      fsqlFilter,
+                                      messageHandlerClass,
+                                      messageHandlerArgs,
+                                      subscriptionId)
 
 
 async def subscribeClient(url, credentials, channel, position, fsqlFilter,

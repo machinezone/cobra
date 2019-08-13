@@ -71,11 +71,11 @@ def print_over_input(string: str) -> None:
 
 
 class MessageHandlerClass:
-    def __init__(self, websockets, args):
+    def __init__(self, connection, args):
         self.verbose = args['verbose']
         self.q = args['queue']
 
-        args['websocket'] = websockets
+        args['connection'] = connection
 
     async def on_init(self):
         '''Get a connection to the DB'''
@@ -101,10 +101,6 @@ async def publish(websocket, msg, channel):
 
 async def runClient(url, role, secret, channel, position, stream_sql, verbose,
                     username, loop, inputs, stop):
-    '''
-    Things to do: uvloop
-    '''
-
     credentials = createCredentials(role, secret)
 
     q: asyncio.Queue[str] = asyncio.Queue(loop=loop)
@@ -165,15 +161,15 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
                     'id': messageId
                 }
 
-                await publish(args['websocket'], message, channel)
+                await publish(args['connection'].websocket, message, channel)
 
             if stop in done:
                 break
 
     finally:
-        await args['websocket'].close()
-        close_status = format_close(args['websocket'].close_code,
-                                    args['websocket'].close_reason)
+        await args['connection'].websocket.close()
+        close_status = format_close(args['connection'].websocket.close_code,
+                                    args['connection'].websocket.close_reason)
 
         print_over_input(f"Connection closed: {close_status}.")
 

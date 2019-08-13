@@ -39,53 +39,18 @@ def getDefaultHealthCheckUrl(host=None, port=None):
 def healthCheck(url, role, secret, channel):
     '''Perform a health check'''
     class MessageHandlerClass:
-        def __init__(self, websocket, args):
-            self.websocket = websocket
+        def __init__(self, connection, args):
+            self.connection = connection
             self.channel = args['channel']
             self.content = args['content']
             self.subscriptionId = self.channel
-            self.msg = None
             self.parsedMessage = None
 
         async def on_init(self):
-            await self.publishHealthMsg()
-
-        async def unsubscribe(self):
-            # Unsubscribe
-            unsubscribePdu = {
-                "action": "rtm/unsubscribe",
-                "body": {
-                    "subscription_id": self.subscriptionId
-                }
-            }
-
-            data = json.dumps(unsubscribePdu)
-            print(f"> {data}")
-            await self.websocket.send(data)
-            await self.websocket.recv()  # needed ?
-
-        async def publishHealthMsg(self):
-            publishPdu = {
-                "action": "rtm/publish",
-                "body": {
-                    "channel": self.channel,
-                    "message": {
-                        "messages": [self.content]
-                    }
-                }
-            }
-
-            data = json.dumps(publishPdu)
-            print(f"> {data}")
-            await self.websocket.send(data)
+            await self.connection.publish(self.channel, self.content)
 
         async def handleMsg(self, message: Dict, position: str) -> bool:
             self.parsedMessage = message
-
-            await self.unsubscribe()
-
-            # The server should not send this message to us
-            await self.publishHealthMsg()
             return False
 
     credentials = createCredentials(role, secret)
