@@ -58,12 +58,14 @@ async def sendEvent(websocket, channel, event, connectionId, verbose):
     await websocket.send(line)
 
 
-async def clientCallback(websocket, **args):
+async def clientCallback(connection, **args):
     item = args['item']
     channel = args['channel']
     verbose = args['verbose']
     delay = args['delay']
     repeat = args['repeat']
+
+    websocket = connection.websocket
 
     if not item:  # FIXME: how can this happen ?
         return
