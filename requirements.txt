@@ -9,5 +9,5 @@ ujson==1.35
 byteformat==0.2a0
 uvloop==0.12.2
 uhashring==1.1
-websockets==7.0
+websockets==8.0.2
 coloredlogs==10.0

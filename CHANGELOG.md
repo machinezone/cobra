@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.7] - 2019-08-13
+
+### Changed
+- update to websockets 8.0.2
+- unittest does not run with warnings
+
 ## [1.2.6] - 2019-08-12
 
 ### Changed
