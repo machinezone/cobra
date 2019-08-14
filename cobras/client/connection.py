@@ -124,6 +124,7 @@ class Connection(object):
         try:
             await self.unsubscribe(subscriptionId)
         except websockets.exceptions.ConnectionClosed as e:
+            print(f"Connection is closed, cannot unsubscribe")
             pass
 
         return messageHandler
