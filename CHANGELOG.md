@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.8] - 2019-08-14
+
+### Changed
+- use new exceptions types from websockets 8.0.2 to get better logging about connection termination
+
 ## [1.2.7] - 2019-08-13
 
 ### Changed

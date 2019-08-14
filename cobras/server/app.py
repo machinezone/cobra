@@ -46,11 +46,13 @@ async def cobraHandler(websocket, path, app, redisUrls: str, verbose: bool):
             if not state.ok:
                 raise Exception(state.error)
 
-    except websockets.exceptions.WebSocketProtocolError as e:
+    except websockets.exceptions.ProtocolError as e:
         print(e)
         state.log('Protocol error')
-    except websockets.exceptions.ConnectionClosed:
-        state.log('Connection closed')
+    except websockets.exceptions.ConnectionClosedOK:
+        state.log('Connection closed properly')
+    except websockets.exceptions.ConnectionClosedError:
+        state.log('Connection closed with an error')
     except Exception as e:
         print(e)
         print('Generic Exception caught in {}'.format(traceback.format_exc()))
