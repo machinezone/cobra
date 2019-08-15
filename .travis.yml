@@ -7,9 +7,10 @@ install:
   - pip install -r requirements.txt
   - pip install -e .
   - pip install "file://`pwd`#egg=cobra[dev]"
+  - pip install pytest-cov
   - pip install codecov
 script:
-  - pytest tests/
+  - pytest --cov=cobras --cov-report=xml tests/
   - codecov
 env:
   - CODECOV_TOKEN=01dee113-5bf8-4e0c-a2d5-a6e34f023459
