@@ -22,18 +22,14 @@ with open(os.path.join(ROOT, 'DOCKER_VERSION')) as f:
 dev_requires = [
     'flake8',
     'isort',
-    'honcho',
     'mypy',
-    'aiojobs==0.1.0',
     'twine',
     'yapf'
 ]
 
 tests_require = [
     'pytest',
-    'pytest-cov',
-    'pytest-xdist',
-    'coverage'
+    'pytest-cov'
 ]
 
 with open('requirements.txt') as f:
