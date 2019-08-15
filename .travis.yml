@@ -7,7 +7,6 @@ install:
   - pip install -e .
   - pip install "file://`pwd`#egg=cobra[dev]"
 script:
-  - redis-cli INFO
   - pytest
 services:
   - redis-server
