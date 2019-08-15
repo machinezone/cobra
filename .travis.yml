@@ -6,7 +6,10 @@ install:
   - pip install -r requirements.txt
   - pip install -e .
   - pip install "file://`pwd`#egg=cobra[dev]"
+  - pip install codecov
 script:
   - pytest
+after_success:
+  - codecov --token 01dee113-5bf8-4e0c-a2d5-a6e34f023459
 services:
   - redis-server

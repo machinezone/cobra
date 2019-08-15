@@ -1,0 +1,6 @@
+[run]
+omit =
+    # omit runners
+    cobras/runner/*
+    # omit bavarde
+    cobras/bavarde/*
