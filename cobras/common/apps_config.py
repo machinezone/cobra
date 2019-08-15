@@ -104,7 +104,7 @@ class AppsConfig():
 
             self.data['apps'][app]['roles'][role] = {
                 'secret': genSecret(),
-                'permissions': ['subscribe', 'publish', 'admin']
+                'permissions': ['subscribe', 'publish', 'admin', 'read', 'write']
             }
 
         # write to disk

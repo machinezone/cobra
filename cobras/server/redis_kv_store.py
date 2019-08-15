@@ -37,7 +37,6 @@ async def kvStoreRead(redisConnections: RedisConnections, pattern: str,
         data = msg[b'json']
 
         msg = ujson.loads(data)
-        msg['body']['position'] = position.decode()
         return msg
 
     except asyncio.CancelledError:

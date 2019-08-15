@@ -515,14 +515,67 @@ async def handleRead(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
     await respond(state, ws, app, response)
 
 
+async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                      serializedPdu: str):
+    # Missing message
+    message = pdu.get('body', {}).get('message')
+    if message is None:
+        errMsg = 'write: empty message'
+        logging.warning(errMsg)
+        response = {
+            "action": "rtm/write/error",
+            "id": pdu.get('id', 1),
+            "body": {
+                "error": errMsg
+            }
+        }
+        await respond(state, ws, app, response)
+        return
+
+    # Missing channel
+    channel = pdu.get('body', {}).get('channel')
+    if channel is None:
+        errMsg = 'write: missing channel field'
+        logging.warning(errMsg)
+        response = {
+            "action": "rtm/write/error",
+            "id": pdu.get('id', 1),
+            "body": {
+                "error": errMsg
+            }
+        }
+        await respond(state, ws, app, response)
+        return
+
+    # Extract the message. This is what will be published
+    message = pdu['body']['message']
+
+    appkey = state.appkey
+    pipelinedPublisher = \
+        await app['pipelined_publishers'].get(appkey, channel)
+
+    await pipelinedPublisher.publishNow((appkey, channel, json.dumps(message)))
+
+    # Stats
+    app['stats'].updateWrites(state.role, len(serializedPdu))
+
+    response = {
+        "action": f"rtm/write/ok",
+        "id": pdu.get('id', 1),
+        "body": {}
+    }
+    await respond(state, ws, app, response)
+
+
 def validatePermissions(permissions, action):
-    if action == 'rtm/publish' and not 'publish' in permissions:
-        return False
+    group, sep, verb = action.partition('/')
+    if group != 'rtm' or sep != '/':
+        return True
 
-    if action == 'rtm/subscribe' and not 'subscribe' in permissions:
-        return False
-
-    return True
+    if verb == 'unsubscribe':
+        return True
+    
+    return verb in permissions
 
 
 AUTH_PREFIX = 'auth'
@@ -533,6 +586,7 @@ ACTION_HANDLERS_LUT = {
     'rtm/subscribe': handleSubscribe,
     'rtm/unsubscribe': handleUnSubscribe,
     'rtm/read': handleRead,
+    'rtm/write': handleWrite,
     'rpc/admin': handleAdminRpc
 }
 

@@ -9,3 +9,4 @@ dist
 .mypy_cache/
 .coverage
 htmlcov/
+coverage.xml

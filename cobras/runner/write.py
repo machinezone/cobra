@@ -1,4 +1,4 @@
-'''Read to the cobra key value store
+'''Write to the cobra key value store
 
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
@@ -23,9 +23,9 @@ DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={PUBSUB_APPKEY}'
 @click.option('--role', default=getDefaultRoleForApp('pubsub'))
 @click.option('--secret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--channel', default='sms_republished_v1_neo')
-@click.option('--position')
-def read(url, role, secret, channel, position):
-    '''Read to the cobra key value store
+@click.option('--data', default='{"foo": "bar"}')
+def write(url, role, secret, channel, data):
+    '''Write to the cobra key value store
     '''
 
     preventRootUsage()
@@ -33,12 +33,11 @@ def read(url, role, secret, channel, position):
 
     credentials = createCredentials(role, secret)
 
-    async def handler(url, credentials, channel, position):
+    async def handler(url, credentials, channel, data):
         connection = Connection(url, credentials, verbose=True)
         await connection.connect()
-        data = await connection.read(channel, position)
+        await connection.write(channel, data)
         await connection.close()
-        print()
-        print(f'handler received message {data}')
 
-    asyncio.get_event_loop().run_until_complete(handler(url, credentials, channel, position))
+    asyncio.get_event_loop().run_until_complete(handler(url, credentials, channel, data))
+

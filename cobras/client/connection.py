@@ -162,6 +162,49 @@ class Connection(object):
 
         await self.websocket.send(data)
 
+    async def write(self, channel, msg):
+        writePdu = {
+            "action": "rtm/write",
+            "id": next(self.idIterator),
+            "body": {
+                "channel": channel,
+                "message": msg
+            }
+        }
+
+        data = json.dumps(writePdu)
+
+        if self.verbose:
+            print(f"> {data}")
+
+        await self.websocket.send(data)
+
+        response = await self.websocket.recv()
+        if self.verbose:
+            print(f"> {response}")
+
+    async def read(self, channel, position=None):
+        readPdu = {
+            "action": "rtm/read",
+            "id": next(self.idIterator),
+            "body": {
+                "channel": channel,
+            }
+        }
+
+        if position is not None:
+            readPdu['body']['position'] = position
+
+        print(f"> {readPdu}")
+        await self.websocket.send(json.dumps(readPdu))
+
+        readResponse = await self.websocket.recv()
+        print(f"< {readResponse}")
+
+        data = json.loads(readResponse)
+        msg = data['body']['message']  # FIXME data missing
+        return msg
+
     async def close(self):
         await self.websocket.close()
         close_status = websockets.exceptions.format_close(self.websocket.close_code,

@@ -37,6 +37,11 @@ class ServerStats():
         self.subscribedBytes = collections.defaultdict(int)
         self.subscriptions = collections.defaultdict(int)
 
+        self.readsCount = collections.defaultdict(int)
+        self.readsBytes = collections.defaultdict(int)
+        self.writesCount = collections.defaultdict(int)
+        self.writesBytes = collections.defaultdict(int)
+
         self.resetCounterByPeriod()
         self.start = time.time()
 
@@ -63,6 +68,11 @@ class ServerStats():
         self.subscribedCountByPeriod = collections.defaultdict(int)
         self.subscribedBytesByPeriod = collections.defaultdict(int)
 
+        self.readsCountByPeriod = collections.defaultdict(int)
+        self.readsBytesByPeriod = collections.defaultdict(int)
+        self.writesCountByPeriod = collections.defaultdict(int)
+        self.writesBytesByPeriod = collections.defaultdict(int)
+
     def updatePublished(self, role, val):
         self.publishedCount[role] += 1
         self.publishedBytes[role] += val
@@ -77,21 +87,55 @@ class ServerStats():
         self.subscribedCountByPeriod[role] += 1
         self.subscribedBytesByPeriod[role] += val
 
+    def updateReads(self, role, val):
+        self.readsCount[role] += 1
+        self.readsBytes[role] += val
+
+        self.readsCountByPeriod[role] += 1
+        self.readsBytesByPeriod[role] += val
+
+    def updateWrites(self, role, val):
+        self.writesCount[role] += 1
+        self.writesBytes[role] += val
+
+        self.writesCountByPeriod[role] += 1
+        self.writesBytesByPeriod[role] += val
+
     async def run(self):
         while True:
             # Only dict-like objects are permitted in that field
             # to ease the job of aggregating them in the monitor command
             cobraData = {
                 'subscriptions': self.subscriptions,
+            }
+
+            cobraData.update({
                 'published_count': self.publishedCount,
                 'published_bytes': self.publishedBytes,
                 'published_count_per_second': self.publishedCountByPeriod,
-                'published_bytes_per_second': self.publishedBytesByPeriod,
+                'published_bytes_per_second': self.publishedBytesByPeriod
+            })
+
+            cobraData.update({
                 'subscribed_count': self.subscribedCount,
                 'subscribed_bytes': self.subscribedBytes,
                 'subscribed_count_per_second': self.subscribedCountByPeriod,
-                'subscribed_bytes_per_second': self.subscribedBytesByPeriod
-            }
+                'subscribed_bytes_per_second': self.subscribedBytesByPeriod,
+            })
+
+            cobraData.update({
+                'reads_count': self.readsCount,
+                'reads_bytes': self.readsBytes,
+                'reads_count_per_second': self.readsCountByPeriod,
+                'reads_bytes_per_second': self.readsBytesByPeriod
+            })
+
+            cobraData.update({
+                'writes_count': self.writesCount,
+                'writes_bytes': self.writesBytes,
+                'writes_count_per_second': self.writesCountByPeriod,
+                'writes_bytes_per_second': self.writesBytesByPeriod
+            })
 
             uptime = time.time() - self.start
             uptimeMinutes = uptime // 60

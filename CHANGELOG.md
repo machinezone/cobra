@@ -1,9 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2019-08-15
+
+### Changed
+- Server has a simple key value store, internally storing data in stream (at the 'tip' of it). A value can be retrieved at a certain position.
+- New `cobra read` and `cobra write` commands, to work with the Key Value Store
+
 ## [1.2.8] - 2019-08-14
 
 ### Changed
+- `cobra publish` command broke because of refactoring
 - use new exceptions types from websockets 8.0.2 to get better logging about connection termination
 
 ## [1.2.7] - 2019-08-13
