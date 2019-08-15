@@ -10,9 +10,8 @@ install:
   - pip install codecov
 script:
   - pytest
+  - codecov
 env:
   - CODECOV_TOKEN=01dee113-5bf8-4e0c-a2d5-a6e34f023459
-after_success:
-  - codecov
 services:
   - redis-server
