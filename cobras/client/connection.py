@@ -21,6 +21,10 @@ class HandshakeException(Exception):
     pass
 
 
+class ActionException(Exception):
+    pass
+
+
 class Connection(object):
     def __init__(self, url, creds, verbose=True):
         self.url = url
@@ -32,9 +36,11 @@ class Connection(object):
         self.queues = collections.defaultdict(asyncio.Queue)
 
         self.task = None
+        self.stop = asyncio.get_running_loop().create_future()
 
     async def connect(self):
         self.websocket = await websockets.connect(self.url)
+        self.task = asyncio.create_task(self.waitForResponses())
 
         role = self.creds['role']
 
@@ -43,25 +49,16 @@ class Connection(object):
             "id": next(self.idIterator),
             "body": {
                 "data": {
-                    "role": role
+                    "role": self.creds['role']
                 },
                 "method": "role_secret"
             }
         }
-        print(f"> {handshake}")
-        await self.websocket.send(json.dumps(handshake))
 
-        handshakeResponse = await self.websocket.recv()
-        print(f"< {handshakeResponse}")
-
-        response = json.loads(handshakeResponse)
-        if response.get('action') != 'auth/handshake/ok':
-            raise HandshakeException('Handshake error.')
-
-        reply = json.loads(handshakeResponse)
+        reply = await self.send(handshake)
         nonce = bytearray(reply['body']['data']['nonce'], 'utf8')
-
         secret = bytearray(self.creds['secret'], 'utf8')
+
 
         challenge = {
             "action": "auth/authenticate",
@@ -73,40 +70,47 @@ class Connection(object):
                 }
             }
         }
-        print(f"> {challenge}")
-        await self.websocket.send(json.dumps(challenge))
+        # print(f"> {challenge}")
+        # await self.websocket.send(json.dumps(challenge))
 
-        challengeResponse = await self.websocket.recv()
-        print(f"< {challengeResponse}")
+        # challengeResponse = await self.websocket.recv()
+        # print(f"< {challengeResponse}")
 
-        response = json.loads(challengeResponse)
-        if response.get('action') != 'auth/authenticate/ok':
-            raise AuthException('Authentication error.')
-
-        self.task = asyncio.create_task(self.getResponse())
+        # response = json.loads(challengeResponse)
+        # if response.get('action') != 'auth/authenticate/ok':
+        #     raise AuthException('Authentication error.')
+        await self.send(challenge)
 
     def __del__(self):
         if self.task is not None:
             self.task.cancel()
 
-    async def getResponse(self):
-        while True:
-            response = await self.websocket.recv()
-            if self.verbose:
-                print(f'< {response}')
+    async def waitForResponses(self):
+        try:
+            while True:
+                response = await self.websocket.recv()
 
-            data = json.loads(response)
+                # if self.verbose:
+                #     print(f'< {response}')
 
-            action = data['action']
-            action = '/'.join(action.split('/')[:2])
-            actionId = action + '::' + str(data['id'])
+                data = json.loads(response)
 
-            if action == 'rtm/subscription':
-                actionId = action + '::' + data['body']['subscription_id']
+                action = data['action']
+                action = '/'.join(action.split('/')[:2])
+                actionId = action + '::' + str(data['id'])
 
-            q = self.getQueue(actionId)
+                if action == 'rtm/subscription':
+                    actionId = action + '::' + data['body']['subscription_id']
 
-            await q.put(data)
+                q = self.getQueue(actionId)
+
+                await q.put(data)
+
+        except Exception as e:
+            print(f'unexpected exception: {e}')
+
+            # propagate the exception to the caller
+            self.stop.set_result(e)
 
     def getQueue(self, action):
         q = self.queues[action]
@@ -117,6 +121,32 @@ class Connection(object):
         actionId = f'{action}::' + str(pdu['id'])
         return actionId
 
+    async def getActionResponse(self, actionId):
+        '''
+        This could be as simple as:
+            data = await self.getQueue(actionId).get()
+
+        Unfortunately we need to handle exception in the 
+        'fetch response coroutine' so that we can rethrow them here
+        '''
+        incoming = asyncio.ensure_future(self.getQueue(actionId).get())
+
+        done, pending = await asyncio.wait(
+             [incoming, self.stop],
+             return_when=asyncio.FIRST_COMPLETED)
+
+        # Cancel pending tasks to avoid leaking them.
+        if incoming in pending:
+            incoming.cancel()
+
+        if incoming in done:
+            data = incoming.result()
+            return data
+
+        if self.stop in done:
+            # Reraise the exception which was caught in self.waitForResponses
+            raise self.stop.result()
+
     async def send(self, pdu):
         actionId = self.computeDefaultActionId(pdu)
 
@@ -125,12 +155,12 @@ class Connection(object):
         await self.websocket.send(data)
 
         # get the response
-        data = await self.getQueue(actionId).get()
+        data = await self.getActionResponse(actionId)
         print(f"< {data}")
 
         # validate response
         if data.get('action') != (pdu['action'] + '/ok'):
-            raise ValueError(data.get('body', {}).get('error'))
+            raise ActionException(data.get('body', {}).get('error'))
 
         return data
 
@@ -159,7 +189,7 @@ class Connection(object):
         actionId = 'rtm/subscription::' + subscriptionId
 
         while True:
-            data = await self.getQueue(actionId).get()
+            data = await self.getActionResponse(actionId)
 
             message = data['body']['messages'][0]
             position = data['body']['position']

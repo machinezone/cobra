@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2019-08-16
+### Changed
+
+- client: fix hang when an exception is thrown (disconnection with the server for example) inside the coroutine waiting for server data
+
 ## [1.4.0] - 2019-08-16
 ### Changed
 

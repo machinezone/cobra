@@ -11,7 +11,7 @@ import json
 import click
 import websockets
 
-from cobras.client.connection import Connection, AuthException, HandshakeException
+from cobras.client.connection import Connection, AuthException, HandshakeException, ActionException
 
 
 async def client(url, creds, clientCallback):
@@ -46,6 +46,10 @@ async def client(url, creds, clientCallback):
             await asyncio.sleep(1)
             pass
         except AuthException as e:
+            click.secho(str(e), fg='red')
+            await asyncio.sleep(1)
+            pass
+        except ActionException as e:
             click.secho(str(e), fg='red')
             await asyncio.sleep(1)
             pass
