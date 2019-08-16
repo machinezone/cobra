@@ -4,25 +4,14 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import os
-import base64
-import tempfile
 
 import click
 import sentry_sdk
 import uvloop
 
-from cobras.common.apps_config import getDefaultAppsConfigPath
+from cobras.common.apps_config import getDefaultAppsConfigPath, generateAppsConfig
 from cobras.common.superuser import preventRootUsage
 from cobras.server.app import AppRunner
-
-
-def generateAppsConfig(apps_config_path_content):
-    tempPath = tempfile.mktemp(suffix='_apps.yaml')
-    content = base64.b64decode(apps_config_path_content)
-    with open(tempPath, 'wb') as f:
-        f.write(content)
-
-    return tempPath
 
 
 @click.command()

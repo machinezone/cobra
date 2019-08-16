@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.4] - 2019-08-15
+
+### Changed
+- cobra can start if redis is down. Not being able to publish statistics is a non fatal error
+- COBRA_APPS_CONFIG_CONTENT contains data that is gziped first before being encoded with base64. You can generate that blob with `gzip -c ~/.cobra.yaml | base64` on macOS, or `gzip -c ~/.cobra.yaml | openssl base64` if you have openssl installed ; you'll need to join all the blobs so that they are all on the same line in that case.
+
 ## [1.3.3] - 2019-08-15
 
 ### Changed

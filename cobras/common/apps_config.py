@@ -6,6 +6,10 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import base64
 import logging
 import os
+import base64
+import tempfile
+import gzip
+import io
 from pathlib import Path
 from random import getrandbits, randint
 from typing import List
@@ -143,7 +147,24 @@ class AppsConfig():
         return role.get('secret', '')
 
 
+def generateAppsConfig(apps_config_path_content):
+    tempPath = tempfile.mktemp(suffix='_apps.yaml')
+    content = base64.b64decode(apps_config_path_content)
+    with open(tempPath, 'wb') as f:
+        decompressed = gzip.GzipFile(fileobj=io.BytesIO(content)).read()
+        f.write(decompressed)
+
+    return tempPath
+
+
 def getDefaultAppsConfigPath():
+    content = os.getenv('COBRA_APPS_CONFIG_CONTENT')
+
+    if content:
+        apps_config_path = generateAppsConfig(content)
+        os.environ['COBRA_APPS_CONFIG'] = apps_config_path
+        return apps_config_path
+
     path = Path.home() / '.cobra.yaml'
     return str(path)
 

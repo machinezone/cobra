@@ -11,6 +11,7 @@ import json
 import os
 import platform
 import time
+import logging
 
 from cobras.common.memory_usage import (getContainerMemoryLimit,
                                         getProcessUsedMemory)
@@ -164,9 +165,13 @@ class ServerStats():
 
             chan = self.statsChannel
             appkey = self.internalAppKey
-            pipelinedPublisher = await self.pipelinedPublishers.get(
-                appkey, chan)  # noqa
-            await pipelinedPublisher.publishNow((appkey, chan, data))
+
+            try:
+                pipelinedPublisher = await self.pipelinedPublishers.get(appkey, chan)
+                await pipelinedPublisher.publishNow((appkey, chan, data))
+            except ConnectionRefusedError as e:
+                logging.error(f"stats: cannot connect to redis {e}")
+                pass
 
             self.resetCounterByPeriod()
 
