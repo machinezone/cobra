@@ -36,11 +36,11 @@ class Connection(object):
         self.queues = collections.defaultdict(asyncio.Queue)
 
         self.task = None
-        self.stop = asyncio.get_running_loop().create_future()
 
     async def connect(self):
         self.websocket = await websockets.connect(self.url)
         self.task = asyncio.create_task(self.waitForResponses())
+        self.stop = asyncio.get_running_loop().create_future()
 
         role = self.creds['role']
 
@@ -55,10 +55,9 @@ class Connection(object):
             }
         }
 
-        reply = await self.send(handshake)
-        nonce = bytearray(reply['body']['data']['nonce'], 'utf8')
+        response = await self.send(handshake)
+        nonce = bytearray(response['body']['data']['nonce'], 'utf8')
         secret = bytearray(self.creds['secret'], 'utf8')
-
 
         challenge = {
             "action": "auth/authenticate",
@@ -70,15 +69,6 @@ class Connection(object):
                 }
             }
         }
-        # print(f"> {challenge}")
-        # await self.websocket.send(json.dumps(challenge))
-
-        # challengeResponse = await self.websocket.recv()
-        # print(f"< {challengeResponse}")
-
-        # response = json.loads(challengeResponse)
-        # if response.get('action') != 'auth/authenticate/ok':
-        #     raise AuthException('Authentication error.')
         await self.send(challenge)
 
     def __del__(self):

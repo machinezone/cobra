@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.5] - 2019-08-16
+### Changed
+
+- fix unittest (kv read/write)
+
 ## [1.4.4] - 2019-08-16
 ### Changed
 
