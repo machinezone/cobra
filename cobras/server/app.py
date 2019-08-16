@@ -222,4 +222,3 @@ class AppRunner():
     def terminate(self):
         asyncio.get_event_loop().run_until_complete(self.cleanup())
         asyncio.get_event_loop().run_until_complete(self.closeServer())
-

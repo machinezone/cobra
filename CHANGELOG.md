@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.3] - 2019-08-15
+
+### Changed
+- cobra run can use an environment variable, COBRA_APPS_CONFIG_CONTENT, to specify the content of the configuratio file
+
 ## [1.3.0] - 2019-08-15
 
 ### Changed

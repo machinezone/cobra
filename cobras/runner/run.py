@@ -4,6 +4,8 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import os
+import base64
+import tempfile
 
 import click
 import sentry_sdk
@@ -12,6 +14,15 @@ import uvloop
 from cobras.common.apps_config import getDefaultAppsConfigPath
 from cobras.common.superuser import preventRootUsage
 from cobras.server.app import AppRunner
+
+
+def generateAppsConfig(apps_config_path_content):
+    tempPath = tempfile.mktemp(suffix='_apps.yaml')
+    content = base64.b64decode(apps_config_path_content)
+    with open(tempPath, 'wb') as f:
+        f.write(content)
+
+    return tempPath
 
 
 @click.command()
@@ -27,6 +38,7 @@ from cobras.server.app import AppRunner
 @click.option('--apps_config_path',
               envvar='COBRA_APPS_CONFIG',
               default=getDefaultAppsConfigPath())
+@click.option('--apps_config_path_content', envvar='COBRA_APPS_CONFIG_CONTENT')
 @click.option('--verbose', envvar='COBRA_VERBOSE', is_flag=True)
 @click.option('--prod', envvar='COBRA_PROD', is_flag=True)
 @click.option('--plugins', envvar='COBRA_PLUGINS')
@@ -41,9 +53,9 @@ from cobras.server.app import AppRunner
               envvar='COBRA_IDLE_TIMEOUT',
               default=5 * 60,
               help='idle connections kicked out after X seconds')
-def run(host, port, redis_urls, redis_password, apps_config_path, verbose,
-        debug_memory, plugins, sentry, sentry_url, prod, no_stats,
-        max_subscriptions, idle_timeout):
+def run(host, port, redis_urls, redis_password, apps_config_path,
+        apps_config_path_content, verbose, debug_memory, plugins, sentry,
+        sentry_url, prod, no_stats, max_subscriptions, idle_timeout):
     '''Run the cobra server
 
     \b
@@ -59,6 +71,10 @@ def run(host, port, redis_urls, redis_password, apps_config_path, verbose,
 
     if sentry and sentry_url:
         sentry_sdk.init(sentry_url)
+
+    if apps_config_path_content:
+        apps_config_path = generateAppsConfig(apps_config_path_content)
+        apps_config_path_content = '<cleared>'
 
     print('runServer', locals())
     runner = AppRunner(host, port, redis_urls, redis_password,
