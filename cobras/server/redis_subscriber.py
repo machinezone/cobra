@@ -53,7 +53,7 @@ async def redisSubscriber(
     try:
         # Create connection
         connection = await redisConnections.create(pattern)
-    except ConnectionRefusedError as e:
+    except Exception as e:
         logging.error(f"subcriber: cannot connect to redis {e}")
         connection = None
 

@@ -169,7 +169,7 @@ class ServerStats():
             try:
                 pipelinedPublisher = await self.pipelinedPublishers.get(appkey, chan)
                 await pipelinedPublisher.publishNow((appkey, chan, data))
-            except ConnectionRefusedError as e:
+            except Exception as e:
                 logging.error(f"stats: cannot connect to redis {e}")
                 pass
 

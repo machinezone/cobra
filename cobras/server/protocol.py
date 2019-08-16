@@ -196,7 +196,7 @@ async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
             await pipelinedPublisher.push((appkey, chan, serializedPdu),
                                           batchPublish)
-        except ConnectionRefusedError as e:
+        except Exception as e:
             errMsg = f'publish: cannot connect to redis {e}'
             logging.warning(errMsg)
             response = {

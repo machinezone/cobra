@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.4] - 2019-08-16
+### Changed
+
+- (server) handle more exception types when failing to connect to redis (such as cannot resolve DNS name)
+
 ## [1.4.3] - 2019-08-16
 ### Changed
 
