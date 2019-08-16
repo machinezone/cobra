@@ -24,8 +24,9 @@ from cobras.common.superuser import preventRootUsage
 @click.option('--role', default=getDefaultRoleForApp('health'))
 @click.option('--secret', default=getDefaultSecretForApp('health'))
 @click.option('--channel', default=getDefaultHealthCheckChannel())
+@click.option('--retry', is_flag=True)
 @click.command()
-def health(url, http_url, http, role, secret, channel):
+def health(url, http_url, http, role, secret, channel, retry):
     '''Health check
 
     \b
@@ -44,7 +45,7 @@ def health(url, http_url, http, role, secret, channel):
             print(html.decode('utf8'), end='')
     else:
         try:
-            healthCheck(url, role, secret, channel)
+            healthCheck(url, role, secret, channel, retry)
         except ValueError as e:
             click.secho(f'System is unhealthy !!: {e}', fg='red')
             sys.exit(1)

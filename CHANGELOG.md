@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.2] - 2019-08-16
+### Changed
+
+- health check return non 0 exit code when a problem happens, instead of retrying to connect and succeed
+
 ## [1.4.1] - 2019-08-16
 ### Changed
 

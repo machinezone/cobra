@@ -8,7 +8,8 @@ import json
 import uuid
 from typing import Dict
 
-from cobras.client.client import subscribeClient
+from cobras.client.client import subscribeClient, unsafeSubcribeClient
+from cobras.client.connection import Connection
 from cobras.client.credentials import createCredentials
 from cobras.common.apps_config import HEALTH_APPKEY
 
@@ -36,7 +37,7 @@ def getDefaultHealthCheckUrl(host=None, port=None):
     return f'ws://{host}:{port}/v2?appkey={HEALTH_APPKEY}'
 
 
-def healthCheck(url, role, secret, channel):
+def healthCheck(url, role, secret, channel, retry=False):
     '''Perform a health check'''
     class MessageHandlerClass:
         def __init__(self, connection, args):
@@ -72,12 +73,19 @@ def healthCheck(url, role, secret, channel):
                          device.android_id = '{refAndroidId}' AND
                          magic = {magicNumber}
     """
+
+    messageHandlerArgs = {
+        'channel': channel,
+        'content': content
+    }
+
+    handler = unsafeSubcribeClient
+    if retry:
+        handler = subscribeClient
+
     messageHandler = asyncio.get_event_loop().run_until_complete(
-        subscribeClient(url, credentials, channel, position, fsqlFilter,
-                        MessageHandlerClass, {
-                            'channel': channel,
-                            'content': content
-                        }))
+        handler(url, credentials, channel, position, fsqlFilter,
+                MessageHandlerClass, messageHandlerArgs))
 
     message = messageHandler.parsedMessage
 

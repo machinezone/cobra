@@ -86,6 +86,23 @@ async def subscribeClient(url, credentials, channel, position, fsqlFilter,
     return ret
 
 
+async def unsafeSubcribeClient(url, credentials, channel, position, fsqlFilter,
+                               messageHandlerClass, messageHandlerArgs):
+    '''
+    No retry or exception handling
+    Used by the health check, where we want to die hard and fast if there's a problem
+    '''
+    connection = Connection(url, credentials)
+    await connection.connect()
+    message = await connection.subscribe(channel,
+                                         position,
+                                         fsqlFilter,
+                                         messageHandlerClass,
+                                         messageHandlerArgs,
+                                         subscriptionId=channel)
+    return message
+
+
 async def readHandler(websocket, **args):
     position = args.get('position')
     channel = args.get('channel')
