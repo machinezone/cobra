@@ -9,6 +9,7 @@ import os
 import base64
 import tempfile
 import gzip
+import binascii
 import io
 from pathlib import Path
 from random import getrandbits, randint
@@ -147,11 +148,19 @@ class AppsConfig():
         return role.get('secret', '')
 
 
-def generateAppsConfig(apps_config_path_content):
+def generateAppsConfig(apps_config_path_content) -> str:
     tempPath = tempfile.mktemp(suffix='_apps.yaml')
-    content = base64.b64decode(apps_config_path_content)
+    try:
+        content = base64.b64decode(apps_config_path_content)
+    except binascii.Error:
+        return ''
+
     with open(tempPath, 'wb') as f:
-        decompressed = gzip.GzipFile(fileobj=io.BytesIO(content)).read()
+        try:
+            decompressed = gzip.GzipFile(fileobj=io.BytesIO(content)).read()
+        except OSError:
+            return ''
+
         f.write(decompressed)
 
     return tempPath

@@ -8,8 +8,7 @@ services:
       - COBRA_REDIS_URLS=redis://redis1;redis://redis2;redis://redis3;redis://redis4;redis://redis5
       - COBRA_HOST=0.0.0.0
       - COBRA_PORT=8765
-      - COBRA_APPS_CONFIG=/etc/secret-volume/apps.yaml
-      - COBRA_SENTRY=1
+      - COBRA_APPS_CONFIG_CONTENT=${COBRA_APPS_CONFIG_CONTENT}
       - PYTHONUNBUFFERED=1
       - COBRA_PLUGINS=republish
       - PYTHONPATH=/etc/secret-volume

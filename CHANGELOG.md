@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.3] - 2019-08-16
+### Changed
+
+- (server) Handle invalid COBRA_APPS_CONFIG_CONTENT values
+
 ## [1.4.2] - 2019-08-16
 ### Changed
 

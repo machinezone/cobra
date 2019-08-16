@@ -4,6 +4,8 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import os
+import sys
+import logging
 
 import click
 import sentry_sdk
@@ -63,6 +65,12 @@ def run(host, port, redis_urls, redis_password, apps_config_path,
 
     if apps_config_path_content:
         apps_config_path = generateAppsConfig(apps_config_path_content)
+        if not apps_config_path:
+            logging.error(f'Invalid apps config path content: {apps_config_path_content}')
+            logging.error(f'(usually configured with ${COBRA_APPS_CONFIG_CONTENT})')
+            logging.error(f'Generate it with `gzip -c ~/.cobra.yaml | base64`')
+            sys.exit(1)
+
         apps_config_path_content = '<cleared>'
         os.environ['COBRA_APPS_CONFIG'] = apps_config_path
 
