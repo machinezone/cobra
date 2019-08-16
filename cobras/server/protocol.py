@@ -189,11 +189,32 @@ async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
     # We could have metrics per channel
     for chan in channels:
         appkey = state.appkey
-        pipelinedPublisher = \
-            await app['pipelined_publishers'].get(appkey, chan)
 
-        await pipelinedPublisher.push((appkey, chan, serializedPdu),
-                                      batchPublish)
+        try:
+            pipelinedPublisher = \
+                await app['pipelined_publishers'].get(appkey, chan)
+
+            await pipelinedPublisher.push((appkey, chan, serializedPdu),
+                                          batchPublish)
+        except ConnectionRefusedError as e:
+            errMsg = f'publish: cannot connect to redis {e}'
+            logging.warning(errMsg)
+            response = {
+                "action": "rtm/publish/error",
+                "id": pdu.get('id', 1),
+                "body": {
+                    "error": errMsg
+                }
+            }
+            await respond(state, ws, app, response)
+            return
+
+    response = {
+        "action": "rtm/publish/ok",
+        "id": pdu.get('id', 1),
+        "body": {}
+    }
+    await respond(state, ws, app, response)
 
     # Stats
     app['stats'].updatePublished(state.role, len(serializedPdu))
@@ -314,7 +335,10 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
         async def on_init(self, redisConnection):
             response = self.subscribeResponse
-            response['body']['redis_node'] = redisConnection.host
+            if redisConnection is None:
+                response['body']['action'] = 'rtm/subscribe/error'
+            else:
+                response['body']['redis_node'] = redisConnection.host
             await respond(self.state, self.ws, self.app, response)
 
         async def handleMsg(self, msg: dict, position: str,

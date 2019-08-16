@@ -3,6 +3,7 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import logging
 import asyncio
 import re
 import traceback
@@ -47,11 +48,19 @@ async def redisSubscriber(
         position: Optional[str],
         messageHandlerClass: RedisSubscriberMessageHandlerClass,  # noqa
         obj):
-    # Create connection
-    connection = await redisConnections.create(pattern)
-
     messageHandler = messageHandlerClass(obj)
+
+    try:
+        # Create connection
+        connection = await redisConnections.create(pattern)
+    except ConnectionRefusedError as e:
+        logging.error(f"subcriber: cannot connect to redis {e}")
+        connection = None
+
     await messageHandler.on_init(connection)
+
+    if connection is None:
+        return messageHandler
 
     # lastId = '0-0'
     lastId = '$' if position is None else position

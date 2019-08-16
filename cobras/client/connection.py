@@ -3,8 +3,10 @@
 Copyright (c) 2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import asyncio
 import itertools
 import json
+import collections
 
 import websockets
 
@@ -20,11 +22,16 @@ class HandshakeException(Exception):
 
 
 class Connection(object):
-    def __init__(self, url, creds, verbose=False):
+    def __init__(self, url, creds, verbose=True):
         self.url = url
         self.creds = creds
         self.idIterator = itertools.count()
         self.verbose = verbose
+
+        # different queues per action kind or instances
+        self.queues = collections.defaultdict(asyncio.Queue)
+
+        self.task = None
 
     async def connect(self):
         self.websocket = await websockets.connect(self.url)
@@ -76,6 +83,57 @@ class Connection(object):
         if response.get('action') != 'auth/authenticate/ok':
             raise AuthException('Authentication error.')
 
+        self.task = asyncio.create_task(self.getResponse())
+
+    def __del__(self):
+        if self.task is not None:
+            self.task.cancel()
+
+    async def getResponse(self):
+        while True:
+            response = await self.websocket.recv()
+            if self.verbose:
+                print(f'< {response}')
+
+            data = json.loads(response)
+
+            action = data['action']
+            action = '/'.join(action.split('/')[:2])
+            actionId = action + '::' + str(data['id'])
+
+            if action == 'rtm/subscription':
+                actionId = action + '::' + data['body']['subscription_id']
+
+            q = self.getQueue(actionId)
+
+            await q.put(data)
+
+    def getQueue(self, action):
+        q = self.queues[action]
+        return q
+
+    def computeDefaultActionId(self, pdu):
+        action = pdu['action']
+        actionId = f'{action}::' + str(pdu['id'])
+        return actionId
+
+    async def send(self, pdu):
+        actionId = self.computeDefaultActionId(pdu)
+
+        data = json.dumps(pdu)
+        print(f"> {data}")
+        await self.websocket.send(data)
+
+        # get the response
+        data = await self.getQueue(actionId).get()
+        print(f"< {data}")
+
+        # validate response
+        if data.get('action') != (pdu['action'] + '/ok'):
+            raise ValueError(data.get('body', {}).get('error'))
+
+        return data
+
     async def subscribe(self,
                         channel,
                         position,
@@ -83,8 +141,7 @@ class Connection(object):
                         messageHandlerClass,
                         messageHandlerArgs,
                         subscriptionId):
-
-        subscription = {
+        pdu = {
             "action": "rtm/subscribe",
             "id": next(self.idIterator),
             "body": {
@@ -94,26 +151,16 @@ class Connection(object):
                 "filter": fsqlFilter
             },
         }
-
-        if position is not None:
-            subscription['body']['position'] = position
-
-        print(f"> {subscription}")
-        await self.websocket.send(json.dumps(subscription))
-
-        subscribeResponse = await self.websocket.recv()
-        print(f"< {subscribeResponse}")
-
-        # validate response
-        data = json.loads(subscribeResponse)
-        if data.get('action') != 'rtm/subscribe/ok':
-            raise ValueError(data.get('body', {}).get('error'))
+        await self.send(pdu)
 
         messageHandler = messageHandlerClass(self, messageHandlerArgs)
         await messageHandler.on_init()
 
-        async for msg in self.websocket:
-            data = json.loads(msg)
+        actionId = 'rtm/subscription::' + subscriptionId
+
+        while True:
+            data = await self.getQueue(actionId).get()
+
             message = data['body']['messages'][0]
             position = data['body']['position']
 
@@ -130,23 +177,17 @@ class Connection(object):
         return messageHandler
 
     async def unsubscribe(self, subscriptionId):
-        unsubscribePdu = {
+        pdu = {
             "action": "rtm/unsubscribe",
             "id": next(self.idIterator),
             "body": {
                 "subscription_id": subscriptionId
             }
         }
-
-        data = json.dumps(unsubscribePdu)
-        print(f"> {data}")
-        await self.websocket.send(data)
-
-        unsubscribeResponse = await self.websocket.recv()
-        print(f"< {unsubscribeResponse}")
+        await self.send(pdu)
 
     async def publish(self, channel, msg):
-        publishPdu = {
+        pdu = {
             "action": "rtm/publish",
             "id": next(self.idIterator),
             "body": {
@@ -154,16 +195,10 @@ class Connection(object):
                 "message": msg
             }
         }
-
-        data = json.dumps(publishPdu)
-
-        if self.verbose:
-            print(f"> {data}")
-
-        await self.websocket.send(data)
+        await self.send(pdu)
 
     async def write(self, channel, msg):
-        writePdu = {
+        pdu = {
             "action": "rtm/write",
             "id": next(self.idIterator),
             "body": {
@@ -171,38 +206,19 @@ class Connection(object):
                 "message": msg
             }
         }
-
-        data = json.dumps(writePdu)
-
-        if self.verbose:
-            print(f"> {data}")
-
-        await self.websocket.send(data)
-
-        response = await self.websocket.recv()
-        if self.verbose:
-            print(f"> {response}")
+        await self.send(pdu)
 
     async def read(self, channel, position=None):
-        readPdu = {
+        pdu = {
             "action": "rtm/read",
             "id": next(self.idIterator),
             "body": {
                 "channel": channel,
             }
         }
+        data = await self.send(pdu)
 
-        if position is not None:
-            readPdu['body']['position'] = position
-
-        print(f"> {readPdu}")
-        await self.websocket.send(json.dumps(readPdu))
-
-        readResponse = await self.websocket.recv()
-        print(f"< {readResponse}")
-
-        data = json.loads(readResponse)
-        msg = data['body']['message']  # FIXME data missing
+        msg = data['body']['message']  # FIXME data missing / error handling ?
         return msg
 
     async def close(self):

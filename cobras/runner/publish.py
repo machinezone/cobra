@@ -33,29 +33,15 @@ DEFAULT_CHANNEL = 'sms_republished_v1_neo'
 DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={PUBSUB_APPKEY}'
 
 
-async def sendEvent(websocket, channel, event, connectionId, verbose):
+async def sendEvent(connection, channel, event, connectionId, verbose):
     data = json.loads(event)
     action = data.get('action')
-
-    if action is None or action != 'rtm/publish':
-        publishPdu = {
-            "action": "rtm/publish",
-            "body": {
-                "channel": channel,
-                "message": data
-            }
-        }
-        line = json.dumps(publishPdu)
-    else:
-        data['body']['channel'] = channel
-        line = json.dumps(data)
 
     if verbose:
         now = datetime.datetime.now().strftime("%H:%M:%S.%f")
         print(f"[{now}][{connectionId}] > {line}")
 
-    # await websocket.send(line.encode('utf8'))
-    await websocket.send(line)
+    await connection.publish(channel, data)
 
 
 async def clientCallback(connection, **args):
@@ -64,8 +50,6 @@ async def clientCallback(connection, **args):
     verbose = args['verbose']
     delay = args['delay']
     repeat = args['repeat']
-
-    websocket = connection.websocket
 
     if not item:  # FIXME: how can this happen ?
         return
@@ -79,7 +63,7 @@ async def clientCallback(connection, **args):
         print(f"[{now}][{connectionId}] {N} events")
 
         for event, deltaMs in eventsWithDeltas:
-            await sendEvent(websocket, channel, event, connectionId, verbose)
+            await sendEvent(connection, channel, event, connectionId, verbose)
 
             if deltaMs != 0:
                 print(f'sleeping for {deltaMs} ms')

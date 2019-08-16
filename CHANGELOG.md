@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2019-08-16
+### Changed
+
+- Fix very unflexible design in the client code, where the client heavily expected server responses in a specific order. New design is more flexible, and concurrent subscriptions or multiple publish can happens at the same time.
+- Server send a response to acknowledge publish messages.
+
 ## [1.3.4] - 2019-08-15
 
 ### Changed
