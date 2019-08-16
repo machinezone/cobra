@@ -75,6 +75,7 @@ def run(host, port, redis_urls, redis_password, apps_config_path,
     if apps_config_path_content:
         apps_config_path = generateAppsConfig(apps_config_path_content)
         apps_config_path_content = '<cleared>'
+        os.environ['COBRA_APPS_CONFIG'] = apps_config_path
 
     print('runServer', locals())
     runner = AppRunner(host, port, redis_urls, redis_password,
