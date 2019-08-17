@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.4.7] - 2019-08-16
+## [1.4.10] - 2019-08-16
 ### Changed
 
 - (bavarde client) when cancelling with Ctrl-C if a connection was not established yet, do not try to terminate it
