@@ -169,10 +169,10 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
                 break
 
     finally:
-        websocket = args['connection'].websocket
-        await websocket.close()
-        close_status = format_close(websocket.close_code, websocket.close_reason)
-        print_over_input(f"Connection closed: {close_status}.")
+        connection = args.get('connection')
+        if connection is not None:
+            closeStatus = await args['connection'].close()
+            print_over_input(f"Connection closed: {close_status}.")
 
         task.cancel()
         await task
