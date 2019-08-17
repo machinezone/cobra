@@ -169,6 +169,10 @@ class Connection(object):
                 "filter": fsqlFilter
             },
         }
+
+        if position is not None:
+            pdu['body']['position'] = position
+
         await self.send(pdu)
 
         messageHandler = messageHandlerClass(self, messageHandlerArgs)

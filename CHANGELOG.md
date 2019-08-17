@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2019-08-16
+### Changed
+
+- (bavarde cli) fix history
+
 ## [1.4.13] - 2019-08-16
 ### Changed
 
