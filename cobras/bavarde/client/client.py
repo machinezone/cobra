@@ -172,7 +172,7 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
         connection = args.get('connection')
         if connection is not None:
             closeStatus = await args['connection'].close()
-            print_over_input(f"Connection closed: {close_status}.")
+            print_over_input(f"Connection closed: {closeStatus}.")
 
         task.cancel()
         await task
