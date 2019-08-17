@@ -77,4 +77,8 @@ def run(host, port, redis_urls, redis_password, apps_config_path,
     runner = AppRunner(host, port, redis_urls, redis_password,
                        apps_config_path, debug_memory, plugins,
                        not no_stats, max_subscriptions, idle_timeout)
-    runner.run()
+    try:
+        runner.run()
+    except OSError as e:
+        logging.fatal(f'Cannot start cobra server: {e}')
+        sys.exit(1)

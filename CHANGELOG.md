@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.12] - 2019-08-16
+### Changed
+
+- Catch and display readable error when failing to start the server. Classic case is running it twice in two terminals, binding to the same port.
+
+```
+2019-08-16 22:34:27 CRITICAL Cannot start cobra server: [Errno 48] error while attempting to bind on address ('127.0.0.1', 8765): address already in use
+```
+
 ## [1.4.11] - 2019-08-16
 ### Changed
 
