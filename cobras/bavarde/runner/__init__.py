@@ -9,16 +9,20 @@ from pkgutil import walk_packages
 import click
 import coloredlogs
 
-coloredlogs.install(level='WARNING')
+LOGGING_FORMAT = '%(asctime)s %(levelname)s %(message)s'
+coloredlogs.install(level='WARNING', fmt=LOGGING_FORMAT)
 
 
+@click.option('--verbose', '-v', envvar='BAVARDE_VERBOSE', is_flag=True)
 @click.group()
 @click.version_option()
-def main():
+def main(verbose):
     """\b
 
 Bavarde is a chat app written on top of cobra
-"""
+    """
+    if verbose:
+        coloredlogs.install(level='INFO', fmt=LOGGING_FORMAT)
 
 
 for loader, module_name, is_pkg in walk_packages(__path__, __name__ + '.'):

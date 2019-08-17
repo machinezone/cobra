@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.13] - 2019-08-16
+### Changed
+
+- (bavarde cli) add --verbose flag which works like the cobra flag.
+
 ## [1.4.12] - 2019-08-16
 ### Changed
 
