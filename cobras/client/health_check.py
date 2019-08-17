@@ -6,6 +6,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import asyncio
 import json
 import uuid
+import os
 from typing import Dict
 
 from cobras.client.client import subscribeClient, unsafeSubcribeClient
@@ -23,7 +24,7 @@ def getDefaultHealthCheckHttpUrl(host=None, port=None):
     if host is None:
         host = '127.0.0.1'
     if port is None:
-        port = 8765
+        port = os.getenv('COBRA_PORT', 8765)
 
     return f'http://{host}:{port}/health/'
 
@@ -32,7 +33,7 @@ def getDefaultHealthCheckUrl(host=None, port=None):
     if host is None:
         host = '127.0.0.1'
     if port is None:
-        port = 8765
+        port = os.getenv('COBRA_PORT', 8765)
 
     return f'ws://{host}:{port}/v2?appkey={HEALTH_APPKEY}'
 

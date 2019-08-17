@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.6] - 2019-08-16
+### Changed
+
+- (server) when running inside docker with a non default port (COBRA_PORT), health check fails as it is trying to use the default port (8765). Modified healt check to look at COBRA_PORT environment variable
+
 ## [1.4.5] - 2019-08-16
 ### Changed
 
