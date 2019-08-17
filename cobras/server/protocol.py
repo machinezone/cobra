@@ -40,7 +40,7 @@ async def respond(state: ConnectionState, ws, app: Dict, data: JsonDict):
 
 
 async def handleAuth(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                     serializedPdu: str):
+                     serializedPdu: bytes):
     try:
         secret = app['apps_config'].getRoleSecret(state.appkey, state.role)
     except KeyError:
@@ -103,7 +103,7 @@ def parseAppKey(path):
 
 
 async def handleHandshake(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                          serializedPdu: str):
+                          serializedPdu: bytes):
     authMethod = pdu.get('body', {}).get('method')
     if authMethod != 'role_secret':
         errMsg = f'invalid auth method: {authMethod}'
@@ -138,7 +138,7 @@ async def handleHandshake(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
 
 async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                        serializedPdu: str):
+                        serializedPdu: bytes):
     '''Here we don't write back a result to the client for efficiency.
     Client doesn't really needs it.
     '''
@@ -218,7 +218,7 @@ async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
 
 async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                          serializedPdu: str):
+                          serializedPdu: bytes):
     '''
     Client doesn't really needs it.
     '''
@@ -405,7 +405,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
 
 async def handleUnSubscribe(state: ConnectionState, ws, app: Dict,
-                            pdu: JsonDict, serializedPdu: str):
+                            pdu: JsonDict, serializedPdu: bytes):
     '''
     Cancel a subscription
     '''
@@ -473,7 +473,7 @@ async def toggleFileLogging(state: ConnectionState, app: Dict,
 
 # FIXME: make sure that 'write' commands are coming from 'localhost'
 async def handleAdminRpc(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                         serializedPdu: str):
+                         serializedPdu: bytes):
     body = pdu.get('body', {})
     method = body.get('method')
     params = body.get('params', {})
@@ -508,7 +508,7 @@ async def handleAdminRpc(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
 # FIXME error handling
 async def handleRead(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                     serializedPdu: str):
+                     serializedPdu: bytes):
 
     body = pdu.get('body', {})
     position = body.get('position')
@@ -534,7 +534,7 @@ async def handleRead(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
 
 async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                      serializedPdu: str):
+                      serializedPdu: bytes):
     # Missing message
     message = pdu.get('body', {}).get('message')
     if message is None:
@@ -609,7 +609,7 @@ ACTION_HANDLERS_LUT = {
 }
 
 
-async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: str):
+async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes):
     try:
         pdu: JsonDict = ujson.loads(msg)
     except ValueError:
@@ -621,6 +621,10 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: str):
     state.log(f"< {msg}")
 
     action = pdu.get('action')
+    if action is None:
+        await badFormat(state, ws, app, f'missing action')
+        return
+
     handler = ACTION_HANDLERS_LUT.get(action)
     if handler is None:
         await badFormat(state, ws, app, f'invalid action: {action}')

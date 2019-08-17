@@ -37,7 +37,7 @@ test_server:
 	# ./venv/bin/py.test tests/test_app.py::test_server_mem
 
 mypy:
-	mypy --ignore-missing-imports src/cobras/server/*.py src/cobras/common/*.py
+	mypy --ignore-missing-imports cobras/server/*.py cobras/common/*.py
 
 
 coverage:
