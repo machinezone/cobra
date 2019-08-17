@@ -70,7 +70,7 @@ PROD   := ${NAME}:production
 bump:
 	python tools/bump_docker_version.py
 
-docker_tag: bump
+docker_tag:
 	docker tag ${IMG} ${PROD}
 	docker push ${PROD}
 	oc import-image -n cobra-live cobra:production
