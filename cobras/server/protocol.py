@@ -31,9 +31,7 @@ from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 
 async def respond(state: ConnectionState, ws, app: Dict, data: JsonDict):
     response = json.dumps(data)
-
-    if app['verbose']:
-        state.log(f"> {response}")
+    logging.info(f"> {response}")
 
     try:
         await ws.send(response)
@@ -52,9 +50,8 @@ async def handleAuth(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         serverHash = computeHash(secret, state.nonce.encode('ascii'))
         clientHash = pdu.get('body', {}).get('credentials', {}).get('hash')
 
-        if app['verbose']:
-            state.log(f'server hash {serverHash}')
-            state.log(f'client hash {clientHash}')
+        state.log(f'server hash {serverHash}')
+        state.log(f'client hash {clientHash}')
 
         success = (clientHash == serverHash)
         if not success:
@@ -324,7 +321,6 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
             self.streamSQLFilter = args['stream_sql_filter']
             self.appkey = args['appkey']
             self.serverStats = args['stats']
-            self.verbose = args['verbose']
             self.state = args['state']
             self.subscribeResponse = args['subscribe_response']
             self.app = args['app']
@@ -367,8 +363,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
                     "position": position
                 },
             }
-            if self.verbose:
-                self.state.log(f"> {json.dumps(pdu)} at position {position}")
+            self.state.log(f"> {json.dumps(pdu)} at position {position}")
 
             await self.ws.send(json.dumps(pdu))
 
@@ -397,7 +392,6 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
                 'stream_sql_filter': streamSQLFilter,
                 'appkey': state.appkey,
                 'stats': app['stats'],
-                'verbose': app['verbose'],
                 'state': state,
                 'subscribe_response': response,
                 'app': app
@@ -624,8 +618,7 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: str):
         await badFormat(state, ws, app, errMsg)
         return
 
-    if app['verbose']:
-        state.log(f"< {msg}")
+    state.log(f"< {msg}")
 
     action = pdu.get('action')
     handler = ACTION_HANDLERS_LUT.get(action)

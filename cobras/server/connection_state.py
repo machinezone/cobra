@@ -5,6 +5,7 @@ FIXME: use this to enforce publish+subscribe permissions.
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import logging
 import uuid
 
 
@@ -27,7 +28,7 @@ class ConnectionState:
 
     def log(self, msg):
         log = f"[{self.connection_id}::{self.role}] {msg}"
-        print(log)
+        logging.info(log)
 
         if self.fileLogging:
             with open(self.path, 'a') as f:

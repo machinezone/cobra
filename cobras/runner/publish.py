@@ -3,6 +3,7 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import logging
 import asyncio
 import datetime
 import functools
@@ -33,13 +34,12 @@ DEFAULT_CHANNEL = 'sms_republished_v1_neo'
 DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={PUBSUB_APPKEY}'
 
 
-async def sendEvent(connection, channel, event, connectionId, verbose):
+async def sendEvent(connection, channel, event, connectionId):
     data = json.loads(event)
     action = data.get('action')
 
-    if verbose:
-        now = datetime.datetime.now().strftime("%H:%M:%S.%f")
-        print(f"[{now}][{connectionId}] > {line}")
+    now = datetime.datetime.now().strftime("%H:%M:%S.%f")
+    logging.info(f"[{now}][{connectionId}] > {event}")
 
     await connection.publish(channel, data)
 
@@ -47,7 +47,6 @@ async def sendEvent(connection, channel, event, connectionId, verbose):
 async def clientCallback(connection, **args):
     item = args['item']
     channel = args['channel']
-    verbose = args['verbose']
     delay = args['delay']
     repeat = args['repeat']
 
@@ -63,7 +62,7 @@ async def clientCallback(connection, **args):
         print(f"[{now}][{connectionId}] {N} events")
 
         for event, deltaMs in eventsWithDeltas:
-            await sendEvent(connection, channel, event, connectionId, verbose)
+            await sendEvent(connection, channel, event, connectionId)
 
             if deltaMs != 0:
                 print(f'sleeping for {deltaMs} ms')
@@ -76,14 +75,13 @@ async def clientCallback(connection, **args):
             break
 
 
-async def publishTask(url, credentials, items, channel, verbose, repeat,
+async def publishTask(url, credentials, items, channel, repeat,
                       delay):
     tasks = []
     for item in items:
         publishClientCallback = functools.partial(clientCallback,
                                                   item=item,
                                                   channel=channel,
-                                                  verbose=verbose,
                                                   repeat=repeat,
                                                   delay=delay)
 
@@ -123,7 +121,7 @@ def buildItemList(path, limit):
     return items
 
 
-def run(url, channel, path, credentials, verbose, repeat, delay, limit):
+def run(url, channel, path, credentials, repeat, delay, limit):
     items = buildItemList(path, limit)
     if len(items) == 0:
         print('Empty input file')
@@ -132,7 +130,7 @@ def run(url, channel, path, credentials, verbose, repeat, delay, limit):
     print(f'Processing {len(items)} items')
 
     asyncio.get_event_loop().run_until_complete(
-        publishTask(url, credentials, items, channel, verbose, repeat, delay))
+        publishTask(url, credentials, items, channel, repeat, delay))
 
 
 @click.command()
@@ -141,7 +139,6 @@ def run(url, channel, path, credentials, verbose, repeat, delay, limit):
 @click.option('--path', default=DEFAULT_PATH)
 @click.option('--role', default=getDefaultRoleForApp('pubsub'))
 @click.option('--secret', default=getDefaultSecretForApp('pubsub'))
-@click.option('--verbose', is_flag=True)
 @click.option('--repeat', is_flag=True)
 @click.option('--batch', is_flag=True)
 @click.option('--batch_events_path',
@@ -150,7 +147,7 @@ def run(url, channel, path, credentials, verbose, repeat, delay, limit):
 @click.option('--limit', default=256)
 @click.option('--delay', default=0.1)
 def publish(url, channel, path, role, secret, batch, batch_events_path, limit,
-            verbose, repeat, delay):
+            repeat, delay):
     '''Publish to a channel
     '''
 
@@ -162,4 +159,4 @@ def publish(url, channel, path, role, secret, batch, batch_events_path, limit,
 
     credentials = createCredentials(role, secret)
 
-    run(url, channel, path, credentials, verbose, repeat, delay, limit)
+    run(url, channel, path, credentials, repeat, delay, limit)

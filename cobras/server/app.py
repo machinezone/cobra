@@ -24,7 +24,7 @@ from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
 
 
-async def cobraHandler(websocket, path, app, redisUrls: str, verbose: bool):
+async def cobraHandler(websocket, path, app, redisUrls: str):
     start = time.time()
     msgCount = 0
     appkey = parseAppKey(path)  # appkey must have been validated
@@ -101,7 +101,7 @@ class AppRunner():
     '''From aiohttp
     '''
     def __init__(self, host, port, redisUrls, redisPassword, appsConfigPath,
-                 verbose, debugMemory, plugins, enableStats, maxSubscriptions,
+                 debugMemory, plugins, enableStats, maxSubscriptions,
                  idleTimeout):
         self.app = {}
         self.app['connections'] = {}
@@ -109,7 +109,6 @@ class AppRunner():
         self.app['max_subscriptions'] = maxSubscriptions
         self.app['idle_timeout'] = idleTimeout
 
-        self.app['verbose'] = verbose
         self.app['memory_debugger'] = debugMemory
         self.app['redis_urls'] = redisUrls
         self.app['redis_password'] = redisPassword
@@ -118,7 +117,6 @@ class AppRunner():
         self.port = port
         self.redisUrls = redisUrls
         self.redisPassword = redisPassword
-        self.verbose = verbose
         self.plugins = plugins
         self.enableStats = enableStats
 
@@ -184,8 +182,7 @@ class AppRunner():
 
         handler = functools.partial(cobraHandler,
                                     app=self.app,
-                                    redisUrls=self.redisUrls,
-                                    verbose=self.verbose)
+                                    redisUrls=self.redisUrls)
 
         ServerProtocol.appsConfig = self.app['apps_config']
 

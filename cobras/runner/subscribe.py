@@ -3,6 +3,7 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import logging
 import asyncio
 import json
 from typing import Dict
@@ -25,7 +26,6 @@ class MessageHandlerClass:
         self.cnt = 0
         self.cntPerSec = 0
         self.throttle = Throttle(seconds=1)
-        self.verbose = args['verbose']
 
     async def on_init(self):
         pass
@@ -34,8 +34,7 @@ class MessageHandlerClass:
         self.cnt += 1
         self.cntPerSec += 1
 
-        if self.verbose >= 1:
-            print(f'{message} at position {position}')
+        logging.info(f'{message} at position {position}')
 
         if self.throttle.exceedRate():
             return True
@@ -52,9 +51,8 @@ class MessageHandlerClass:
 @click.option('--secret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--channel', default='sms_republished_v1_neo')
 @click.option('--position')
-@click.option('--verbose', '-v', count=True)
 @click.option('--stream_sql')
-def subscribe(url, role, secret, channel, position, stream_sql, verbose):
+def subscribe(url, role, secret, channel, position, stream_sql):
     '''Subscribe to a channel
     '''
 
@@ -65,4 +63,4 @@ def subscribe(url, role, secret, channel, position, stream_sql, verbose):
 
     asyncio.get_event_loop().run_until_complete(
         subscribeClient(url, credentials, channel, position, stream_sql,
-                        MessageHandlerClass, {'verbose': verbose}))
+                        MessageHandlerClass, {}))

@@ -39,9 +39,8 @@ async def clientCallback(websocket, **args):
     print(response)
 
 
-async def start(url, credentials, verbose, method, params):
+async def start(url, credentials, method, params):
     callback = functools.partial(clientCallback,
-                                 verbose=verbose,
                                  method=method,
                                  params=params)
 
@@ -53,10 +52,9 @@ async def start(url, credentials, verbose, method, params):
 @click.option('--url', default=DEFAULT_URL)
 @click.option('--role', default=getDefaultRoleForApp('admin'))
 @click.option('--secret', default=getDefaultSecretForApp('admin'))
-@click.option('--verbose', is_flag=True)
 @click.option('--method', default='close_all')
 @click.option('--params', default='{}')
-def admin(url, role, secret, verbose, method, params):
+def admin(url, role, secret, method, params):
     '''Admin
 
     \b
@@ -69,4 +67,4 @@ def admin(url, role, secret, verbose, method, params):
     credentials = createCredentials(role, secret)
 
     asyncio.get_event_loop().run_until_complete(
-        start(url, credentials, verbose, method, params))
+        start(url, credentials, method, params))

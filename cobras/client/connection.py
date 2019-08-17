@@ -7,6 +7,7 @@ import asyncio
 import itertools
 import json
 import collections
+import logging
 
 import websockets
 
@@ -26,11 +27,10 @@ class ActionException(Exception):
 
 
 class Connection(object):
-    def __init__(self, url, creds, verbose=True):
+    def __init__(self, url, creds):
         self.url = url
         self.creds = creds
         self.idIterator = itertools.count()
-        self.verbose = verbose
 
         # different queues per action kind or instances
         self.queues = collections.defaultdict(asyncio.Queue)
@@ -80,9 +80,7 @@ class Connection(object):
             while True:
                 response = await self.websocket.recv()
 
-                # if self.verbose:
-                #     print(f'< {response}')
-
+                logging.debug(f'< {response}')
                 data = json.loads(response)
 
                 action = data['action']
@@ -97,7 +95,7 @@ class Connection(object):
                 await q.put(data)
 
         except Exception as e:
-            print(f'unexpected exception: {e}')
+            logging.error(f'unexpected exception: {e}')
 
             # propagate the exception to the caller
             self.stop.set_result(e)
@@ -141,12 +139,12 @@ class Connection(object):
         actionId = self.computeDefaultActionId(pdu)
 
         data = json.dumps(pdu)
-        print(f"> {data}")
+        logging.info(f"> {data}")
         await self.websocket.send(data)
 
         # get the response
         data = await self.getActionResponse(actionId)
-        print(f"< {data}")
+        logging.info(f"< {data}")
 
         # validate response
         if data.get('action') != (pdu['action'] + '/ok'):
@@ -191,7 +189,7 @@ class Connection(object):
         try:
             await self.unsubscribe(subscriptionId)
         except websockets.exceptions.ConnectionClosed as e:
-            print(f"Connection is closed, cannot unsubscribe")
+            logging.warning(f"Connection is closed, cannot unsubscribe")
             pass
 
         return messageHandler

@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.4.11] - 2019-08-16
+### Changed
+
+- --verbose (short -v) can be passed in to all cobra commands, and almost all printing goes through the logging library. Logging format is simplified by removing hostname and username.
+
+```
+2019-08-16 21:57:56 INFO < {'action': 'rtm/publish/ok', 'id': 2, 'body': {}}
+```
+
 ## [1.4.10] - 2019-08-16
 ### Changed
 

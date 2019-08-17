@@ -30,7 +30,6 @@ from cobras.server.app import AppRunner
               envvar='COBRA_APPS_CONFIG',
               default=getDefaultAppsConfigPath())
 @click.option('--apps_config_path_content', envvar='COBRA_APPS_CONFIG_CONTENT')
-@click.option('--verbose', envvar='COBRA_VERBOSE', is_flag=True)
 @click.option('--prod', envvar='COBRA_PROD', is_flag=True)
 @click.option('--plugins', envvar='COBRA_PLUGINS')
 @click.option('--debug_memory', envvar='COBRA_DEBUG_MEMORY', is_flag=True)
@@ -45,7 +44,7 @@ from cobras.server.app import AppRunner
               default=5 * 60,
               help='idle connections kicked out after X seconds')
 def run(host, port, redis_urls, redis_password, apps_config_path,
-        apps_config_path_content, verbose, debug_memory, plugins, sentry,
+        apps_config_path_content, debug_memory, plugins, sentry,
         sentry_url, prod, no_stats, max_subscriptions, idle_timeout):
     '''Run the cobra server
 
@@ -76,6 +75,6 @@ def run(host, port, redis_urls, redis_password, apps_config_path,
 
     print('runServer', locals())
     runner = AppRunner(host, port, redis_urls, redis_password,
-                       apps_config_path, verbose, debug_memory, plugins,
+                       apps_config_path, debug_memory, plugins,
                        not no_stats, max_subscriptions, idle_timeout)
     runner.run()

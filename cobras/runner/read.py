@@ -34,7 +34,7 @@ def read(url, role, secret, channel, position):
     credentials = createCredentials(role, secret)
 
     async def handler(url, credentials, channel, position):
-        connection = Connection(url, credentials, verbose=True)
+        connection = Connection(url, credentials)
         await connection.connect()
         data = await connection.read(channel, position)
         await connection.close()

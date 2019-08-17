@@ -23,7 +23,6 @@ def makeRunner(debugMemory=False):
     port = '5678'
     redisUrls = 'redis://localhost'
     redisPassword = None
-    verbose = True
     plugins = 'republish'
     enableStats = True
     maxSubscriptions = -1
@@ -35,7 +34,7 @@ def makeRunner(debugMemory=False):
     os.environ['COBRA_APPS_CONFIG'] = appsConfigPath
 
     runner = AppRunner(host, port, redisUrls, redisPassword, appsConfigPath,
-                       verbose, debugMemory, plugins, enableStats,
+                       debugMemory, plugins, enableStats,
                        maxSubscriptions, idleTimeout)
     asyncio.get_event_loop().run_until_complete(runner.setup())
     return runner, appsConfigPath
