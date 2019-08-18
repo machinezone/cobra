@@ -30,6 +30,7 @@ dev_requires = [
 tests_require = [
     'pytest',
     'pytest-cov'
+    'pytest-xdist'
 ]
 
 with open('requirements.txt') as f:

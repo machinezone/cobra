@@ -1,6 +1,42 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.5.1] - 2019-08-18
+
+### Changed
+
+- Unittest can be run in parallel with py.xdist. On a 2014 macbook the runtime goes from 15 seconds down to 7 seconds.
+
+```
+(venv) cobra$ py.test -n 10 tests
+====================================== test session starts ======================================
+platform darwin -- Python 3.7.2, pytest-5.0.1, py-1.8.0, pluggy-0.12.0
+rootdir: /Users/bsergeant/src/foss/cobra
+plugins: xdist-1.29.0, forked-1.0.2, cov-2.7.1
+gw0 [37] / gw1 [37] / gw2 [37] / gw3 [37] / gw4 ok / gw5 [37] / gw6 ok / gw7 ok / gw8 [37] / gw9 gw0 [37] / gw1 [37] / gw2 [37] / gw3 [37] / gw4 [37] / gw5 [37] / gw6 ok / gw7 ok / gw8 [37] / gwgw0 [37] / gw1 [37] / gw2 [37] / gw3 [37] / gw4 [37] / gw5 [37] / gw6 [37] / gw7 ok / gw8 [37] / gw0 [37] / gw1 [37] / gw2 [37] / gw3 [37] / gw4 [37] / gw5 [37] / gw6 [37] / gw7 [37] / gw8 [37] gw0 [37] / gw1 [37] / gw2 [37] / gw3 [37] / gw4 [37] / gw5 [37] / gw6 [37] / gw7 [37] / gw8 [37] / gw9 [37]
+.....................................                                                     [100%]
+=================================== 37 passed in 7.06 seconds ===================================
+(venv) cobra$ py.test
+====================================== test session starts ======================================
+platform darwin -- Python 3.7.2, pytest-5.0.1, py-1.8.0, pluggy-0.12.0
+rootdir: /Users/bsergeant/src/foss/cobra
+plugins: xdist-1.29.0, forked-1.0.2, cov-2.7.1
+collected 37 items
+
+tests/test_app.py ...                                                                     [  8%]
+tests/test_apps_config.py ...                                                             [ 16%]
+tests/test_client_publish.py .                                                            [ 18%]
+tests/test_memory_debugger.py .                                                           [ 21%]
+tests/test_merge_monitor_events.py .                                                      [ 24%]
+tests/test_read_write.py .                                                                [ 27%]
+tests/test_redis_connections.py ...                                                       [ 35%]
+tests/test_redis_subscriber.py .                                                          [ 37%]
+tests/test_stream_sql.py .....................                                            [ 94%]
+tests/test_throttle.py .                                                                  [ 97%]
+tests/test_validate_redis_position.py .                                                   [100%]
+
+================================== 37 passed in 15.00 seconds ===================================```
+
 ## [1.5.0] - 2019-08-16
 ### Changed
 

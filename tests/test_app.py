@@ -11,32 +11,9 @@ from cobras.client.credentials import (getDefaultRoleForApp,
                                        getDefaultSecretForApp)
 from cobras.client.health_check import (getDefaultHealthCheckHttpUrl,
                                         getDefaultHealthCheckUrl, healthCheck)
-from cobras.common.apps_config import AppsConfig
 from cobras.common.memory_debugger import MemoryDebugger
-from cobras.server.app import AppRunner
 
-
-def makeRunner(debugMemory=False):
-    host = 'localhost'
-    port = '5678'
-    redisUrls = 'redis://localhost'
-    redisPassword = None
-    plugins = 'republish'
-    enableStats = True
-    maxSubscriptions = -1
-    idleTimeout = 10  # after 10 seconds it's a lost cause
-
-    appsConfigPath = tempfile.mktemp()
-    appsConfig = AppsConfig(appsConfigPath)
-    appsConfig.generateDefaultConfig()
-    os.environ['COBRA_APPS_CONFIG'] = appsConfigPath
-
-    runner = AppRunner(host, port, redisUrls, redisPassword, appsConfigPath,
-                       debugMemory, plugins, enableStats,
-                       maxSubscriptions, idleTimeout)
-    asyncio.get_event_loop().run_until_complete(runner.setup())
-    return runner, appsConfigPath
-
+from .test_utils import makeRunner
 
 @pytest.fixture()
 def runner():
