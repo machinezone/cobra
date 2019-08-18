@@ -7,12 +7,9 @@ install:
   - pip install -r requirements.txt
   - pip install -e .
   - pip install "file://`pwd`#egg=cobra[dev]"
-  - pip install coverage
-  - pip install pytest
-  - pip install pytest-cov
-  - pip install codecov
+  - pip install pytest coverage pytest-cov pytest-xdist codecov
 script:
-  - pytest --cov=cobras --cov-report=xml tests/
+  - pytest -n 4 --cov=cobras --cov-report=xml tests/
   - codecov
 services:
   - redis-server

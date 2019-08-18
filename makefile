@@ -30,7 +30,7 @@ flake:
 	flake8 `find cobras -name '*.py'`
 
 test:
-	py.test --disable-warnings tests/*.py
+	py.test -n 4 --disable-warnings tests/*.py
 
 test_server:
 	./venv/bin/py.test --disable-warnings tests/test_app.py::test_server
