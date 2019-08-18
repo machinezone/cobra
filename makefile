@@ -21,7 +21,7 @@ develop: develop-only install-python-tests
 
 upload:
 	rm dist/*
-	python setup.py sdist
+	python setup.py sdist bdist_wheel
 	twine upload dist/*
 
 lint: flake

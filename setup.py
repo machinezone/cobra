@@ -20,6 +20,7 @@ with open(os.path.join(ROOT, 'DOCKER_VERSION')) as f:
 
 
 dev_requires = [
+    'wheel',
     'flake8',
     'isort',
     'mypy',

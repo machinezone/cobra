@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- cobras package is distributed as a wheel on PyPI. See [this](https://pythonwheels.com/).
 - Unittest can be run in parallel with py.xdist. On a 2014 macbook the runtime goes from 15 seconds down to 7 seconds.
 
 ```
