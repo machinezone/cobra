@@ -12,12 +12,12 @@ Cobra is a realtime messaging server using Python3, WebSockets and Redis Streams
 
 Cobra has been used in production receiving heavy traffic for about a year. Since it was written in Python it was named after a snake as an hommage to a great programming language.
 
-There are 4 operations that a client can execute against a cobra server: publish, subscribe, read and write. publish and subscribe are the 2 operations core to a group-chat, and read and write are the typical operations that key value stores (such as memcached) provide.
+There are 4 operations that a client can execute against a cobra server: *publish*, *subscribe*, *read* and *write*. *publish* and *subscribe* are the 2 operations core to a group-chat. *read* and *write* are the typical operations that key value stores (such as memcached), or a python dictionnary provide.
 
-* publish: send data to a channel, which will be broadcasted to anyone subscribed to that channel
-* subscribe: receive events sent to a channel in real time.
-* write: record some data (addressed by a key)
-* read: retrieve data
+* *publish*: send data to a channel, which will be broadcasted to anyone subscribed to that channel
+* *subscribe*: receive events sent to a channel in real time.
+* *write*: record some data (addressed by a key)
+* *read*: retrieve data
 
 # News
 
