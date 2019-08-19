@@ -8,6 +8,9 @@ import random
 from cobras.common.apps_config import AppsConfig
 from cobras.server.app import AppRunner
 
+import coloredlogs
+coloredlogs.install(level='INFO')
+
 
 def getFreePort():
     return random.randint(9000, 16000)

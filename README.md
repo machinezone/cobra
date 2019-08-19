@@ -102,6 +102,8 @@ $ bavarde client --username bob
 
 # Setup
 
+`cobras init` needs to be run once to generate an app configuration file, in `~/.cobra.yaml`. That file contains all the roles, secrets and apps configured. Clients will use this data to authenticate.
+
 To run in production you will need a redis (version > 5) instance. Here are environment variables that you will likely want to tweak, to connect to 2 redis instances (for scalabity), and to bind on 0.0.0.0 so that the internet can see your instance.
 
 ```
@@ -109,6 +111,16 @@ To run in production you will need a redis (version > 5) instance. Here are envi
   value: 0.0.0.0
 - name: COBRA_REDIS_URLS
   value: redis://redis1;redis://redis2
+
+# config can be a path to a file
+- name: COBRA_APPS_CONFIG_PATH
+  value: /path/to/your/cobra.yaml
+
+# config can be a blob of gziped + base64 data (if you do not want to mount volumes)
+# Generate it with:
+# `gzip -c ~/.cobra.yaml | base64`
+- name: COBRA_APPS_CONFIG_CONTENT
+  value: BIGBLOGOFDATA
 ```
 
 # Thank you

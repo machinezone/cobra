@@ -27,6 +27,8 @@ class ActionException(Exception):
 
 
 class Connection(object):
+    '''FIXME: leaking queues
+    '''
     def __init__(self, url, creds):
         self.url = url
         self.creds = creds
@@ -243,9 +245,32 @@ class Connection(object):
         msg = data['body']['message']  # FIXME data missing / error handling ?
         return msg
 
+    async def adminCloseConnection(self, connectionId):
+        pdu = {
+            "action": "admin/close_connection",
+            "id": next(self.idIterator),
+            "body": {
+                "connection_id": connectionId
+            }
+        }
+        data = await self.send(pdu)
+        return data.get('body', {}).get('success', False)
+
+    async def adminGetConnections(self):
+        pdu = {
+            "action": "admin/get_connections",
+            "id": next(self.idIterator),
+            "body": {}
+        }
+        data = await self.send(pdu)
+
+        try:
+            return data.get('body', {}).get('connections')
+        except Exception as e:
+            raise ValueError(f'rpc/admin/get_connections_count failure {e}')
+
     async def close(self):
         await self.websocket.close()
         close_status = websockets.exceptions.format_close(self.websocket.close_code,
                                                           self.websocket.close_reason)
         return close_status
-

@@ -448,18 +448,71 @@ async def handleUnSubscribe(state: ConnectionState, ws, app: Dict,
     task.cancel()
 
 
-async def closeAll(state: ConnectionState, app: Dict, params: JsonDict):
+#
+# Admin operations
+#
+async def handleAdminGetConnections(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                                    serializedPdu: bytes):
+    action = pdu['action']
+    connections = list(app['connections'].keys())
+
+    response = {
+        "action": f"{action}/ok",
+        "id": pdu.get('id', 1),
+        "body": {
+            'connections': connections
+        }
+    }
+    await respond(state, ws, app, response)
+
+
+async def handleAdminCloseConnection(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                                     serializedPdu: bytes):
+
+    action = pdu['action']
+    body = pdu.get('body', {})
+    targetConnectionId = body.get('connection_id')
+
+    if targetConnectionId is None:
+        errMsg = f'Missing connection id'
+        logging.warning(errMsg)
+        response = {
+            "action": f"{action}/error",
+            "id": pdu.get('id', 1),
+            "body": {
+                "error": errMsg
+            }
+        }
+        await respond(state, ws, app, response)
+        return
+
     websocketLists = []
     for connectionId, (state, websocket) in app['connections'].items():
-        if connectionId != state.connection_id:
-            websocketLists.append(websocket)
+        if connectionId == targetConnectionId:
+            await websocket.close()
+            found = True
 
-    for ws in websocketLists:
-        await ws.close()  # should this be shielded ?
+    if not found:
+        errMsg = f'Cannot find connection id'
+        logging.warning(errMsg)
+        response = {
+            "action": f"{action}/error",
+            "id": pdu.get('id', 1),
+            "body": {
+                "error": errMsg
+            }
+        }
+        await respond(state, ws, app, response)
+        return
 
-    return {'status': 'ok'}
+    response = {
+        "action": f"{action}/ok",
+        "id": pdu.get('id', 1),
+        "body": {}
+    }
+    await respond(state, ws, app, response)
 
-
+# FIXME
 async def toggleFileLogging(state: ConnectionState, app: Dict,
                             params: JsonDict):
     found = False
@@ -471,39 +524,17 @@ async def toggleFileLogging(state: ConnectionState, app: Dict,
     return {'found': found, 'params': params}
 
 
-# FIXME: make sure that 'write' commands are coming from 'localhost'
-async def handleAdminRpc(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                         serializedPdu: bytes):
-    body = pdu.get('body', {})
-    method = body.get('method')
-    params = body.get('params', {})
+# FIXME
+async def closeAll(state: ConnectionState, app: Dict, params: JsonDict):
+    websocketLists = []
+    for connectionId, (state, websocket) in app['connections'].items():
+        if connectionId != state.connection_id:
+            websocketLists.append(websocket)
 
-    methods = {'close_all': closeAll, 'toggle_file_logging': toggleFileLogging}
+    for ws in websocketLists:
+        await ws.close()  # should this be shielded ?
 
-    if method is None or method not in methods:
-        errMsg = f'Invalid method'
-        logging.warning(errMsg)
-        response = {
-            "action": "rpc/admin/error",
-            "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
-        }
-        await respond(state, ws, app, response)
-        return
-
-    func = methods.get(method)  # lookup callback
-    response = await func(state, app, params)  # execute it
-
-    responseBody = {"data": response}
-
-    response = {
-        "action": "rpc/admin/ok",
-        "id": pdu.get('id', 1),
-        "body": responseBody
-    }
-    await respond(state, ws, app, response)
+    return {'status': 'ok'}  # FIXME: return bool
 
 
 # FIXME error handling
@@ -587,9 +618,15 @@ async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
 def validatePermissions(permissions, action):
     group, sep, verb = action.partition('/')
-    if group != 'rtm' or sep != '/':
+
+    if group == 'admin':
+        return 'admin' in permissions
+
+    if group == 'auth':
         return True
 
+    # FIXME: ugly that unsubscribe is the only rtm action that does not have
+    # its own permission
     if verb == 'unsubscribe':
         return True
     
@@ -605,7 +642,8 @@ ACTION_HANDLERS_LUT = {
     'rtm/unsubscribe': handleUnSubscribe,
     'rtm/read': handleRead,
     'rtm/write': handleWrite,
-    'rpc/admin': handleAdminRpc
+    'admin/close_connection': handleAdminCloseConnection,
+    'admin/get_connections': handleAdminGetConnections
 }
 
 
