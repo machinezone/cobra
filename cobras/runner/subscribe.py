@@ -22,7 +22,7 @@ DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={PUBSUB_APPKEY}'
 
 
 class MessageHandlerClass:
-    def __init__(self, websockets, args):
+    def __init__(self, connection, args):
         self.cnt = 0
         self.cntPerSec = 0
         self.throttle = Throttle(seconds=1)
