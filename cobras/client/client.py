@@ -3,6 +3,7 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import logging
 import asyncio
 import functools
 import itertools
@@ -14,10 +15,14 @@ import websockets
 from cobras.client.connection import Connection, AuthException, HandshakeException, ActionException
 
 
-async def client(url, creds, clientCallback):
+async def client(url, creds, clientCallback, waitTime=None):
     '''Main client. Does authenticate then invoke the clientCallback which
     takes control.
     '''
+
+    # Wait 1 second by default before retrying to connect after an error
+    if waitTime is None:
+        waitTime = 1
 
     while True:
         try:
@@ -26,33 +31,40 @@ async def client(url, creds, clientCallback):
             return await clientCallback(connection)
 
         except TimeoutError as e:
-            click.secho(str(e), fg='red')
-            await asyncio.sleep(1)
+            logging.error(e)
+            await asyncio.sleep(waitTime)
             pass
         except ConnectionRefusedError as e:
-            click.secho(str(e), fg='red')
-            await asyncio.sleep(1)
+            logging.error(e)
+            await asyncio.sleep(waitTime)
             pass
         except ConnectionResetError as e:
-            click.secho(str(e), fg='red')
-            await asyncio.sleep(1)
+            logging.error(e)
+            await asyncio.sleep(waitTime)
             pass
-        except websockets.exceptions.ConnectionClosed as e:
-            click.secho(str(e), fg='red')
-            await asyncio.sleep(1)
+        except websockets.exceptions.ConnectionClosedOK as e:
+            logging.error(e)
+            await asyncio.sleep(waitTime)
+            pass
+        except websockets.exceptions.ConnectionClosedError as e:
+            logging.error(e)
+            await asyncio.sleep(waitTime)
             pass
         except OSError as e:
-            click.secho(str(e), fg='red')
-            await asyncio.sleep(1)
+            logging.error(e)
+            await asyncio.sleep(waitTime)
             pass
         except AuthException as e:
-            click.secho(str(e), fg='red')
-            await asyncio.sleep(1)
+            logging.error(e)
+            await asyncio.sleep(waitTime)
             pass
         except ActionException as e:
-            click.secho(str(e), fg='red')
-            await asyncio.sleep(1)
+            logging.error(e)
+            await asyncio.sleep(waitTime)
             pass
+        finally:
+            msg = 'Recovering and creating a new connection'
+            logging.info(msg)
 
 
 async def subscribeHandler(connection, **args):
@@ -73,7 +85,7 @@ async def subscribeHandler(connection, **args):
 
 
 async def subscribeClient(url, credentials, channel, position, fsqlFilter,
-                          messageHandlerClass, messageHandlerArgs):
+                          messageHandlerClass, messageHandlerArgs, waitTime=None):
     subscribeHandlerPartial = functools.partial(
         subscribeHandler,
         channel=channel,
@@ -82,7 +94,7 @@ async def subscribeClient(url, credentials, channel, position, fsqlFilter,
         messageHandlerClass=messageHandlerClass,
         messageHandlerArgs=messageHandlerArgs)
 
-    ret = await client(url, credentials, subscribeHandlerPartial)
+    ret = await client(url, credentials, subscribeHandlerPartial, waitTime)
     return ret
 
 
