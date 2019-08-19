@@ -82,7 +82,7 @@ Commands:
 To run the server use `cobra run`. You can run a health-check against the server with `cobra health`.
 
 ```
-cobra health --url 'ws://cobra.jeanserge.com/v2?appkey=_health' --secret A5a3BdEfbc6Df5AAFFcadE7F9Dd7F17E --role health
+cobra health --url 'ws://jeanserge.com/v2?appkey=_health' --secret A5a3BdEfbc6Df5AAFFcadE7F9Dd7F17E --role health
 ```
 
 ## bavarde
