@@ -6,65 +6,56 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import asyncio
 import functools
 import json
+import logging
 
 import click
 import uvloop
 
-from cobras.client.client import client
+from cobras.client.connection import Connection
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                        getDefaultSecretForApp)
-from cobras.common.apps_config import ADMIN_APPKEY
+from cobras.common.apps_config import ADMIN_APPKEY, getDefaultPort
 from cobras.common.superuser import preventRootUsage
 
-DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={ADMIN_APPKEY}'
+DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={ADMIN_APPKEY}'
 
 
-async def clientCallback(websocket, **args):
-    method = args['method']
-    params = args.get('params')
-    params = json.loads(params)
+async def adminCoroutine(url, creds, action, connectionId):
 
-    pdu = {
-        "action": "rpc/admin",
-        "id": 1,
-        "body": {
-            "method": method,
-            "params": params
-        }
-    }
+    connection = Connection(url, creds)
+    try:
+        await connection.connect()
+    except Exception as e:
+        logging.error(f'Error connecting: {e}')
+        return
 
-    await websocket.send(json.dumps(pdu))
+    if action == 'get_connections':
+        openedConnections = await connection.adminGetConnections()
+        print(f'#{len(openedConnections)} connection(s)')
+        for connection in openedConnections:
+            print(f'\t{connection}')
 
-    response = await websocket.recv()
-    print(response)
-
-
-async def start(url, credentials, method, params):
-    callback = functools.partial(clientCallback,
-                                 method=method,
-                                 params=params)
-
-    task = asyncio.create_task(client(url, credentials, callback))
-    await task
+    elif action == 'disconnect':
+        await connection.adminCloseConnection(connectionId)
 
 
-@click.command()
 @click.option('--url', default=DEFAULT_URL)
 @click.option('--role', default=getDefaultRoleForApp('admin'))
 @click.option('--secret', default=getDefaultSecretForApp('admin'))
-@click.option('--method', default='close_all')
-@click.option('--params', default='{}')
-def admin(url, role, secret, method, params):
-    '''Admin
+@click.option('--action', default='get_connections')
+@click.option('--connection_id')
+@click.command()
+def admin(url, role, secret, action, connection_id):
+    '''Execute admin operations on the server
 
     \b
-    cobra admin --method toggle_file_logging --params '{"connection_id": ".."}'
+    cobra admin --action disconnect --connection_id 3919dc67
     '''
-
     preventRootUsage()
     uvloop.install()
 
     credentials = createCredentials(role, secret)
 
     asyncio.get_event_loop().run_until_complete(
-        start(url, credentials, method, params))
+        adminCoroutine(url, credentials, action, connection_id))
+

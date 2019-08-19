@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [1.5.2] - 2019-08-18
 
+- (client) New admin command argument handling. Run `cobra admin --help` to see available admin actions.
+- (client) All command handle COBRA_PORT, so they will function properly in a docker environment, when hitting a local server with a non default port (!= 8765), through docker exec.
 - (server) Add admin command to disconnect just one connection
 - (server) Add admin command to retrieve all connection ids.
 

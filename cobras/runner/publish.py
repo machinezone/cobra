@@ -20,7 +20,7 @@ from cobras.client.client import client
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                        getDefaultSecretForApp)
 from cobras.client.publish import computeEventTimeDeltas
-from cobras.common.apps_config import PUBSUB_APPKEY
+from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
 from cobras.common.superuser import preventRootUsage
 
 root = os.path.dirname(os.path.realpath(__file__))
@@ -31,7 +31,7 @@ DEFAULT_BATCH_PATH = os.path.join(dataDir, 'niso_events.tar.bz')
 # Default channel when pushing from redis
 DEFAULT_CHANNEL = 'sms_republished_v1_neo'
 
-DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={PUBSUB_APPKEY}'
+DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={PUBSUB_APPKEY}'
 
 
 async def sendEvent(connection, channel, event, connectionId):

@@ -9,10 +9,10 @@ import uvloop
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                        getDefaultSecretForApp)
 from cobras.client.monitor import runMonitor
-from cobras.common.apps_config import STATS_APPKEY
+from cobras.common.apps_config import STATS_APPKEY, getDefaultPort
 from cobras.common.superuser import preventRootUsage
 
-DEFAULT_URL = f'ws://127.0.0.1:8765/v2?appkey={STATS_APPKEY}'
+DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={STATS_APPKEY}'
 
 
 @click.command()

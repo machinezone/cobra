@@ -178,6 +178,10 @@ def getDefaultAppsConfigPath():
     return str(path)
 
 
+def getDefaultPort():
+    return os.getenv('COBRA_PORT', 8765)
+
+
 def generateNonce():
     bits = getrandbits(64)
     return base64.b64encode(bytearray(str(bits), 'utf8')).decode('ascii')
