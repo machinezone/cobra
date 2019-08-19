@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.5.2] - 2019-08-18
 
+- (server) Add admin command to disconnect just one connection
 - (server) Add admin command to retrieve all connection ids.
 
 ## [1.5.1] - 2019-08-18

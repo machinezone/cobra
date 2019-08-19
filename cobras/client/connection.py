@@ -33,6 +33,7 @@ class Connection(object):
         self.url = url
         self.creds = creds
         self.idIterator = itertools.count()
+        self.connectionId = None
 
         # different queues per action kind or instances
         self.queues = collections.defaultdict(asyncio.Queue)
@@ -58,6 +59,9 @@ class Connection(object):
         }
 
         response = await self.send(handshake)
+
+        self.connectionId = response['body']['data']['connection_id']
+
         nonce = bytearray(response['body']['data']['nonce'], 'utf8')
         secret = bytearray(self.creds['secret'], 'utf8')
 
@@ -253,8 +257,7 @@ class Connection(object):
                 "connection_id": connectionId
             }
         }
-        data = await self.send(pdu)
-        return data.get('body', {}).get('success', False)
+        await self.send(pdu)
 
     async def adminGetConnections(self):
         pdu = {

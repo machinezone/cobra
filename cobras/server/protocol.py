@@ -468,7 +468,6 @@ async def handleAdminGetConnections(state: ConnectionState, ws, app: Dict, pdu: 
 
 async def handleAdminCloseConnection(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
                                      serializedPdu: bytes):
-
     action = pdu['action']
     body = pdu.get('body', {})
     targetConnectionId = body.get('connection_id')
@@ -486,10 +485,11 @@ async def handleAdminCloseConnection(state: ConnectionState, ws, app: Dict, pdu:
         await respond(state, ws, app, response)
         return
 
+    found = False
     websocketLists = []
     for connectionId, (state, websocket) in app['connections'].items():
         if connectionId == targetConnectionId:
-            await websocket.close()
+            targetWebSocket = websocket
             found = True
 
     if not found:
@@ -505,12 +505,15 @@ async def handleAdminCloseConnection(state: ConnectionState, ws, app: Dict, pdu:
         await respond(state, ws, app, response)
         return
 
+    await targetWebSocket.close()
+
     response = {
         "action": f"{action}/ok",
         "id": pdu.get('id', 1),
         "body": {}
     }
     await respond(state, ws, app, response)
+
 
 # FIXME
 async def toggleFileLogging(state: ConnectionState, app: Dict,
@@ -524,7 +527,29 @@ async def toggleFileLogging(state: ConnectionState, app: Dict,
     return {'found': found, 'params': params}
 
 
-# FIXME
+# FIXME (should close current connection)
+async def handleAdminCloseAllConnection(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
+                                        serializedPdu: bytes):
+    action = pdu['action']
+
+    websocketLists = []
+    for connectionId, (state, websocket) in app['connections'].items():
+        if connectionId != state.connection_id:
+            websocketLists.append(websocket)
+
+    for ws in websocketLists:
+        await ws.close()  # should this be shielded ?
+
+    await targetWebSocket.close()
+
+    response = {
+        "action": f"{action}/ok",
+        "id": pdu.get('id', 1),
+        "body": {}
+    }
+    await respond(state, ws, app, response)
+
+
 async def closeAll(state: ConnectionState, app: Dict, params: JsonDict):
     websocketLists = []
     for connectionId, (state, websocket) in app['connections'].items():

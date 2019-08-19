@@ -34,11 +34,10 @@ async def clientCoroutine(connection, connectionToBeClosed):
     openedConnections = await connection.adminGetConnections()
     assert len(openedConnections) == 2
 
-    # success = await connection.adminCloseConnection(connectionToBeClosed.connectionId)
-    # assert success
+    await connection.adminCloseConnection(connectionToBeClosed.connectionId)
 
-    # openedConnections = await connection.adminGetConnections()
-    # assert len(openedConnections) == 1
+    openedConnections = await connection.adminGetConnections()
+    assert len(openedConnections) == 1
 
     await connection.close()
 
