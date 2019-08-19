@@ -62,9 +62,6 @@ async def client(url, creds, clientCallback, waitTime=None):
             logging.error(e)
             await asyncio.sleep(waitTime)
             pass
-        finally:
-            msg = 'Recovering and creating a new connection'
-            logging.info(msg)
 
 
 async def subscribeHandler(connection, **args):

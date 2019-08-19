@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.5.3] - 2019-08-19
+
+- (client) reconnect wait time can be parameterized, still default to 1 second
+
 ## [1.5.2] - 2019-08-18
 
 - (client) New admin command argument handling. Run `cobra admin --help` to see available admin actions.
