@@ -131,7 +131,7 @@ async def runClient(url, role, secret, channel, position, stream_sql, verbose,
             if incoming in done:
                 try:
                     (message, position) = incoming.result()
-                except websockets.ConnectionClosed:
+                except websockets.exceptions.ConnectionClosed:
                     break
                 else:
                     data = message.get('data', {})
