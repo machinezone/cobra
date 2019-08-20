@@ -11,6 +11,7 @@ from typing import Dict
 
 from cobras.client.client import subscribeClient, unsafeSubcribeClient
 from cobras.client.connection import Connection
+from cobras.client.connection import ActionFlow
 from cobras.client.credentials import createCredentials
 from cobras.common.apps_config import HEALTH_APPKEY
 
@@ -51,9 +52,9 @@ def healthCheck(url, role, secret, channel, retry=False):
         async def on_init(self):
             await self.connection.publish(self.channel, self.content)
 
-        async def handleMsg(self, message: Dict, position: str) -> bool:
+        async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
             self.parsedMessage = message
-            return False
+            return ActionFlow.STOP
 
     credentials = createCredentials(role, secret)
 

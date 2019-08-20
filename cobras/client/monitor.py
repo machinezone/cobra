@@ -13,6 +13,7 @@ import click
 import tabulate
 
 from cobras.client.client import subscribeClient
+from cobras.client.connection import ActionFlow
 from cobras.common.algorithm import transpose
 from cobras.common.throttle import Throttle
 from cobras.server.stats import DEFAULT_STATS_CHANNEL
@@ -58,7 +59,7 @@ class MessageHandlerClass:
     def shouldProcessNode(self, node):
         return 'subscriber' in node if self.subscribers else True
 
-    async def handleMsg(self, message: Dict, position: str) -> bool:
+    async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
 
         data = message
         node = data['node']
@@ -111,7 +112,7 @@ class MessageHandlerClass:
                 self.nodeEntriesHeader = nodeEntryHeaders
 
         if self.throttle.exceedRate():
-            return True
+            return ActionFlow.CONTINUE
 
         click.clear()
         # print(yaml.dump(data))
@@ -143,7 +144,7 @@ class MessageHandlerClass:
             self.displayRoleMetrics()
 
         self.resetMetrics()
-        return True
+        return ActionFlow.CONTINUE
 
     def updateRoleMetrics(self, cobraData):
         '''Collect data per role'''

@@ -22,6 +22,7 @@ import websockets
 from websockets.exceptions import format_close
 
 from cobras.client.client import subscribeClient
+from cobras.client.connection import ActionFlow
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                        getDefaultSecretForApp)
 from cobras.common.throttle import Throttle
@@ -95,9 +96,9 @@ class MessageHandlerClass:
         '''Get a connection to the DB'''
         print('Ready to receive messages')
 
-    async def handleMsg(self, message: dict, position: str) -> bool:
+    async def handleMsg(self, message: dict, position: str) -> ActionFlow:
         self.q.put_nowait((message, position))
-        return True
+        return ActionFlow.CONTINUE
 
 
 async def runClient(url, role, secret, channel, position, stream_sql, verbose,

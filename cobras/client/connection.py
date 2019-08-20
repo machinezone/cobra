@@ -218,10 +218,10 @@ class Connection(object):
 
             ret = await messageHandler.handleMsg(message, position)
 
-            if resumeFromLastPositionId: # and ret == ActionFlow.SAVE_POSITION:
+            if resumeFromLastPositionId and ret == ActionFlow.SAVE_POSITION:
                 await self.write(resumeFromLastPositionId, position)
 
-            if not ret:
+            if ret == ActionFlow.STOP:
                 break
 
         self.deleteQueue(actionId)

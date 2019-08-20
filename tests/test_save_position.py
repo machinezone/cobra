@@ -51,18 +51,17 @@ class MessageHandlerClass:
         self.args['ids'].append(message['iteration'])
 
         if message['iteration'] == 99:
-            return False
-            # return ActionFlow.STOP
+            return ActionFlow.STOP
 
         logging.info(f'{message} at position {position}')
 
         if self.throttle.exceedRate():
-            return True
+            return ActionFlow.SAVE_POSITION
 
         print(f"#messages {self.cnt} msg/s {self.cntPerSec}")
         self.cntPerSec = 0
 
-        return True
+        return ActionFlow.SAVE_POSITION
 
 
 def startSubscriber(url, credentials, channel, resumeFromLastPositionId):

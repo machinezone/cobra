@@ -12,6 +12,7 @@ import click
 import uvloop
 
 from cobras.client.client import subscribeClient
+from cobras.client.connection import ActionFlow
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                        getDefaultSecretForApp)
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
@@ -30,19 +31,19 @@ class MessageHandlerClass:
     async def on_init(self):
         pass
 
-    async def handleMsg(self, message: Dict, position: str) -> bool:
+    async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
         self.cnt += 1
         self.cntPerSec += 1
 
         logging.info(f'{message} at position {position}')
 
         if self.throttle.exceedRate():
-            return True
+            return ActionFlow.CONTINUE
 
         print(f"#messages {self.cnt} msg/s {self.cntPerSec}")
         self.cntPerSec = 0
 
-        return True
+        return ActionFlow.CONTINUE
 
 
 @click.command()
