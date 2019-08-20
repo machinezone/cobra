@@ -28,14 +28,11 @@ dev_requires = [
     'yapf'
 ]
 
-tests_require = [
-    'pytest',
-    'pytest-cov'
-    'pytest-xdist'
-]
-
 with open('requirements.txt') as f:
     install_requires = f.read().splitlines()
+
+with open('requirements_test.txt') as f:
+    tests_requires = f.read().splitlines()
 
 setup(
     name='cobras',
@@ -50,7 +47,7 @@ setup(
     zip_safe=False,
     install_requires=install_requires,
     extras_require={
-        'tests': tests_require,
+        'tests': tests_requires,
         'dev': dev_requires
     },
     license='BSD 3',

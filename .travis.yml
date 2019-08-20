@@ -5,9 +5,10 @@ python:
 install:
   - pip install -U pip
   - pip install -r requirements.txt
+  - pip install -r requirements_test.txt
   - pip install -e .
   - pip install "file://`pwd`#egg=cobra[dev]"
-  - pip install pytest coverage pytest-cov pytest-xdist codecov
+
 script:
   - pytest -n 4 --cov=cobras --cov-report=xml tests/
   - codecov
