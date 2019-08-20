@@ -186,7 +186,7 @@ class Connection(object):
             try:
                 position = await self.read(resumeFromLastPositionId)
             except Exception as e:
-                logging.warning('Cannot retrieve last position id for {resumeFromLastPositionId}: {e}')
+                logging.warning(f'Cannot retrieve last position id for {resumeFromLastPositionId}- Error: {e}')
                 pass
 
         pdu = {

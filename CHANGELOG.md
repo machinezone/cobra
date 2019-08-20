@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.3] - 2019-08-20
+
+### Fixed
+
+- (client) subscribe: when erroring while retrieving last position, the error message is lost
+
 ## [1.6.2] - 2019-08-20
 
 ### Fixed
