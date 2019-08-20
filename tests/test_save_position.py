@@ -16,7 +16,7 @@ from cobras.client.health_check import (getDefaultHealthCheckHttpUrl,
                                         getDefaultHealthCheckUrl, healthCheck)
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.client.credentials import createCredentials
-from cobras.client.connection import Connection
+from cobras.client.connection import Connection, ActionFlow
 from cobras.client.client import subscribeClient
 from cobras.common.throttle import Throttle
 
@@ -38,24 +38,23 @@ class MessageHandlerClass:
         self.cntPerSec = 0
         self.throttle = Throttle(seconds=1)
         self.connection = connection
+        self.args = args
 
     async def on_init(self):
         pass
 
-    async def handleMsg(self, message: Dict, position: str) -> bool:
+    async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
         self.cnt += 1
         self.cntPerSec += 1
 
+        self.args['total'] += 1
+        self.args['ids'].append(message['iteration'])
+
         if message['iteration'] == 99:
             return False
+            # return ActionFlow.STOP
 
         logging.info(f'{message} at position {position}')
-
-        # Ultimately, save last message properly processed. 
-        # We'd need a transaction here of some sort, to roll back 
-        # all the previous stuff in case of a failure.
-        savedPositionId = 'saved_position'
-        await self.connection.write(savedPositionId, position)
 
         if self.throttle.exceedRate():
             return True
@@ -66,15 +65,19 @@ class MessageHandlerClass:
         return True
 
 
-def startSubscriber(url, credentials, channel):
+def startSubscriber(url, credentials, channel, resumeFromLastPositionId):
     # fetch last position first
     position = '$'
     stream_sql = None
-    waitTime = 0.001
+    waitTime = 0.1
+
+    args = {"total": 0, "ids": []}
 
     subscriberTask = asyncio.get_event_loop().create_task(
         subscribeClient(url, credentials, channel, position, stream_sql,
-                        MessageHandlerClass, {}, waitTime))
+                        MessageHandlerClass, args, waitTime,
+                        resumeFromLastPosition=True,
+                        resumeFromLastPositionId=resumeFromLastPositionId))
 
     return subscriberTask
 
@@ -92,8 +95,12 @@ async def disconnectSubscriptionConnection(connection):
 async def clientCoroutine(connection, channel, subscriberTask):
     await connection.connect()
 
+    # wait 100ms so that the subscriber is ready.
+    # FIXME: the subscriber should notify this coro instead
+    await asyncio.sleep(0.1)
+
     for i in range(100):
-        if i in (25, 50, 75):
+        if i == 50:
             await disconnectSubscriptionConnection(connection)
 
         # publish one message
@@ -107,7 +114,8 @@ async def clientCoroutine(connection, channel, subscriberTask):
     await asyncio.sleep(0.1)
     subscriberTask.cancel()
     messageHandler = subscriberTask.result()
-    assert messageHandler.cnt == 100
+
+    assert messageHandler.args['total'] == 100
 
 
 def test_save_position(runner):
@@ -122,8 +130,10 @@ def test_save_position(runner):
     connection = Connection(url, creds)
     connectionToBeClosed = Connection(url, creds)
 
-    channel = 'test_save_position_channel::' + uuid.uuid4().hex
-    subscriberTask = startSubscriber(url, creds, channel)
+    uniqueId = uuid.uuid4().hex[:8]
+    channel = 'test_save_position_channel::' + uniqueId
+    resumeFromLastPositionId = 'last_position_id::' + uniqueId
+    subscriberTask = startSubscriber(url, creds, channel, resumeFromLastPositionId)
 
     asyncio.get_event_loop().run_until_complete(clientCoroutine(connection,
                                                                 channel,

@@ -72,31 +72,39 @@ async def subscribeHandler(connection, **args):
     messageHandlerArgs = args['messageHandlerArgs']
     subscriptionId = args.get('subscription_id', channel)
     messageHandlerArgs['subscription_id'] = subscriptionId
+    resumeFromLastPosition = args['resumeFromLastPosition']
+    resumeFromLastPositionId = args['resumeFromLastPositionId']
 
     return await connection.subscribe(channel,
                                       position,
                                       fsqlFilter,
                                       messageHandlerClass,
                                       messageHandlerArgs,
-                                      subscriptionId)
+                                      subscriptionId,
+                                      resumeFromLastPosition,
+                                      resumeFromLastPositionId)
 
 
 async def subscribeClient(url, credentials, channel, position, fsqlFilter,
-                          messageHandlerClass, messageHandlerArgs, waitTime=None):
+                          messageHandlerClass, messageHandlerArgs, waitTime=None,
+                          resumeFromLastPosition=False, resumeFromLastPositionId=None):
     subscribeHandlerPartial = functools.partial(
         subscribeHandler,
         channel=channel,
         position=position,
         fsqlFilter=fsqlFilter,
         messageHandlerClass=messageHandlerClass,
-        messageHandlerArgs=messageHandlerArgs)
+        messageHandlerArgs=messageHandlerArgs,
+        resumeFromLastPosition=resumeFromLastPosition,
+        resumeFromLastPositionId=resumeFromLastPositionId)
 
     ret = await client(url, credentials, subscribeHandlerPartial, waitTime)
     return ret
 
 
 async def unsafeSubcribeClient(url, credentials, channel, position, fsqlFilter,
-                               messageHandlerClass, messageHandlerArgs):
+                               messageHandlerClass, messageHandlerArgs,
+                               resumeFromLastPosition=False, resumeFromLastPositionId=None):
     '''
     No retry or exception handling
     Used by the health check, where we want to die hard and fast if there's a problem
@@ -108,7 +116,9 @@ async def unsafeSubcribeClient(url, credentials, channel, position, fsqlFilter,
                                          fsqlFilter,
                                          messageHandlerClass,
                                          messageHandlerArgs,
-                                         subscriptionId=channel)
+                                         subscriptionId=channel,
+                                         resumeFromLastPosition=resumeFromLastPosition,
+                                         resumeFromLastPositionId=resumeFromLastPositionId)
     return message
 
 

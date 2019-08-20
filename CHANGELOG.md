@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.0] - 2019-08-19
+
+### New feature
+
+- (client) subscription can save and restore positions internally, so that no published events are missed in case a subscription trips up
+
+### Fixed
+
+- (client) in the connection class, remove queues used for events that have already been received from the server
+
 ## [1.5.3] - 2019-08-19
 
 - (client) reconnect wait time can be parameterized, still default to 1 second

@@ -8,6 +8,7 @@ import itertools
 import json
 import collections
 import logging
+from enum import Flag, auto
 
 import websockets
 
@@ -24,6 +25,12 @@ class HandshakeException(Exception):
 
 class ActionException(Exception):
     pass
+
+
+class ActionFlow(Flag):
+    CONTINUE = auto()
+    STOP = auto()
+    SAVE_POSITION = auto()
 
 
 class Connection(object):
@@ -110,12 +117,15 @@ class Connection(object):
         q = self.queues[action]
         return q
 
+    def deleteQueue(self, action):
+        del self.queues[action]
+
     def computeDefaultActionId(self, pdu):
         action = pdu['action']
         actionId = f'{action}::' + str(pdu['id'])
         return actionId
 
-    async def getActionResponse(self, actionId):
+    async def getActionResponse(self, actionId, retainQueue=False):
         '''
         This could be as simple as:
             data = await self.getQueue(actionId).get()
@@ -135,6 +145,10 @@ class Connection(object):
 
         if incoming in done:
             data = incoming.result()
+
+            if not retainQueue:
+                self.deleteQueue(actionId)
+
             return data
 
         if self.stop in done:
@@ -164,7 +178,17 @@ class Connection(object):
                         fsqlFilter,
                         messageHandlerClass,
                         messageHandlerArgs,
-                        subscriptionId):
+                        subscriptionId,
+                        resumeFromLastPosition=False,
+                        resumeFromLastPositionId=None):
+
+        if resumeFromLastPosition:
+            try:
+                position = await self.read(resumeFromLastPositionId)
+            except Exception as e:
+                logging.warning('Cannot retrieve last position id for {resumeFromLastPositionId}: {e}')
+                pass
+
         pdu = {
             "action": "rtm/subscribe",
             "id": next(self.idIterator),
@@ -187,14 +211,20 @@ class Connection(object):
         actionId = 'rtm/subscription::' + subscriptionId
 
         while True:
-            data = await self.getActionResponse(actionId)
+            data = await self.getActionResponse(actionId, retainQueue=True)
 
             message = data['body']['messages'][0]
             position = data['body']['position']
 
             ret = await messageHandler.handleMsg(message, position)
+
+            if resumeFromLastPositionId: # and ret == ActionFlow.SAVE_POSITION:
+                await self.write(resumeFromLastPositionId, position)
+
             if not ret:
                 break
+
+        self.deleteQueue(actionId)
 
         try:
             await self.unsubscribe(subscriptionId)

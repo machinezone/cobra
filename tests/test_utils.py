@@ -22,7 +22,7 @@ def makeRunner(debugMemory=False):
     redisUrls = 'redis://localhost'
     redisPassword = None
     plugins = 'republish'
-    enableStats = True
+    enableStats = False
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause
 

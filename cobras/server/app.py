@@ -170,8 +170,9 @@ class AppRunner():
 
     async def cleanup(self):
         # FIXME: we could speed this up
-        self.app['stats'].terminate()
-        await self.serverStatsTask
+        if self.enableStats:
+            self.app['stats'].terminate()
+            await self.serverStatsTask
 
         if self.app.get('memory_debugger'):
             self.app['memory_debugger'].terminate()
