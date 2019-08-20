@@ -6,7 +6,6 @@
 [![License](https://img.shields.io/pypi/l/cobras.svg)](https://img.shields.io/pypi/l/cobras)
 [![Wheel](https://img.shields.io/pypi/wheel/cobras.svg)](https://img.shields.io/pypi/wheel/cobras)
 [![codecov](https://codecov.io/gh/machinezone/cobra/branch/master/graph/badge.svg)](https://codecov.io/gh/machinezone/cobra)
-[![GitHub Issues](https://img.shields.io/github/issues/cobras.svg)](https://img.shields.io/github/issues/cobras)
 
 Cobra is a realtime messaging server using Python3, WebSockets and Redis Streams. It was presented in great details during [RedisConf 2019](https://events.redislabs.com/redis-conf/redis-conf-2019/).
 
