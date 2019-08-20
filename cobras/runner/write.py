@@ -4,12 +4,13 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import asyncio
+import logging
 
 import click
 import uvloop
 
 # from cobras.client.kv_store import readClient
-from cobras.client.connection import Connection
+from cobras.client.connection import Connection, ActionException
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                        getDefaultSecretForApp)
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
@@ -36,7 +37,13 @@ def write(url, role, secret, channel, data):
     async def handler(url, credentials, channel, data):
         connection = Connection(url, credentials)
         await connection.connect()
-        await connection.write(channel, data)
+
+        try:
+            await connection.write(channel, data)
+        except ActionException as e:
+            logging.error(f'Action error: {e}')
+            return
+
         await connection.close()
 
     asyncio.get_event_loop().run_until_complete(handler(url, credentials, channel, data))

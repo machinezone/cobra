@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.2] - 2019-08-20
+
+### Fixed
+
+- (client+server) read / write operations are handled gracefully when redis cannot be reached by the server
+
 ## [1.6.0] - 2019-08-19
 
 ### New feature

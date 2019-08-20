@@ -4,12 +4,13 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import asyncio
+import logging
 
 import click
 import uvloop
 
 # from cobras.client.kv_store import readClient
-from cobras.client.connection import Connection
+from cobras.client.connection import Connection, ActionException
 from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
                                        getDefaultSecretForApp)
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
@@ -36,7 +37,13 @@ def read(url, role, secret, channel, position):
     async def handler(url, credentials, channel, position):
         connection = Connection(url, credentials)
         await connection.connect()
-        data = await connection.read(channel, position)
+
+        try:
+            data = await connection.read(channel, position)
+        except ActionException as e:
+            logging.error(f'Action error: {e}')
+            return
+
         await connection.close()
         print()
         print(f'handler received message {data}')

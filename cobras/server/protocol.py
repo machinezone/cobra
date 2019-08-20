@@ -575,8 +575,21 @@ async def handleRead(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
     redisConnections = RedisConnections(app['redis_urls'],
                                         app['redis_password'])
 
-    message = await kvStoreRead(redisConnections, appChannel, position,
-                                state.log)
+    try:
+        message = await kvStoreRead(redisConnections, appChannel, position,
+                                    state.log)
+    except Exception as e:
+        errMsg = f'write: cannot connect to redis {e}'
+        logging.warning(errMsg)
+        response = {
+            "action": "rtm/read/error",
+            "id": pdu.get('id', 1),
+            "body": {
+                "error": errMsg
+            }
+        }
+        await respond(state, ws, app, response)
+        return
 
     # Correct path
     response = {
@@ -625,10 +638,24 @@ async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
     message = pdu['body']['message']
 
     appkey = state.appkey
-    pipelinedPublisher = \
-        await app['pipelined_publishers'].get(appkey, channel)
 
-    await pipelinedPublisher.publishNow((appkey, channel, json.dumps(message)))
+    try:
+        pipelinedPublisher = \
+            await app['pipelined_publishers'].get(appkey, channel)
+
+        await pipelinedPublisher.publishNow((appkey, channel, json.dumps(message)))
+    except Exception as e:
+        errMsg = f'write: cannot connect to redis {e}'
+        logging.warning(errMsg)
+        response = {
+            "action": "rtm/write/error",
+            "id": pdu.get('id', 1),
+            "body": {
+                "error": errMsg
+            }
+        }
+        await respond(state, ws, app, response)
+        return
 
     # Stats
     app['stats'].updateWrites(state.role, len(serializedPdu))

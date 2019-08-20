@@ -43,10 +43,6 @@ async def kvStoreRead(redisConnections: RedisConnections, pattern: str,
         logger('Cancelling redis subscription')
         raise
 
-    except Exception as e:
-        logger(e)
-        logger('Generic Exception caught in {}'.format(traceback.format_exc()))
-
     finally:
         # When finished, close the connection.
         connection.close()
