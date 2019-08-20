@@ -14,3 +14,4 @@ script:
   - codecov
 services:
   - redis-server
+cache: pip
