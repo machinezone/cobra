@@ -126,7 +126,7 @@ class Connection(object):
         This could be as simple as:
             data = await self.getQueue(actionId).get()
 
-        Unfortunately we need to handle exception in the 
+        Unfortunately we need to handle exception in the
         'fetch response coroutine' so that we can rethrow them here
         '''
         incoming = asyncio.ensure_future(self.getQueue(actionId).get())
