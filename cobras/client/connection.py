@@ -59,7 +59,6 @@ class Connection(object):
 
         handshake = {
             "action": "auth/handshake",
-            "id": next(self.idIterator),
             "body": {"data": {"role": role}, "method": "role_secret"},
         }
 
@@ -72,7 +71,6 @@ class Connection(object):
 
         challenge = {
             "action": "auth/authenticate",
-            "id": next(self.idIterator),
             "body": {
                 "method": "role_secret",
                 "credentials": {"hash": computeHash(secret, nonce)},
@@ -152,6 +150,10 @@ class Connection(object):
             raise self.stop.result()
 
     async def send(self, pdu):
+        # Set the message id
+        pdu["id"] = next(self.idIterator)
+
+        # Compute the action id
         actionId = self.computeDefaultActionId(pdu)
 
         data = json.dumps(pdu)
@@ -192,7 +194,6 @@ class Connection(object):
 
         pdu = {
             "action": "rtm/subscribe",
-            "id": next(self.idIterator),
             "body": {
                 "subscription_id": subscriptionId,
                 "channel": channel,
@@ -238,7 +239,6 @@ class Connection(object):
     async def unsubscribe(self, subscriptionId):
         pdu = {
             "action": "rtm/unsubscribe",
-            "id": next(self.idIterator),
             "body": {"subscription_id": subscriptionId},
         }
         await self.send(pdu)
@@ -246,7 +246,6 @@ class Connection(object):
     async def publish(self, channel, msg):
         pdu = {
             "action": "rtm/publish",
-            "id": next(self.idIterator),
             "body": {"channel": channel, "message": msg},
         }
         await self.send(pdu)
@@ -254,7 +253,6 @@ class Connection(object):
     async def write(self, channel, msg):
         pdu = {
             "action": "rtm/write",
-            "id": next(self.idIterator),
             "body": {"channel": channel, "message": msg},
         }
         await self.send(pdu)
@@ -262,7 +260,6 @@ class Connection(object):
     async def read(self, channel, position=None):
         pdu = {
             "action": "rtm/read",
-            "id": next(self.idIterator),
             "body": {"channel": channel},
         }
         data = await self.send(pdu)
@@ -273,7 +270,6 @@ class Connection(object):
     async def delete(self, channel):
         pdu = {
             "action": "rtm/delete",
-            "id": next(self.idIterator),
             "body": {"channel": channel},
         }
         await self.send(pdu)
@@ -281,7 +277,6 @@ class Connection(object):
     async def adminCloseConnection(self, connectionId):
         pdu = {
             "action": "admin/close_connection",
-            "id": next(self.idIterator),
             "body": {"connection_id": connectionId},
         }
         await self.send(pdu)
@@ -289,7 +284,6 @@ class Connection(object):
     async def adminGetConnections(self):
         pdu = {
             "action": "admin/get_connections",
-            "id": next(self.idIterator),
             "body": {},
         }
         data = await self.send(pdu)
