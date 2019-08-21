@@ -17,7 +17,6 @@ from cobras.client.credentials import (
     getDefaultSecretForApp,
 )
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
-from cobras.common.superuser import preventRootUsage
 
 DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={PUBSUB_APPKEY}'
 
@@ -32,7 +31,6 @@ def read(url, role, secret, channel, position):
     '''Read to the cobra key value store
     '''
 
-    preventRootUsage()
     uvloop.install()
 
     credentials = createCredentials(role, secret)

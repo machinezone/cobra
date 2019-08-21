@@ -18,7 +18,6 @@ from cobras.client.credentials import (
     getDefaultSecretForApp,
 )
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
-from cobras.common.superuser import preventRootUsage
 from cobras.common.throttle import Throttle
 
 DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={PUBSUB_APPKEY}'
@@ -66,7 +65,6 @@ def subscribe(
     '''Subscribe to a channel
     '''
 
-    preventRootUsage()
     uvloop.install()
 
     credentials = createCredentials(role, secret)

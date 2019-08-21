@@ -24,7 +24,6 @@ from cobras.client.credentials import (
 )
 from cobras.client.publish import computeEventTimeDeltas
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
-from cobras.common.superuser import preventRootUsage
 
 root = os.path.dirname(os.path.realpath(__file__))
 dataDir = os.path.join(root, '..', 'data')
@@ -150,7 +149,6 @@ def publish(
     '''Publish to a channel
     '''
 
-    preventRootUsage()
     uvloop.install()
 
     if batch:

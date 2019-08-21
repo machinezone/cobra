@@ -16,7 +16,6 @@ from cobras.client.credentials import (
     getDefaultSecretForApp,
 )
 from cobras.common.apps_config import ADMIN_APPKEY, getDefaultPort
-from cobras.common.superuser import preventRootUsage
 
 DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={ADMIN_APPKEY}'
 
@@ -52,7 +51,6 @@ def admin(url, role, secret, action, connection_id):
     \b
     cobra admin --action disconnect --connection_id 3919dc67
     '''
-    preventRootUsage()
     uvloop.install()
 
     credentials = createCredentials(role, secret)

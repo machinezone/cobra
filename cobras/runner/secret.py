@@ -6,7 +6,6 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import click
 
 from cobras.common.apps_config import genSecret
-from cobras.common.superuser import preventRootUsage
 
 
 @click.command()
@@ -17,8 +16,6 @@ def secret():
     \b
     cobra secret
     '''
-
-    preventRootUsage()
 
     secret = genSecret()
     print(secret)

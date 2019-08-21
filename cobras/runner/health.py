@@ -17,7 +17,6 @@ from cobras.client.health_check import (
     getDefaultHealthCheckUrl,
     healthCheck,
 )
-from cobras.common.superuser import preventRootUsage
 
 
 @click.option('--url', default=getDefaultHealthCheckUrl())
@@ -37,7 +36,6 @@ def health(url, http_url, http, role, secret, channel, retry):
     cobra health --http --http_url 'http://127.0.0.1:8765/health/'
     \b
     '''
-    preventRootUsage()
     uvloop.install()
 
     if http:

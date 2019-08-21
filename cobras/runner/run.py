@@ -12,7 +12,6 @@ import sentry_sdk
 import uvloop
 
 from cobras.common.apps_config import getDefaultAppsConfigPath, generateAppsConfig
-from cobras.common.superuser import preventRootUsage
 from cobras.server.app import AppRunner
 
 
@@ -73,7 +72,6 @@ def run(
     if prod:
         os.environ['COBRA_PROD'] = '1'
 
-    preventRootUsage()
     uvloop.install()
 
     if sentry and sentry_url:

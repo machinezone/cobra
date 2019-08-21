@@ -12,7 +12,6 @@ from cobras.client.credentials import (
     getDefaultSecretForApp,
 )
 from cobras.client.monitor import runMonitor, getDefaultMonitorUrl
-from cobras.common.superuser import preventRootUsage
 
 
 @click.command()
@@ -32,7 +31,6 @@ def monitor(
     '''Monitor cobra
     '''
 
-    preventRootUsage()
     uvloop.install()
 
     credentials = createCredentials(role, secret)
