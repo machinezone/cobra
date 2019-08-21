@@ -57,7 +57,11 @@ async def redisSubscriber(
         logging.error(f"subcriber: cannot connect to redis {e}")
         connection = None
 
-    await messageHandler.on_init(connection)
+    try:
+        await messageHandler.on_init(connection)
+    except Exception as e:
+        logging.error(f"subcriber: cannot initialize message handler: {e}")
+        connection = None
 
     if connection is None:
         return messageHandler

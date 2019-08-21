@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.5] - 2019-08-20
+
+### Changed
+
+- (server) breaking protocol.py mega file into small ones
+
 ## [1.6.4] - 2019-08-20
 
 ### Changed
