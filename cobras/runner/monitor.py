@@ -26,7 +26,16 @@ from cobras.client.monitor import runMonitor, getDefaultMonitorUrl
 @click.option('--system', is_flag=True)
 @click.option('--once', is_flag=True)
 def monitor(
-    url, role, secret, raw, role_filter, hide_nodes, hide_roles, subscribers, system, once
+    url,
+    role,
+    secret,
+    raw,
+    role_filter,
+    hide_nodes,
+    hide_roles,
+    subscribers,
+    system,
+    once,
 ):
     '''Monitor cobra
     '''

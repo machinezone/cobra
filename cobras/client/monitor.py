@@ -201,7 +201,7 @@ class MessageHandlerClass:
 
 
 def runMonitor(
-    url, credentials, raw, roleFilter, showNodes, showRoles, subscribers, system, once,
+    url, credentials, raw, roleFilter, showNodes, showRoles, subscribers, system, once
 ):
     position = None
 

@@ -237,41 +237,26 @@ class Connection(object):
         return messageHandler
 
     async def unsubscribe(self, subscriptionId):
-        pdu = {
-            "action": "rtm/unsubscribe",
-            "body": {"subscription_id": subscriptionId},
-        }
+        pdu = {"action": "rtm/unsubscribe", "body": {"subscription_id": subscriptionId}}
         await self.send(pdu)
 
     async def publish(self, channel, msg):
-        pdu = {
-            "action": "rtm/publish",
-            "body": {"channel": channel, "message": msg},
-        }
+        pdu = {"action": "rtm/publish", "body": {"channel": channel, "message": msg}}
         await self.send(pdu)
 
     async def write(self, channel, msg):
-        pdu = {
-            "action": "rtm/write",
-            "body": {"channel": channel, "message": msg},
-        }
+        pdu = {"action": "rtm/write", "body": {"channel": channel, "message": msg}}
         await self.send(pdu)
 
     async def read(self, channel, position=None):
-        pdu = {
-            "action": "rtm/read",
-            "body": {"channel": channel},
-        }
+        pdu = {"action": "rtm/read", "body": {"channel": channel}}
         data = await self.send(pdu)
 
         msg = data['body']['message']  # FIXME data missing / error handling ?
         return msg
 
     async def delete(self, channel):
-        pdu = {
-            "action": "rtm/delete",
-            "body": {"channel": channel},
-        }
+        pdu = {"action": "rtm/delete", "body": {"channel": channel}}
         await self.send(pdu)
 
     async def adminCloseConnection(self, connectionId):
@@ -282,10 +267,7 @@ class Connection(object):
         await self.send(pdu)
 
     async def adminGetConnections(self):
-        pdu = {
-            "action": "admin/get_connections",
-            "body": {},
-        }
+        pdu = {"action": "admin/get_connections", "body": {}}
         data = await self.send(pdu)
 
         try:
