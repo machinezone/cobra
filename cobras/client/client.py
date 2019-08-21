@@ -15,14 +15,17 @@ import websockets
 from cobras.client.connection import Connection, AuthException, HandshakeException, ActionException
 
 
+DEFAULT_CLIENT_WAIT_TIME = 1
+
+
 async def client(url, creds, clientCallback, waitTime=None):
     '''Main client. Does authenticate then invoke the clientCallback which
     takes control.
     '''
 
-    # Wait 1 second by default before retrying to connect after an error
+    # Wait N seconds by default before retrying to connect after an error
     if waitTime is None:
-        waitTime = 1
+        waitTime = DEFAULT_CLIENT_WAIT_TIME
 
     while True:
         try:

@@ -27,6 +27,7 @@ class MessageHandlerClass:
         self.cnt = 0
         self.cntPerSec = 0
         self.throttle = Throttle(seconds=1)
+        self.args = args
 
     async def on_init(self):
         pass
@@ -40,10 +41,13 @@ class MessageHandlerClass:
         if self.throttle.exceedRate():
             return ActionFlow.CONTINUE
 
-        print(f"#messages {self.cnt} msg/s {self.cntPerSec}")
+        print(f"position {position} #messages {self.cnt} msg/s {self.cntPerSec}")
         self.cntPerSec = 0
 
-        return ActionFlow.CONTINUE
+        if self.args['resume_from_last_position']:
+            return ActionFlow.SAVE_POSITION
+        else:
+            return ActionFlow.CONTINUE
 
 
 @click.command()
@@ -53,7 +57,9 @@ class MessageHandlerClass:
 @click.option('--channel', default='sms_republished_v1_neo')
 @click.option('--position')
 @click.option('--stream_sql')
-def subscribe(url, role, secret, channel, position, stream_sql):
+@click.option('--resume_from_last_position', is_flag=True)
+def subscribe(url, role, secret, channel, position,
+              stream_sql, resume_from_last_position):
     '''Subscribe to a channel
     '''
 
@@ -62,6 +68,14 @@ def subscribe(url, role, secret, channel, position, stream_sql):
 
     credentials = createCredentials(role, secret)
 
+    resumeFromLastPositionId = ''
+    if resume_from_last_position:
+        resumeFromLastPositionId = f'{channel}::{stream_sql}'
+
     asyncio.get_event_loop().run_until_complete(
         subscribeClient(url, credentials, channel, position, stream_sql,
-                        MessageHandlerClass, {}))
+                        MessageHandlerClass, {
+                            'resume_from_last_position': resume_from_last_position
+                        },
+                        resumeFromLastPosition=resume_from_last_position,
+                        resumeFromLastPositionId=resumeFromLastPositionId))

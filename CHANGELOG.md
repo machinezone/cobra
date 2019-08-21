@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.4] - 2019-08-20
+
+### Changed
+
+- (client) subscribe command: new --resume_from_last_position to start subscription where it was left of previously
+- (server) write operations sets stream max length to be 1 entry only to keep that stream small
+
 ## [1.6.3] - 2019-08-20
 
 ### Fixed
@@ -70,6 +77,7 @@ tests/test_throttle.py .                                                        
 tests/test_validate_redis_position.py .                                                   [100%]
 
 ================================== 37 passed in 15.00 seconds ===================================```
+```
 
 ## [1.5.0] - 2019-08-16
 ### Changed

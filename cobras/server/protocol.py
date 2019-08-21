@@ -643,7 +643,8 @@ async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         pipelinedPublisher = \
             await app['pipelined_publishers'].get(appkey, channel)
 
-        await pipelinedPublisher.publishNow((appkey, channel, json.dumps(message)))
+        await pipelinedPublisher.publishNow((appkey, channel, json.dumps(message)),
+                                            maxLen=1)
     except Exception as e:
         errMsg = f'write: cannot connect to redis {e}'
         logging.warning(errMsg)

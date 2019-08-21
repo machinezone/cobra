@@ -8,6 +8,7 @@ Weird leaks https://bugs.python.org/issue31620
 '''
 
 import asyncio
+from typing import Optional
 
 
 class PipelinedPublisher():
@@ -36,17 +37,20 @@ class PipelinedPublisher():
     def enqueue(self, job):
         self.queue.put_nowait(job)
 
-    def publish(self, pipe, job):
+    def publish(self, pipe, job, maxLen: Optional[int] = None):
+        if maxLen is None:
+            maxLen = self.xaddMaxLength
+
         appkey, channel, data = job
         appChannel = '{}::{}'.format(appkey, channel)
         pipe.xadd(appChannel, {'json': data},
                   max_len=self.xaddMaxLength,
                   exact_len=False)
 
-    async def publishNow(self, job):
+    async def publishNow(self, job, maxLen: Optional[int] = None):
         async with self.lock:
             pipe = self.redis.pipeline()
-            self.publish(pipe, job)
+            self.publish(pipe, job, maxLen)
             await pipe.execute()
 
     async def push(self, job, batchPublish=False):
