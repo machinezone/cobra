@@ -3,29 +3,26 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
-import asyncio
 import base64
-import itertools
-import json
 import logging
 from typing import Dict
 from urllib.parse import parse_qs, urlparse
 
 import ujson
-import websockets
 
 from cobras.common.cobra_types import JsonDict
 from cobras.server.handlers.auth import handleHandshake, handleAuth
-from cobras.server.handlers.pubsub import handlePublish, handleSubscribe, handleUnSubscribe
-from cobras.server.handlers.kv_store import handleRead, handleWrite
-from cobras.server.handlers.admin import handleAdminGetConnections, handleAdminCloseConnection
-from cobras.server.connection_state import ConnectionState
-from cobras.server.redis_connections import RedisConnections
-from cobras.server.redis_subscriber import (
-    RedisSubscriberMessageHandlerClass,
-    redisSubscriber,
-    validatePosition,
+from cobras.server.handlers.pubsub import (
+    handlePublish,
+    handleSubscribe,
+    handleUnSubscribe,
 )
+from cobras.server.handlers.kv_store import handleRead, handleWrite
+from cobras.server.handlers.admin import (
+    handleAdminGetConnections,
+    handleAdminCloseConnection,
+)
+from cobras.server.connection_state import ConnectionState
 
 
 async def badFormat(state: ConnectionState, ws, app: Dict, reason: str):
