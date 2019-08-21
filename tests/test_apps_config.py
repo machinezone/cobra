@@ -25,16 +25,15 @@ def test_answer():
     with pytest.raises(KeyError):
         appsConfig.getRoleSecret('C1bD8A3F2Da58C43F0CBB357fe9c5b9a', 'blah')
 
-    secret = appsConfig.getRoleSecret('eeeeeeeeeeeeeeeeffffffffffffffff',
-                                      'client_publisher')
+    secret = appsConfig.getRoleSecret(
+        'eeeeeeeeeeeeeeeeffffffffffffffff', 'client_publisher'
+    )
     assert secret == b'ggggggggggggggggggghhhhhhhhhhhhH'
 
-    batchPublish = appsConfig.isBatchPublishEnabled(
-        'AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB')
+    batchPublish = appsConfig.isBatchPublishEnabled('AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB')
     assert not batchPublish
 
-    batchPublish = appsConfig.isBatchPublishEnabled(
-        'eeeeeeeeeeeeeeeeffffffffffffffff')
+    batchPublish = appsConfig.isBatchPublishEnabled('eeeeeeeeeeeeeeeeffffffffffffffff')
     assert batchPublish
 
 

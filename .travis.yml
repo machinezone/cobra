@@ -10,6 +10,7 @@ install:
   - pip install "file://`pwd`#egg=cobra[dev]"
 
 script:
+  - make flake
   - pytest -n 4 --cov=cobras --cov-report=xml tests/
   - codecov
 services:

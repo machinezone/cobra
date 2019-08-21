@@ -7,13 +7,16 @@ import tempfile
 
 import pytest
 
-from cobras.client.credentials import (getDefaultRoleForApp,
-                                       getDefaultSecretForApp)
-from cobras.client.health_check import (getDefaultHealthCheckHttpUrl,
-                                        getDefaultHealthCheckUrl, healthCheck)
+from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
+from cobras.client.health_check import (
+    getDefaultHealthCheckHttpUrl,
+    getDefaultHealthCheckUrl,
+    healthCheck,
+)
 from cobras.common.memory_debugger import MemoryDebugger
 
 from .test_utils import makeRunner
+
 
 @pytest.fixture()
 def runner():

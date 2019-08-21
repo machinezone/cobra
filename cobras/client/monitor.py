@@ -74,8 +74,7 @@ class MessageHandlerClass:
 
                 if self.system:
                     skip = False
-                    for keyName in ('published', 'subscribed',
-                                    'subscriptions'):
+                    for keyName in ('published', 'subscribed', 'subscriptions'):
                         if keyName in key:
                             skip = True
                     if skip:
@@ -118,8 +117,7 @@ class MessageHandlerClass:
         # print(yaml.dump(data))
 
         self.metrics = {
-            key: self.humanReadableSize(key, val)
-            for key, val in self.metrics.items()
+            key: self.humanReadableSize(key, val) for key, val in self.metrics.items()
         }
 
         print(writeJson(self.metrics))
@@ -135,10 +133,7 @@ class MessageHandlerClass:
             nodeEntries = transpose(nodeEntries)
 
         if self.showNodes:
-            print(
-                tabulate.tabulate(nodeEntries,
-                                  tablefmt="simple",
-                                  headers="firstrow"))
+            print(tabulate.tabulate(nodeEntries, tablefmt="simple", headers="firstrow"))
 
         if self.showRoles:
             self.displayRoleMetrics()
@@ -193,17 +188,25 @@ class MessageHandlerClass:
         print(tabulate.tabulate(rows, tablefmt="simple", headers="firstrow"))
 
 
-def runMonitor(url, credentials, raw, roleFilter, showNodes, showRoles,
-               subscribers, system):
+def runMonitor(
+    url, credentials, raw, roleFilter, showNodes, showRoles, subscribers, system
+):
     position = None
     asyncio.get_event_loop().run_until_complete(
         subscribeClient(
-            url, credentials, DEFAULT_STATS_CHANNEL, position, '',
-            MessageHandlerClass, {
+            url,
+            credentials,
+            DEFAULT_STATS_CHANNEL,
+            position,
+            '',
+            MessageHandlerClass,
+            {
                 'raw': raw,
                 'role_filter': roleFilter,
                 'show_nodes': showNodes,
                 'show_roles': showRoles,
                 'subscribers': subscribers,
-                'system': system
-            }))
+                'system': system,
+            },
+        )
+    )

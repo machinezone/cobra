@@ -10,10 +10,12 @@ from typing import Dict
 
 import pytest
 
-from cobras.client.credentials import (getDefaultRoleForApp,
-                                       getDefaultSecretForApp)
-from cobras.client.health_check import (getDefaultHealthCheckHttpUrl,
-                                        getDefaultHealthCheckUrl, healthCheck)
+from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
+from cobras.client.health_check import (
+    getDefaultHealthCheckHttpUrl,
+    getDefaultHealthCheckUrl,
+    healthCheck,
+)
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.client.credentials import createCredentials
 from cobras.client.connection import Connection, ActionFlow
@@ -73,10 +75,19 @@ def startSubscriber(url, credentials, channel, resumeFromLastPositionId):
     args = {"total": 0, "ids": []}
 
     subscriberTask = asyncio.get_event_loop().create_task(
-        subscribeClient(url, credentials, channel, position, stream_sql,
-                        MessageHandlerClass, args, waitTime,
-                        resumeFromLastPosition=True,
-                        resumeFromLastPositionId=resumeFromLastPositionId))
+        subscribeClient(
+            url,
+            credentials,
+            channel,
+            position,
+            stream_sql,
+            MessageHandlerClass,
+            args,
+            waitTime,
+            resumeFromLastPosition=True,
+            resumeFromLastPositionId=resumeFromLastPositionId,
+        )
+    )
 
     return subscriberTask
 
@@ -134,6 +145,6 @@ def test_save_position(runner):
     resumeFromLastPositionId = 'last_position_id::' + uniqueId
     subscriberTask = startSubscriber(url, creds, channel, resumeFromLastPositionId)
 
-    asyncio.get_event_loop().run_until_complete(clientCoroutine(connection,
-                                                                channel,
-                                                                subscriberTask))
+    asyncio.get_event_loop().run_until_complete(
+        clientCoroutine(connection, channel, subscriberTask)
+    )

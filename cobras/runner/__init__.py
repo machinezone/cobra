@@ -2,6 +2,8 @@
    Calls into sub commands like git.
 
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
+
+# flake8: noqa
 '''
 
 from pkgutil import walk_packages

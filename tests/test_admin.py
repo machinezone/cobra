@@ -7,10 +7,12 @@ import tempfile
 
 import pytest
 
-from cobras.client.credentials import (getDefaultRoleForApp,
-                                       getDefaultSecretForApp)
-from cobras.client.health_check import (getDefaultHealthCheckHttpUrl,
-                                        getDefaultHealthCheckUrl, healthCheck)
+from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
+from cobras.client.health_check import (
+    getDefaultHealthCheckHttpUrl,
+    getDefaultHealthCheckUrl,
+    healthCheck,
+)
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.client.credentials import createCredentials
 from cobras.client.connection import Connection
@@ -54,5 +56,6 @@ def test_admin_disconnect_one(runner):
     connection = Connection(url, creds)
     connectionToBeClosed = Connection(url, creds)
 
-    asyncio.get_event_loop().run_until_complete(clientCoroutine(connection,
-                                                                connectionToBeClosed))
+    asyncio.get_event_loop().run_until_complete(
+        clientCoroutine(connection, connectionToBeClosed)
+    )

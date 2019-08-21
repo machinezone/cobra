@@ -4,13 +4,11 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import asyncio
-import json
 import uuid
 import os
 from typing import Dict
 
 from cobras.client.client import subscribeClient, unsafeSubcribeClient
-from cobras.client.connection import Connection
 from cobras.client.connection import ActionFlow
 from cobras.client.credentials import createCredentials
 from cobras.common.apps_config import HEALTH_APPKEY
@@ -41,6 +39,7 @@ def getDefaultHealthCheckUrl(host=None, port=None):
 
 def healthCheck(url, role, secret, channel, retry=False):
     '''Perform a health check'''
+
     class MessageHandlerClass:
         def __init__(self, connection, args):
             self.connection = connection
@@ -62,11 +61,8 @@ def healthCheck(url, role, secret, channel, retry=False):
     magicNumber = 666
     refAndroidId = uuid.uuid4().hex
     content = {
-        'device': {
-            'game': 'test',
-            'android_id': refAndroidId
-        },
-        'magic': magicNumber
+        'device': {'game': 'test', 'android_id': refAndroidId},
+        'magic': magicNumber,
     }
 
     fsqlFilter = f"""select magic,device.android_id
@@ -76,23 +72,28 @@ def healthCheck(url, role, secret, channel, retry=False):
                          magic = {magicNumber}
     """
 
-    messageHandlerArgs = {
-        'channel': channel,
-        'content': content
-    }
+    messageHandlerArgs = {'channel': channel, 'content': content}
 
     handler = unsafeSubcribeClient
     if retry:
         handler = subscribeClient
 
     messageHandler = asyncio.get_event_loop().run_until_complete(
-        handler(url, credentials, channel, position, fsqlFilter,
-                MessageHandlerClass, messageHandlerArgs))
+        handler(
+            url,
+            credentials,
+            channel,
+            position,
+            fsqlFilter,
+            MessageHandlerClass,
+            messageHandlerArgs,
+        )
+    )
 
     message = messageHandler.parsedMessage
 
     if message.get('device.android_id') != refAndroidId:
-        raise ValueError(f'incorrect android_id: {data}')
+        raise ValueError(f'incorrect android_id: {message}')
 
     if magicNumber != message['magic']:
-        raise ValueError(f'incorrect magic: {data}')
+        raise ValueError(f'incorrect magic: {message}')

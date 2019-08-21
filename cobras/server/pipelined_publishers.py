@@ -9,9 +9,10 @@ from cobras.server.pipelined_publisher import PipelinedPublisher
 from cobras.server.redis_connections import RedisConnections
 
 
-class PipelinedPublishers():
-    def __init__(self, redisConnections: RedisConnections,
-                 batchPublishSize: int) -> None:
+class PipelinedPublishers:
+    def __init__(
+        self, redisConnections: RedisConnections, batchPublishSize: int
+    ) -> None:
         self.redisConnections = redisConnections
         self.pipelinedPublishers: dict = {}
         self.batchPublishSize: int = batchPublishSize
@@ -31,8 +32,7 @@ class PipelinedPublishers():
         appChannel = '{}::{}'.format(appkey, channel)
 
         # Constraint B
-        key = '{}::{}'.format(appkey,
-                              self.redisConnections.hashChannel(appChannel))
+        key = '{}::{}'.format(appkey, self.redisConnections.hashChannel(appChannel))
 
         async with self.lock:
             pipelinedPublisher = self.pipelinedPublishers.get(key)

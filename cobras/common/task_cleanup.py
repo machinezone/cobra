@@ -20,10 +20,12 @@ def addTaskCleanup(task):
             capture_exception(e)
 
             # Normal exception business
-            asyncio.get_event_loop().call_exception_handler({
-                'message': 'Unhandled exception in async future',
-                'future': fut,
-                'exception': e,
-            })
+            asyncio.get_event_loop().call_exception_handler(
+                {
+                    'message': 'Unhandled exception in async future',
+                    'future': fut,
+                    'exception': e,
+                }
+            )
 
     task.add_done_callback(exception_logging_done_cb)

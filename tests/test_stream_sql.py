@@ -176,15 +176,11 @@ def test_different_operand():
         'data': {
             'essential': False,
             'file_count': 17,
-            'description': 'content_sync_oops'
+            'description': 'content_sync_oops',
         }
     }
     miss = {
-        'data': {
-            'essential': True,
-            'file_count': 15,
-            'description': 'content_sync'
-        }
+        'data': {'essential': True, 'file_count': 15, 'description': 'content_sync'}
     }
 
     assert match_stream_sql_filter(sql_filter, hit)
@@ -194,16 +190,8 @@ def test_different_operand():
 def test_larger_than_operand():
     sql_filter = """SELECT * from `blah` WHERE data.file_count > 16
                  """
-    hit = {
-        'data': {
-            'file_count': 17,
-        }
-    }
-    miss = {
-        'data': {
-            'file_count': 15,
-        }
-    }
+    hit = {'data': {'file_count': 17}}
+    miss = {'data': {'file_count': 15}}
 
     assert match_stream_sql_filter(sql_filter, hit)
     assert not match_stream_sql_filter(sql_filter, miss)
@@ -212,67 +200,30 @@ def test_larger_than_operand():
 def test_select_with_subfields_1():
     sql_filter = """SELECT device.app_version from `blah`
                  """
-    hit = {
-        'data': {
-            'file_count': 17,
-        },
-        'device': {
-            'app_version': '4.3.2',
-        }
-    }
-    miss = {
-        'data': {
-            'file_count': 15,
-        }
-    }
+    hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
+    miss = {'data': {'file_count': 15}}
 
-    assert {
-        "device.app_version": "4.3.2"
-    } == match_stream_sql_filter(sql_filter, hit)
+    assert {"device.app_version": "4.3.2"} == match_stream_sql_filter(sql_filter, hit)
 
 
 def test_select_with_subfields_2():
     sql_filter = """SELECT device.app_version from `blah` WHERE data.file_count > 16
                  """
-    hit = {
-        'data': {
-            'file_count': 17,
-        },
-        'device': {
-            'app_version': '4.3.2',
-        }
-    }
-    miss = {
-        'data': {
-            'file_count': 15,
-        }
-    }
+    hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
+    miss = {'data': {'file_count': 15}}
 
-    assert {
-        "device.app_version": "4.3.2"
-    } == match_stream_sql_filter(sql_filter, hit)
+    assert {"device.app_version": "4.3.2"} == match_stream_sql_filter(sql_filter, hit)
     assert not match_stream_sql_filter(sql_filter, miss)
 
 
 def test_select_with_multiple_subfields():
     sql_filter = """SELECT device.app_version,data.file_count from `blah` WHERE data.file_count > 16
                  """
-    hit = {
-        'data': {
-            'file_count': 17,
-        },
-        'device': {
-            'app_version': '4.3.2',
-        }
-    }
-    miss = {
-        'data': {
-            'file_count': 15,
-        }
-    }
+    hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
+    miss = {'data': {'file_count': 15}}
 
     assert {
         "device.app_version": "4.3.2",
-        'data.file_count': 17
+        'data.file_count': 17,
     } == match_stream_sql_filter(sql_filter, hit)
     assert not match_stream_sql_filter(sql_filter, miss)

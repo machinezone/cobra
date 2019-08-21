@@ -37,17 +37,17 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def handleMsg(self, msg: dict, position: str,
-                        payloadSize: int) -> bool:
+    async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:
         return True  # pragma: no cover
 
 
 async def redisSubscriber(
-        redisConnections: RedisConnections,
-        pattern: str,
-        position: Optional[str],
-        messageHandlerClass: RedisSubscriberMessageHandlerClass,  # noqa
-        obj):
+    redisConnections: RedisConnections,
+    pattern: str,
+    position: Optional[str],
+    messageHandlerClass: RedisSubscriberMessageHandlerClass,  # noqa
+    obj,
+):
     messageHandler = messageHandlerClass(obj)
 
     try:
@@ -68,9 +68,7 @@ async def redisSubscriber(
     try:
         # wait for incoming events.
         while True:
-            results = await connection.xread([pattern],
-                                             timeout=0,
-                                             latest_ids=[lastId])
+            results = await connection.xread([pattern], timeout=0, latest_ids=[lastId])
 
             for result in results:
                 lastId = result[1]
@@ -79,8 +77,7 @@ async def redisSubscriber(
 
                 payloadSize = len(data)
                 msg = ujson.loads(data)
-                ret = await messageHandler.handleMsg(msg, lastId.decode(),
-                                                     payloadSize)
+                ret = await messageHandler.handleMsg(msg, lastId.decode(), payloadSize)
                 if not ret:
                     break
 
@@ -90,8 +87,9 @@ async def redisSubscriber(
 
     except Exception as e:
         messageHandler.log(e)
-        messageHandler.log('Generic Exception caught in {}'.format(
-            traceback.format_exc()))
+        messageHandler.log(
+            'Generic Exception caught in {}'.format(traceback.format_exc())
+        )
 
     finally:
         messageHandler.log('Closing redis subscription')
@@ -102,11 +100,13 @@ async def redisSubscriber(
         return messageHandler
 
 
-def runSubscriber(redisConnections: RedisConnections,
-                  channel: str,
-                  position: str,
-                  messageHandlerClass,
-                  obj=None):
+def runSubscriber(
+    redisConnections: RedisConnections,
+    channel: str,
+    position: str,
+    messageHandlerClass,
+    obj=None,
+):
     asyncio.get_event_loop().run_until_complete(
-        redisSubscriber(redisConnections, channel, position,
-                        messageHandlerClass, obj))
+        redisSubscriber(redisConnections, channel, position, messageHandlerClass, obj)
+    )

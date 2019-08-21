@@ -6,8 +6,11 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import click
 import uvloop
 
-from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                       getDefaultSecretForApp)
+from cobras.client.credentials import (
+    createCredentials,
+    getDefaultRoleForApp,
+    getDefaultSecretForApp,
+)
 from cobras.client.monitor import runMonitor
 from cobras.common.apps_config import STATS_APPKEY, getDefaultPort
 from cobras.common.superuser import preventRootUsage
@@ -25,8 +28,9 @@ DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={STATS_APPKEY}'
 @click.option('--subscribers', is_flag=True)
 @click.option('--role_filter')
 @click.option('--system', is_flag=True)
-def monitor(url, role, secret, raw, role_filter, hide_nodes, hide_roles,
-            subscribers, system):
+def monitor(
+    url, role, secret, raw, role_filter, hide_nodes, hide_roles, subscribers, system
+):
     '''Monitor cobra
     '''
 
@@ -34,5 +38,13 @@ def monitor(url, role, secret, raw, role_filter, hide_nodes, hide_roles,
     uvloop.install()
 
     credentials = createCredentials(role, secret)
-    runMonitor(url, credentials, raw, role_filter, not hide_nodes,
-               not hide_roles, subscribers, system)
+    runMonitor(
+        url,
+        credentials,
+        raw,
+        role_filter,
+        not hide_nodes,
+        not hide_roles,
+        subscribers,
+        system,
+    )

@@ -6,10 +6,19 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import collections
 import logging
 
-StreamSQLExpression = collections.namedtuple('StreamSQLExpression', [
-    'components', 'val', 'length', 'equalExpression', 'likeExpression',
-    'differentExpression', 'largerThanExpression', 'lowerThanExpression'
-])
+StreamSQLExpression = collections.namedtuple(
+    'StreamSQLExpression',
+    [
+        'components',
+        'val',
+        'length',
+        'equalExpression',
+        'likeExpression',
+        'differentExpression',
+        'largerThanExpression',
+        'lowerThanExpression',
+    ],
+)
 
 
 class InvalidStreamSQLError(Exception):
@@ -34,9 +43,11 @@ class StreamSqlFilter:
         # Basic validation
         tokens = [token.strip() for token in sql_filter.split()]
 
-        validSql = len(tokens) >= 4 and \
-            tokens[0].lower() == 'select' and \
-            tokens[2].lower() == 'from'
+        validSql = (
+            len(tokens) >= 4
+            and tokens[0].lower() == 'select'
+            and tokens[2].lower() == 'from'
+        )
 
         if not validSql:
             raise InvalidStreamSQLError()
@@ -126,15 +137,22 @@ class StreamSqlFilter:
                 raise InvalidStreamSQLError()
 
         components = self.jsonExpr.split('.')
-        return StreamSQLExpression(components, val, len(components),
-                                   equalExpression, likeExpression,
-                                   differentExpression, largerThanExpression,
-                                   lowerThanExpression)
+        return StreamSQLExpression(
+            components,
+            val,
+            len(components),
+            equalExpression,
+            likeExpression,
+            differentExpression,
+            largerThanExpression,
+            lowerThanExpression,
+        )
 
     def matchExpression(self, msg, expression):
         if expression.length == 2:
-            val = msg.get(expression.components[0],
-                          {}).get(expression.components[1])  # noqa
+            val = msg.get(expression.components[0], {}).get(
+                expression.components[1]
+            )  # noqa
             return self.matchOperand(val, expression)
         elif expression.length == 1:
             val = msg.get(expression.components[0])
@@ -172,15 +190,15 @@ class StreamSqlFilter:
 
         if self.andExpr:
             if not all(
-                    self.matchExpression(msg, expression)
-                    for expression in self.expressions):  # noqa
+                self.matchExpression(msg, expression) for expression in self.expressions
+            ):  # noqa
                 return False
             else:
                 return self.transform(msg)
         else:
             if not any(
-                    self.matchExpression(msg, expression)
-                    for expression in self.expressions):  # noqa
+                self.matchExpression(msg, expression) for expression in self.expressions
+            ):  # noqa
                 return False
             else:
                 return self.transform(msg)

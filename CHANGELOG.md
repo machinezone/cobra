@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 - (client) subscribe command: new --resume_from_last_position to start subscription where it was left of previously
 - (server) write operations sets stream max length to be 1 entry only to keep that stream small
 
+### Fixed
+
+- format code with black + fix lint errors (flake8) / add linter to travis
+
 ## [1.6.3] - 2019-08-20
 
 ### Fixed

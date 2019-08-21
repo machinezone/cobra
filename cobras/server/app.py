@@ -81,6 +81,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
 
 class ServerProtocol(websockets.WebSocketServerProtocol):
     '''Used to validate appkey'''
+
     appsConfig = None
 
     async def process_request(self, path, request_headers):
@@ -93,16 +94,28 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
 
         appkey = parseAppKey(path)
         if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(
-                appkey):  # noqa
+            appkey
+        ):  # noqa
             return http.HTTPStatus.FORBIDDEN, [], b'KO\n'
 
 
-class AppRunner():
+class AppRunner:
     '''From aiohttp
     '''
-    def __init__(self, host, port, redisUrls, redisPassword, appsConfigPath,
-                 debugMemory, plugins, enableStats, maxSubscriptions,
-                 idleTimeout):
+
+    def __init__(
+        self,
+        host,
+        port,
+        redisUrls,
+        redisPassword,
+        appsConfigPath,
+        debugMemory,
+        plugins,
+        enableStats,
+        maxSubscriptions,
+        idleTimeout,
+    ):
         self.app = {}
         self.app['connections'] = {}
         self.app['apps_config_path'] = appsConfigPath
@@ -150,8 +163,7 @@ class AppRunner():
         batchPublishSize = self.app['batch_publish_size']
         redisConnections = RedisConnections(redisUrls, redisPassword)
 
-        pipelinedPublishers = PipelinedPublishers(redisConnections,
-                                                  batchPublishSize)
+        pipelinedPublishers = PipelinedPublishers(redisConnections, batchPublishSize)
         self.app['pipelined_publishers'] = pipelinedPublishers
 
         serverStats = ServerStats(pipelinedPublishers, STATS_APPKEY)
@@ -181,19 +193,21 @@ class AppRunner():
     async def setup(self):
         await self.init_app()
 
-        handler = functools.partial(cobraHandler,
-                                    app=self.app,
-                                    redisUrls=self.redisUrls)
+        handler = functools.partial(
+            cobraHandler, app=self.app, redisUrls=self.redisUrls
+        )
 
         ServerProtocol.appsConfig = self.app['apps_config']
 
-        self.server = await websockets.serve(handler,
-                                             self.host,
-                                             self.port,
-                                             create_protocol=ServerProtocol,
-                                             subprotocols=['json'],
-                                             ping_timeout=None,
-                                             ping_interval=None)
+        self.server = await websockets.serve(
+            handler,
+            self.host,
+            self.port,
+            create_protocol=ServerProtocol,
+            subprotocols=['json'],
+            ping_timeout=None,
+            ping_interval=None,
+        )
 
     def run(self):
         asyncio.get_event_loop().run_until_complete(self.setup())

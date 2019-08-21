@@ -21,17 +21,16 @@ with open(os.path.join(ROOT, 'DOCKER_VERSION')) as f:
 
 dev_requires = [
     'wheel',
-    'flake8',
     'isort',
     'mypy',
     'twine',
-    'yapf'
+    'black'
 ]
 
 with open('requirements.txt') as f:
     install_requires = f.read().splitlines()
 
-with open('requirements_test.txt') as f:
+with open('tests/requirements.txt') as f:
     tests_requires = f.read().splitlines()
 
 setup(

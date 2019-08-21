@@ -4,16 +4,17 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import asyncio
-import functools
-import json
 import logging
 
 import click
 import uvloop
 
 from cobras.client.connection import Connection
-from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                       getDefaultSecretForApp)
+from cobras.client.credentials import (
+    createCredentials,
+    getDefaultRoleForApp,
+    getDefaultSecretForApp,
+)
 from cobras.common.apps_config import ADMIN_APPKEY, getDefaultPort
 from cobras.common.superuser import preventRootUsage
 
@@ -57,5 +58,5 @@ def admin(url, role, secret, action, connection_id):
     credentials = createCredentials(role, secret)
 
     asyncio.get_event_loop().run_until_complete(
-        adminCoroutine(url, credentials, action, connection_id))
-
+        adminCoroutine(url, credentials, action, connection_id)
+    )

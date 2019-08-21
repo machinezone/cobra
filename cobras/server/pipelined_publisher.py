@@ -11,7 +11,7 @@ import asyncio
 from typing import Optional
 
 
-class PipelinedPublisher():
+class PipelinedPublisher:
     def __init__(self, redis, batchSize=None):
         self.redis = redis
         self.queue = asyncio.Queue()
@@ -43,9 +43,9 @@ class PipelinedPublisher():
 
         appkey, channel, data = job
         appChannel = '{}::{}'.format(appkey, channel)
-        pipe.xadd(appChannel, {'json': data},
-                  max_len=self.xaddMaxLength,
-                  exact_len=False)
+        pipe.xadd(
+            appChannel, {'json': data}, max_len=self.xaddMaxLength, exact_len=False
+        )
 
     async def publishNow(self, job, maxLen: Optional[int] = None):
         async with self.lock:

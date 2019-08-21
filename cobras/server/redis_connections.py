@@ -10,7 +10,7 @@ import aioredis
 from uhashring import HashRing
 
 
-class RedisConnections():
+class RedisConnections:
     def __init__(self, urls: str, password) -> None:
         self.urls = urls.split(';')
         self.password = password

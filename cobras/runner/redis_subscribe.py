@@ -9,8 +9,10 @@ import uvloop
 from cobras.common.superuser import preventRootUsage
 from cobras.common.throttle import Throttle
 from cobras.server.redis_connections import RedisConnections
-from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
-                                            runSubscriber)
+from cobras.server.redis_subscriber import (
+    RedisSubscriberMessageHandlerClass,
+    runSubscriber,
+)
 
 
 class MessageHandlerClass(RedisSubscriberMessageHandlerClass):
@@ -25,8 +27,7 @@ class MessageHandlerClass(RedisSubscriberMessageHandlerClass):
     async def on_init(self, redisConnection):
         pass
 
-    async def handleMsg(self, msg: str, position: str,
-                        payloadSize: int) -> bool:
+    async def handleMsg(self, msg: str, position: str, payloadSize: int) -> bool:
         self.cnt += 1
         self.cntPerSec += 1
 

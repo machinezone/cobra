@@ -9,6 +9,7 @@ from cobras.common.apps_config import AppsConfig
 from cobras.server.app import AppRunner
 
 import coloredlogs
+
 coloredlogs.install(level='INFO')
 
 
@@ -31,9 +32,17 @@ def makeRunner(debugMemory=False):
     appsConfig.generateDefaultConfig()
     os.environ['COBRA_APPS_CONFIG'] = appsConfigPath
 
-    runner = AppRunner(host, port, redisUrls, redisPassword, appsConfigPath,
-                       debugMemory, plugins, enableStats,
-                       maxSubscriptions, idleTimeout)
+    runner = AppRunner(
+        host,
+        port,
+        redisUrls,
+        redisPassword,
+        appsConfigPath,
+        debugMemory,
+        plugins,
+        enableStats,
+        maxSubscriptions,
+        idleTimeout,
+    )
     asyncio.get_event_loop().run_until_complete(runner.setup())
     return runner, appsConfigPath
-

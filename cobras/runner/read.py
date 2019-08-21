@@ -11,8 +11,11 @@ import uvloop
 
 # from cobras.client.kv_store import readClient
 from cobras.client.connection import Connection, ActionException
-from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                       getDefaultSecretForApp)
+from cobras.client.credentials import (
+    createCredentials,
+    getDefaultRoleForApp,
+    getDefaultSecretForApp,
+)
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
 from cobras.common.superuser import preventRootUsage
 
@@ -48,4 +51,6 @@ def read(url, role, secret, channel, position):
         print()
         print(f'handler received message {data}')
 
-    asyncio.get_event_loop().run_until_complete(handler(url, credentials, channel, position))
+    asyncio.get_event_loop().run_until_complete(
+        handler(url, credentials, channel, position)
+    )

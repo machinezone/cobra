@@ -36,6 +36,7 @@ class ActionFlow(Flag):
 class Connection(object):
     '''FIXME: leaking queues
     '''
+
     def __init__(self, url, creds):
         self.url = url
         self.creds = creds
@@ -53,16 +54,13 @@ class Connection(object):
         self.stop = asyncio.get_running_loop().create_future()
 
         role = self.creds['role']
+        if role is None:
+            raise ValueError('connect: Missing role')
 
         handshake = {
             "action": "auth/handshake",
             "id": next(self.idIterator),
-            "body": {
-                "data": {
-                    "role": self.creds['role']
-                },
-                "method": "role_secret"
-            }
+            "body": {"data": {"role": role}, "method": "role_secret"},
         }
 
         response = await self.send(handshake)
@@ -77,10 +75,8 @@ class Connection(object):
             "id": next(self.idIterator),
             "body": {
                 "method": "role_secret",
-                "credentials": {
-                    "hash": computeHash(secret, nonce)
-                }
-            }
+                "credentials": {"hash": computeHash(secret, nonce)},
+            },
         }
         await self.send(challenge)
 
@@ -136,8 +132,8 @@ class Connection(object):
         incoming = asyncio.ensure_future(self.getQueue(actionId).get())
 
         done, pending = await asyncio.wait(
-             [incoming, self.stop],
-             return_when=asyncio.FIRST_COMPLETED)
+            [incoming, self.stop], return_when=asyncio.FIRST_COMPLETED
+        )
 
         # Cancel pending tasks to avoid leaking them.
         if incoming in pending:
@@ -172,21 +168,26 @@ class Connection(object):
 
         return data
 
-    async def subscribe(self,
-                        channel,
-                        position,
-                        fsqlFilter,
-                        messageHandlerClass,
-                        messageHandlerArgs,
-                        subscriptionId,
-                        resumeFromLastPosition=False,
-                        resumeFromLastPositionId=None):
+    async def subscribe(
+        self,
+        channel,
+        position,
+        fsqlFilter,
+        messageHandlerClass,
+        messageHandlerArgs,
+        subscriptionId,
+        resumeFromLastPosition=False,
+        resumeFromLastPositionId=None,
+    ):
 
         if resumeFromLastPosition:
             try:
                 position = await self.read(resumeFromLastPositionId)
             except Exception as e:
-                logging.warning(f'Cannot retrieve last position id for {resumeFromLastPositionId} - Error: {e}')
+                logging.warning(
+                    'Cannot retrieve last position id for '
+                    + f'{resumeFromLastPositionId} - Error: {e}'
+                )
                 pass
 
         pdu = {
@@ -196,7 +197,7 @@ class Connection(object):
                 "subscription_id": subscriptionId,
                 "channel": channel,
                 "fast_forward": True,
-                "filter": fsqlFilter
+                "filter": fsqlFilter,
             },
         }
 
@@ -229,7 +230,7 @@ class Connection(object):
         try:
             await self.unsubscribe(subscriptionId)
         except websockets.exceptions.ConnectionClosed as e:
-            logging.warning(f"Connection is closed, cannot unsubscribe")
+            logging.warning(f"Connection is closed, cannot unsubscribe: {e}")
             pass
 
         return messageHandler
@@ -238,9 +239,7 @@ class Connection(object):
         pdu = {
             "action": "rtm/unsubscribe",
             "id": next(self.idIterator),
-            "body": {
-                "subscription_id": subscriptionId
-            }
+            "body": {"subscription_id": subscriptionId},
         }
         await self.send(pdu)
 
@@ -248,10 +247,7 @@ class Connection(object):
         pdu = {
             "action": "rtm/publish",
             "id": next(self.idIterator),
-            "body": {
-                "channel": channel,
-                "message": msg
-            }
+            "body": {"channel": channel, "message": msg},
         }
         await self.send(pdu)
 
@@ -259,10 +255,7 @@ class Connection(object):
         pdu = {
             "action": "rtm/write",
             "id": next(self.idIterator),
-            "body": {
-                "channel": channel,
-                "message": msg
-            }
+            "body": {"channel": channel, "message": msg},
         }
         await self.send(pdu)
 
@@ -270,9 +263,7 @@ class Connection(object):
         pdu = {
             "action": "rtm/read",
             "id": next(self.idIterator),
-            "body": {
-                "channel": channel,
-            }
+            "body": {"channel": channel},
         }
         data = await self.send(pdu)
 
@@ -283,9 +274,7 @@ class Connection(object):
         pdu = {
             "action": "admin/close_connection",
             "id": next(self.idIterator),
-            "body": {
-                "connection_id": connectionId
-            }
+            "body": {"connection_id": connectionId},
         }
         await self.send(pdu)
 
@@ -293,7 +282,7 @@ class Connection(object):
         pdu = {
             "action": "admin/get_connections",
             "id": next(self.idIterator),
-            "body": {}
+            "body": {},
         }
         data = await self.send(pdu)
 
@@ -304,6 +293,7 @@ class Connection(object):
 
     async def close(self):
         await self.websocket.close()
-        close_status = websockets.exceptions.format_close(self.websocket.close_code,
-                                                          self.websocket.close_reason)
+        close_status = websockets.exceptions.format_close(
+            self.websocket.close_code, self.websocket.close_reason
+        )
         return close_status

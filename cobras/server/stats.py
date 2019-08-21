@@ -13,13 +13,12 @@ import platform
 import time
 import logging
 
-from cobras.common.memory_usage import (getContainerMemoryLimit,
-                                        getProcessUsedMemory)
+from cobras.common.memory_usage import getContainerMemoryLimit, getProcessUsedMemory
 
 DEFAULT_STATS_CHANNEL = '/stats'
 
 
-class ServerStats():
+class ServerStats:
     def __init__(self, pipelinedPublishers, appkey):
         self.pipelinedPublishers = pipelinedPublishers
 
@@ -106,37 +105,43 @@ class ServerStats():
         while True:
             # Only dict-like objects are permitted in that field
             # to ease the job of aggregating them in the monitor command
-            cobraData = {
-                'subscriptions': self.subscriptions,
-            }
+            cobraData = {'subscriptions': self.subscriptions}
 
-            cobraData.update({
-                'published_count': self.publishedCount,
-                'published_bytes': self.publishedBytes,
-                'published_count_per_second': self.publishedCountByPeriod,
-                'published_bytes_per_second': self.publishedBytesByPeriod
-            })
+            cobraData.update(
+                {
+                    'published_count': self.publishedCount,
+                    'published_bytes': self.publishedBytes,
+                    'published_count_per_second': self.publishedCountByPeriod,
+                    'published_bytes_per_second': self.publishedBytesByPeriod,
+                }
+            )
 
-            cobraData.update({
-                'subscribed_count': self.subscribedCount,
-                'subscribed_bytes': self.subscribedBytes,
-                'subscribed_count_per_second': self.subscribedCountByPeriod,
-                'subscribed_bytes_per_second': self.subscribedBytesByPeriod,
-            })
+            cobraData.update(
+                {
+                    'subscribed_count': self.subscribedCount,
+                    'subscribed_bytes': self.subscribedBytes,
+                    'subscribed_count_per_second': self.subscribedCountByPeriod,
+                    'subscribed_bytes_per_second': self.subscribedBytesByPeriod,
+                }
+            )
 
-            cobraData.update({
-                'reads_count': self.readsCount,
-                'reads_bytes': self.readsBytes,
-                'reads_count_per_second': self.readsCountByPeriod,
-                'reads_bytes_per_second': self.readsBytesByPeriod
-            })
+            cobraData.update(
+                {
+                    'reads_count': self.readsCount,
+                    'reads_bytes': self.readsBytes,
+                    'reads_count_per_second': self.readsCountByPeriod,
+                    'reads_bytes_per_second': self.readsBytesByPeriod,
+                }
+            )
 
-            cobraData.update({
-                'writes_count': self.writesCount,
-                'writes_bytes': self.writesBytes,
-                'writes_count_per_second': self.writesCountByPeriod,
-                'writes_bytes_per_second': self.writesBytesByPeriod
-            })
+            cobraData.update(
+                {
+                    'writes_count': self.writesCount,
+                    'writes_bytes': self.writesBytes,
+                    'writes_count_per_second': self.writesCountByPeriod,
+                    'writes_bytes_per_second': self.writesBytesByPeriod,
+                }
+            )
 
             uptime = time.time() - self.start
             uptimeMinutes = uptime // 60
@@ -151,14 +156,13 @@ class ServerStats():
                     'system': {
                         'connections': self.connectionCount,
                         'mem_bytes': getProcessUsedMemory(),
-                        'container_memory_limit_bytes':
-                        getContainerMemoryLimit(),  # noqa
+                        'container_memory_limit_bytes': getContainerMemoryLimit(),  # noqa
                         'uptime': uptime,
                         'uptime_minutes': uptimeMinutes,
                         'tasks': len(asyncio.all_tasks()),
-                        'idle_connections': self.idleConnections
-                    }
-                }
+                        'idle_connections': self.idleConnections,
+                    },
+                },
             }
 
             data = json.dumps({'body': {'message': message}})

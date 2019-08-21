@@ -9,8 +9,10 @@ import uuid
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.server.pipelined_publisher import PipelinedPublisher
 from cobras.server.redis_connections import RedisConnections
-from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
-                                            redisSubscriber)
+from cobras.server.redis_subscriber import (
+    RedisSubscriberMessageHandlerClass,
+    redisSubscriber,
+)
 
 
 async def subscribeCoroutine():
@@ -42,8 +44,7 @@ async def subscribeCoroutine():
             self.redis.publish(self.channel, self.message)
             await self.redis.execute()
 
-        async def handleMsg(self, msg: str, position: str,
-                            payloadSize: int) -> bool:
+        async def handleMsg(self, msg: str, position: str, payloadSize: int) -> bool:
             print(f'Received message from redis at position {position}')
             message = json.dumps(msg)
             assert message == self.message
@@ -52,11 +53,14 @@ async def subscribeCoroutine():
             return False
 
     task = asyncio.create_task(
-        redisSubscriber(redisConnections, channel, None, MessageHandlerClass, {
-            'redis_urls': redisUrls,
-            'channel': channel,
-            'redis': db
-        }))
+        redisSubscriber(
+            redisConnections,
+            channel,
+            None,
+            MessageHandlerClass,
+            {'redis_urls': redisUrls, 'channel': channel, 'redis': db},
+        )
+    )
     addTaskCleanup(task)
 
     # FIXME: needs a timeout

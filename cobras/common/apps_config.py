@@ -6,7 +6,6 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import base64
 import logging
 import os
-import base64
 import tempfile
 import gzip
 import binascii
@@ -23,7 +22,7 @@ ADMIN_APPKEY = '_admin'
 PUBSUB_APPKEY = '_pubsub'
 
 
-class AppsConfig():
+class AppsConfig:
     def __init__(self, path: str) -> None:
         self.path = path
         self.data = {}
@@ -109,7 +108,7 @@ class AppsConfig():
 
             self.data['apps'][app]['roles'][role] = {
                 'secret': genSecret(),
-                'permissions': ['subscribe', 'publish', 'admin', 'read', 'write']
+                'permissions': ['subscribe', 'publish', 'admin', 'read', 'write'],
             }
 
         # write to disk

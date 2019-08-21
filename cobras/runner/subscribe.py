@@ -5,7 +5,6 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import logging
 import asyncio
-import json
 from typing import Dict
 
 import click
@@ -13,8 +12,11 @@ import uvloop
 
 from cobras.client.client import subscribeClient
 from cobras.client.connection import ActionFlow
-from cobras.client.credentials import (createCredentials, getDefaultRoleForApp,
-                                       getDefaultSecretForApp)
+from cobras.client.credentials import (
+    createCredentials,
+    getDefaultRoleForApp,
+    getDefaultSecretForApp,
+)
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
 from cobras.common.superuser import preventRootUsage
 from cobras.common.throttle import Throttle
@@ -58,8 +60,9 @@ class MessageHandlerClass:
 @click.option('--position')
 @click.option('--stream_sql')
 @click.option('--resume_from_last_position', is_flag=True)
-def subscribe(url, role, secret, channel, position,
-              stream_sql, resume_from_last_position):
+def subscribe(
+    url, role, secret, channel, position, stream_sql, resume_from_last_position
+):
     '''Subscribe to a channel
     '''
 
@@ -73,9 +76,15 @@ def subscribe(url, role, secret, channel, position,
         resumeFromLastPositionId = f'{channel}::{stream_sql}'
 
     asyncio.get_event_loop().run_until_complete(
-        subscribeClient(url, credentials, channel, position, stream_sql,
-                        MessageHandlerClass, {
-                            'resume_from_last_position': resume_from_last_position
-                        },
-                        resumeFromLastPosition=resume_from_last_position,
-                        resumeFromLastPositionId=resumeFromLastPositionId))
+        subscribeClient(
+            url,
+            credentials,
+            channel,
+            position,
+            stream_sql,
+            MessageHandlerClass,
+            {'resume_from_last_position': resume_from_last_position},
+            resumeFromLastPosition=resume_from_last_position,
+            resumeFromLastPositionId=resumeFromLastPositionId,
+        )
+    )

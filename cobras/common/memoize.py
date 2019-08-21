@@ -6,8 +6,10 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 def memoize(f):
     """Memoization decorator for functions taking one or more arguments."""
+
     class Memodict(dict):
         '''Helper class derived from dict'''
+
         def __init__(self, f):
             '''Constructor'''
 

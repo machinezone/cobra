@@ -24,8 +24,11 @@ from cobras.common.version import getVersion
 from cobras.server.connection_state import ConnectionState
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.redis_kv_store import kvStoreRead
-from cobras.server.redis_subscriber import (RedisSubscriberMessageHandlerClass,
-                                            redisSubscriber, validatePosition)
+from cobras.server.redis_subscriber import (
+    RedisSubscriberMessageHandlerClass,
+    redisSubscriber,
+    validatePosition,
+)
 from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 
 
@@ -39,8 +42,9 @@ async def respond(state: ConnectionState, ws, app: Dict, data: JsonDict):
         logging.warning(f'Trying to write in a closed connection: {e}')
 
 
-async def handleAuth(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                     serializedPdu: bytes):
+async def handleAuth(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     try:
         secret = app['apps_config'].getRoleSecret(state.appkey, state.role)
     except KeyError:
@@ -53,7 +57,7 @@ async def handleAuth(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         state.log(f'server hash {serverHash}')
         state.log(f'client hash {clientHash}')
 
-        success = (clientHash == serverHash)
+        success = clientHash == serverHash
         if not success:
             reason = 'challenge_failed'
 
@@ -65,17 +69,13 @@ async def handleAuth(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         }
 
         state.authenticated = True
-        state.permissions = app['apps_config'].getPermissions(
-            state.appkey, state.role)
+        state.permissions = app['apps_config'].getPermissions(state.appkey, state.role)
     else:
         logging.warning(f'auth error: {reason}')
         response = {
             "action": "auth/authenticate/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": "authentication_failed",
-                "reason": reason
-            }
+            "body": {"error": "authentication_failed", "reason": reason},
         }
     await respond(state, ws, app, response)
 
@@ -102,8 +102,9 @@ def parseAppKey(path):
     return appkey
 
 
-async def handleHandshake(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                          serializedPdu: bytes):
+async def handleHandshake(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     authMethod = pdu.get('body', {}).get('method')
     if authMethod != 'role_secret':
         errMsg = f'invalid auth method: {authMethod}'
@@ -111,9 +112,7 @@ async def handleHandshake(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": f"auth/handshake/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -130,15 +129,16 @@ async def handleHandshake(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
                 "nonce": state.nonce,
                 "version": getVersion(),
                 "connection_id": state.connection_id,
-                "node": platform.uname().node
+                "node": platform.uname().node,
             }
-        }
+        },
     }
     await respond(state, ws, app, response)
 
 
-async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                        serializedPdu: bytes):
+async def handlePublish(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     '''Here we don't write back a result to the client for efficiency.
     Client doesn't really needs it.
     '''
@@ -155,9 +155,7 @@ async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": "rtm/publish/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -171,9 +169,7 @@ async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": "rtm/publish/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -188,37 +184,30 @@ async def handlePublish(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         appkey = state.appkey
 
         try:
-            pipelinedPublisher = \
-                await app['pipelined_publishers'].get(appkey, chan)
+            pipelinedPublisher = await app['pipelined_publishers'].get(appkey, chan)
 
-            await pipelinedPublisher.push((appkey, chan, serializedPdu),
-                                          batchPublish)
+            await pipelinedPublisher.push((appkey, chan, serializedPdu), batchPublish)
         except Exception as e:
             errMsg = f'publish: cannot connect to redis {e}'
             logging.warning(errMsg)
             response = {
                 "action": "rtm/publish/error",
                 "id": pdu.get('id', 1),
-                "body": {
-                    "error": errMsg
-                }
+                "body": {"error": errMsg},
             }
             await respond(state, ws, app, response)
             return
 
-    response = {
-        "action": "rtm/publish/ok",
-        "id": pdu.get('id', 1),
-        "body": {}
-    }
+    response = {"action": "rtm/publish/ok", "id": pdu.get('id', 1), "body": {}}
     await respond(state, ws, app, response)
 
     # Stats
     app['stats'].updatePublished(state.role, len(serializedPdu))
 
 
-async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                          serializedPdu: bytes):
+async def handleSubscribe(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     '''
     Client doesn't really needs it.
     '''
@@ -233,9 +222,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": "rtm/subscribe/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -247,9 +234,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": "rtm/subscribe/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         state.ok = False
         state.error = response
@@ -273,9 +258,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": "rtm/subscribe/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         state.ok = False
         state.error = response
@@ -292,9 +275,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": "rtm/subscribe/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         state.ok = False
         state.error = response
@@ -306,7 +287,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         "id": pdu.get('id', 1),
         "body": {
             "position": "1519190184:559034812775",
-            "subscription_id": subscriptionId
+            "subscription_id": subscriptionId,
         },
     }
 
@@ -337,8 +318,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
                 response['body']['redis_node'] = redisConnection.host
             await respond(self.state, self.ws, self.app, response)
 
-        async def handleMsg(self, msg: dict, position: str,
-                            payloadSize: int) -> bool:
+        async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:
 
             # Input msg is the full serialized publish pdu.
             # Extract the real message out of it.
@@ -348,7 +328,8 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
             if self.hasFilter:
                 filterOutput = self.streamSQLFilter.match(
-                    msg.get('messages') or msg)  # noqa
+                    msg.get('messages') or msg
+                )  # noqa
                 if not filterOutput:
                     return True
                 else:
@@ -360,7 +341,7 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
                 "body": {
                     "subscription_id": self.subscriptionId,
                     "messages": [msg],
-                    "position": position
+                    "position": position,
                 },
             }
             self.state.log(f"> {json.dumps(pdu)} at position {position}")
@@ -380,12 +361,15 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisConnections = RedisConnections(app['redis_urls'],
-                                        app['redis_password'])
+    redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
 
     task = asyncio.create_task(
         redisSubscriber(
-            redisConnections, appChannel, position, MessageHandlerClass, {
+            redisConnections,
+            appChannel,
+            position,
+            MessageHandlerClass,
+            {
                 'ws': ws,
                 'subscription_id': subscriptionId,
                 'has_filter': hasFilter,
@@ -394,8 +378,10 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
                 'stats': app['stats'],
                 'state': state,
                 'subscribe_response': response,
-                'app': app
-            }))
+                'app': app,
+            },
+        )
+    )
     addTaskCleanup(task)
 
     key = subscriptionId + state.connection_id
@@ -404,8 +390,9 @@ async def handleSubscribe(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
     app['stats'].incrSubscriptions(state.role)
 
 
-async def handleUnSubscribe(state: ConnectionState, ws, app: Dict,
-                            pdu: JsonDict, serializedPdu: bytes):
+async def handleUnSubscribe(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     '''
     Cancel a subscription
     '''
@@ -418,9 +405,7 @@ async def handleUnSubscribe(state: ConnectionState, ws, app: Dict,
         response = {
             "action": "rtm/unsubscribe/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -434,9 +419,7 @@ async def handleUnSubscribe(state: ConnectionState, ws, app: Dict,
         response = {
             "action": "rtm/unsubscribe/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -451,23 +434,23 @@ async def handleUnSubscribe(state: ConnectionState, ws, app: Dict,
 #
 # Admin operations
 #
-async def handleAdminGetConnections(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                                    serializedPdu: bytes):
+async def handleAdminGetConnections(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     action = pdu['action']
     connections = list(app['connections'].keys())
 
     response = {
         "action": f"{action}/ok",
         "id": pdu.get('id', 1),
-        "body": {
-            'connections': connections
-        }
+        "body": {'connections': connections},
     }
     await respond(state, ws, app, response)
 
 
-async def handleAdminCloseConnection(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                                     serializedPdu: bytes):
+async def handleAdminCloseConnection(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     action = pdu['action']
     body = pdu.get('body', {})
     targetConnectionId = body.get('connection_id')
@@ -478,15 +461,12 @@ async def handleAdminCloseConnection(state: ConnectionState, ws, app: Dict, pdu:
         response = {
             "action": f"{action}/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
 
     found = False
-    websocketLists = []
     for connectionId, (state, websocket) in app['connections'].items():
         if connectionId == targetConnectionId:
             targetWebSocket = websocket
@@ -498,26 +478,19 @@ async def handleAdminCloseConnection(state: ConnectionState, ws, app: Dict, pdu:
         response = {
             "action": f"{action}/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
 
     await targetWebSocket.close()
 
-    response = {
-        "action": f"{action}/ok",
-        "id": pdu.get('id', 1),
-        "body": {}
-    }
+    response = {"action": f"{action}/ok", "id": pdu.get('id', 1), "body": {}}
     await respond(state, ws, app, response)
 
 
 # FIXME
-async def toggleFileLogging(state: ConnectionState, app: Dict,
-                            params: JsonDict):
+async def toggleFileLogging(state: ConnectionState, app: Dict, params: JsonDict):
     found = False
     for connectionId, (st, websocket) in app['connections'].items():
         if connectionId == params.get('connection_id', ''):
@@ -528,8 +501,9 @@ async def toggleFileLogging(state: ConnectionState, app: Dict,
 
 
 # FIXME (should close current connection)
-async def handleAdminCloseAllConnection(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                                        serializedPdu: bytes):
+async def handleAdminCloseAllConnection(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     action = pdu['action']
 
     websocketLists = []
@@ -540,13 +514,7 @@ async def handleAdminCloseAllConnection(state: ConnectionState, ws, app: Dict, p
     for ws in websocketLists:
         await ws.close()  # should this be shielded ?
 
-    await targetWebSocket.close()
-
-    response = {
-        "action": f"{action}/ok",
-        "id": pdu.get('id', 1),
-        "body": {}
-    }
+    response = {"action": f"{action}/ok", "id": pdu.get('id', 1), "body": {}}
     await respond(state, ws, app, response)
 
 
@@ -563,8 +531,9 @@ async def closeAll(state: ConnectionState, app: Dict, params: JsonDict):
 
 
 # FIXME error handling
-async def handleRead(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                     serializedPdu: bytes):
+async def handleRead(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
 
     body = pdu.get('body', {})
     position = body.get('position')
@@ -572,21 +541,17 @@ async def handleRead(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisConnections = RedisConnections(app['redis_urls'],
-                                        app['redis_password'])
+    redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
 
     try:
-        message = await kvStoreRead(redisConnections, appChannel, position,
-                                    state.log)
+        message = await kvStoreRead(redisConnections, appChannel, position, state.log)
     except Exception as e:
         errMsg = f'write: cannot connect to redis {e}'
         logging.warning(errMsg)
         response = {
             "action": "rtm/read/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -595,15 +560,14 @@ async def handleRead(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
     response = {
         "action": "rtm/read/ok",
         "id": pdu.get('id', 1),
-        "body": {
-            "message": message
-        }
+        "body": {"message": message},
     }
     await respond(state, ws, app, response)
 
 
-async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
-                      serializedPdu: bytes):
+async def handleWrite(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
     # Missing message
     message = pdu.get('body', {}).get('message')
     if message is None:
@@ -612,9 +576,7 @@ async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": "rtm/write/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -627,9 +589,7 @@ async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
         response = {
             "action": "rtm/write/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -640,20 +600,18 @@ async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
     appkey = state.appkey
 
     try:
-        pipelinedPublisher = \
-            await app['pipelined_publishers'].get(appkey, channel)
+        pipelinedPublisher = await app['pipelined_publishers'].get(appkey, channel)
 
-        await pipelinedPublisher.publishNow((appkey, channel, json.dumps(message)),
-                                            maxLen=1)
+        await pipelinedPublisher.publishNow(
+            (appkey, channel, json.dumps(message)), maxLen=1
+        )
     except Exception as e:
         errMsg = f'write: cannot connect to redis {e}'
         logging.warning(errMsg)
         response = {
             "action": "rtm/write/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -661,11 +619,7 @@ async def handleWrite(state: ConnectionState, ws, app: Dict, pdu: JsonDict,
     # Stats
     app['stats'].updateWrites(state.role, len(serializedPdu))
 
-    response = {
-        "action": f"rtm/write/ok",
-        "id": pdu.get('id', 1),
-        "body": {}
-    }
+    response = {"action": f"rtm/write/ok", "id": pdu.get('id', 1), "body": {}}
     await respond(state, ws, app, response)
 
 
@@ -682,7 +636,7 @@ def validatePermissions(permissions, action):
     # its own permission
     if verb == 'unsubscribe':
         return True
-    
+
     return verb in permissions
 
 
@@ -696,7 +650,7 @@ ACTION_HANDLERS_LUT = {
     'rtm/read': handleRead,
     'rtm/write': handleWrite,
     'admin/close_connection': handleAdminCloseConnection,
-    'admin/get_connections': handleAdminGetConnections
+    'admin/get_connections': handleAdminGetConnections,
 }
 
 
@@ -728,9 +682,7 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes)
         response = {
             "action": f"{action}/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return
@@ -742,9 +694,7 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes)
         response = {
             "action": f"{action}/error",
             "id": pdu.get('id', 1),
-            "body": {
-                "error": errMsg
-            }
+            "body": {"error": errMsg},
         }
         await respond(state, ws, app, response)
         return

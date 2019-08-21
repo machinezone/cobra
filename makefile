@@ -27,8 +27,11 @@ upload:
 
 lint: flake
 
+indent: 
+	black -S cobras tests
+
 flake:
-	flake8 `find cobras -name '*.py'`
+	flake8 --max-line-length=88 `find cobras -name '*.py'`
 
 test:
 	py.test -n 4 --disable-warnings tests/*.py
@@ -46,9 +49,6 @@ coverage:
 
 isort:
 	isort `find cobras tests -name '*.py'`
-
-yapf:
-	yapf -i `find cobras tests -name '*.py'`
 
 # this is helpful to remove trailing whitespaces
 trail:
