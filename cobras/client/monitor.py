@@ -6,6 +6,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import asyncio
 import collections
 import json
+import os
 from typing import Dict
 
 import byteformat
@@ -17,6 +18,16 @@ from cobras.client.connection import ActionFlow
 from cobras.common.algorithm import transpose
 from cobras.common.throttle import Throttle
 from cobras.server.stats import DEFAULT_STATS_CHANNEL
+from cobras.common.apps_config import STATS_APPKEY
+
+
+def getDefaultMonitorUrl(host=None, port=None):
+    if host is None:
+        host = '127.0.0.1'
+    if port is None:
+        port = os.getenv('COBRA_PORT', 8765)
+
+    return f'ws://{host}:{port}/v2?appkey={STATS_APPKEY}'
 
 
 def writeJson(data):
@@ -37,6 +48,7 @@ class MessageHandlerClass:
         self.showRoles = args['show_roles']
         self.subscribers = args['subscribers']
         self.system = args['system']
+        self.once = args['once']
 
         self.roleMetrics = []
 
@@ -139,7 +151,7 @@ class MessageHandlerClass:
             self.displayRoleMetrics()
 
         self.resetMetrics()
-        return ActionFlow.CONTINUE
+        return ActionFlow.STOP if self.once else ActionFlow.CONTINUE
 
     def updateRoleMetrics(self, cobraData):
         '''Collect data per role'''
@@ -189,10 +201,11 @@ class MessageHandlerClass:
 
 
 def runMonitor(
-    url, credentials, raw, roleFilter, showNodes, showRoles, subscribers, system
+    url, credentials, raw, roleFilter, showNodes, showRoles, subscribers, system, once,
 ):
     position = None
-    asyncio.get_event_loop().run_until_complete(
+
+    messageHandler = asyncio.get_event_loop().run_until_complete(
         subscribeClient(
             url,
             credentials,
@@ -207,6 +220,8 @@ def runMonitor(
                 'show_roles': showRoles,
                 'subscribers': subscribers,
                 'system': system,
+                'once': once,
             },
         )
     )
+    return messageHandler

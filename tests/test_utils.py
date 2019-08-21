@@ -17,13 +17,12 @@ def getFreePort():
     return random.randint(9000, 16000)
 
 
-def makeRunner(debugMemory=False):
+def makeRunner(debugMemory=False, enableStats=False):
     host = 'localhost'
     port = getFreePort()
     redisUrls = 'redis://localhost'
     redisPassword = None
     plugins = 'republish'
-    enableStats = False
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause
 

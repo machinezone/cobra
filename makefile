@@ -45,7 +45,7 @@ mypy:
 
 
 coverage:
-	py.test --disable-warnings --cov=cobras.server --cov=cobras.common --cov-report html --cov-report term tests
+	py.test -n 4 --disable-warnings --cov=cobras --cov-report html --cov-report term tests
 
 isort:
 	isort `find cobras tests -name '*.py'`
