@@ -145,3 +145,48 @@ async def handleWrite(
 
     response = {"action": f"rtm/write/ok", "id": pdu.get('id', 1), "body": {}}
     await state.respond(ws, response)
+
+
+async def handleDelete(
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+):
+    # To delete an entry we publish an empty message
+    message = None
+
+    # Missing channel
+    channel = pdu.get('body', {}).get('channel')
+    if channel is None:
+        errMsg = 'delete: missing channel field'
+        logging.warning(errMsg)
+        response = {
+            "action": "rtm/delete/error",
+            "id": pdu.get('id', 1),
+            "body": {"error": errMsg},
+        }
+        await state.respond(ws, response)
+        return
+
+    appkey = state.appkey
+
+    try:
+        pipelinedPublisher = await app['pipelined_publishers'].get(appkey, channel)
+
+        await pipelinedPublisher.publishNow(
+            (appkey, channel, json.dumps(message)), maxLen=1
+        )
+    except Exception as e:
+        errMsg = f'delete: cannot connect to redis {e}'
+        logging.warning(errMsg)
+        response = {
+            "action": "rtm/delete/error",
+            "id": pdu.get('id', 1),
+            "body": {"error": errMsg},
+        }
+        await state.respond(ws, response)
+        return
+
+    # Stats
+    app['stats'].updateWrites(state.role, len(serializedPdu))
+
+    response = {"action": f"rtm/delete/ok", "id": pdu.get('id', 1), "body": {}}
+    await state.respond(ws, response)

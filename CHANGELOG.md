@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- (server+client) key value store: add a delete operation
 - (server) breaking protocol.py mega file into small ones
 
 ## [1.6.4] - 2019-08-20

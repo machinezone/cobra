@@ -17,7 +17,7 @@ from cobras.server.handlers.pubsub import (
     handleSubscribe,
     handleUnSubscribe,
 )
-from cobras.server.handlers.kv_store import handleRead, handleWrite
+from cobras.server.handlers.kv_store import handleRead, handleWrite, handleDelete
 from cobras.server.handlers.admin import (
     handleAdminGetConnections,
     handleAdminCloseConnection,
@@ -73,6 +73,7 @@ ACTION_HANDLERS_LUT = {
     'rtm/unsubscribe': handleUnSubscribe,
     'rtm/read': handleRead,
     'rtm/write': handleWrite,
+    'rtm/delete': handleDelete,
     'admin/close_connection': handleAdminCloseConnection,
     'admin/get_connections': handleAdminGetConnections,
 }

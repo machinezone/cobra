@@ -4,6 +4,7 @@ import asyncio
 import gc
 import os
 import tempfile
+import uuid
 
 import pytest
 
@@ -29,20 +30,33 @@ def runner():
     os.unlink(appsConfigPath)
 
 
+def makeUniqueString():
+    return uuid.uuid4().hex
+
+
 async def clientCoroutine(connection):
     await connection.connect()
 
-    channel = 'foo'
-    data = {"foo": "bar"}
+    channel = makeUniqueString()
+    data = {"foo": makeUniqueString()}
     await connection.write(channel, data)
     receivedData = await connection.read(channel)
 
     assert receivedData == data
 
+    # Delete that entry previous one
+    await connection.delete(channel)
+    receivedData = await connection.read(channel)
+    assert receivedData is None
+
+    # Read a missing entry, make sure its empty
+    receivedData = await connection.read(makeUniqueString())
+    assert receivedData is None
+
     await connection.close()
 
 
-def test_read_write(runner):
+def test_read_write_delete(runner):
     '''Starts a server, then run a health check'''
     port = runner.port
 

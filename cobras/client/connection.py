@@ -270,6 +270,14 @@ class Connection(object):
         msg = data['body']['message']  # FIXME data missing / error handling ?
         return msg
 
+    async def delete(self, channel):
+        pdu = {
+            "action": "rtm/delete",
+            "id": next(self.idIterator),
+            "body": {"channel": channel},
+        }
+        await self.send(pdu)
+
     async def adminCloseConnection(self, connectionId):
         pdu = {
             "action": "admin/close_connection",
