@@ -17,6 +17,7 @@ from cobras.client.health_check import (
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.client.credentials import createCredentials
 from cobras.client.connection import Connection
+from cobras.client.connection import ActionException
 from cobras.client.monitor import runMonitor, getDefaultMonitorUrl
 
 from .test_utils import makeRunner
@@ -25,6 +26,18 @@ from .test_utils import makeRunner
 @pytest.fixture()
 def runner():
     runner, appsConfigPath = makeRunner(enableStats=True)
+    yield runner
+
+    runner.terminate()
+    os.unlink(appsConfigPath)
+
+
+@pytest.fixture()
+def redisDownRunner():
+    redisUrls = 'redis://localhost:9999'
+    runner, appsConfigPath = makeRunner(
+        debugMemory=False, enableStats=False, redisUrls=redisUrls
+    )
     yield runner
 
     runner.terminate()
@@ -75,5 +88,41 @@ def test_monitor(runner):
     connection = Connection(url, creds)
 
     asyncio.get_event_loop().run_until_complete(clientCoroutine(connection))
+    messageHandler = monitor(connection)
+    print(messageHandler)
+
+
+#
+# We need a way to stop the monitoring with a timeout of some sort.
+#
+async def clientCoroutineRedisDown(connection):
+    # Wait a bit
+    await asyncio.sleep(0.1)
+
+    await connection.connect()
+
+    for i in range(5):
+        channel = makeUniqueString()
+        data = {"foo": makeUniqueString()}
+
+        with pytest.raises(ActionException):
+            await connection.write(channel, data)
+
+    await connection.close()
+
+
+def _test_monitor_redis_down(redisDownRunner):
+    '''Starts a server, then run a health check'''
+    port = redisDownRunner.port
+
+    url = getDefaultMonitorUrl(None, port)
+    role = getDefaultRoleForApp('stats')
+    secret = getDefaultSecretForApp('stats')
+
+    creds = createCredentials(role, secret)
+    connection = Connection(url, creds)
+
+    # FIXME: bring this back
+    # asyncio.get_event_loop().run_until_complete(clientCoroutineRedisDown(connection))
     messageHandler = monitor(connection)
     print(messageHandler)
