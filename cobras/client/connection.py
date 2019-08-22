@@ -90,9 +90,13 @@ class Connection(object):
                 logging.debug(f'< {response}')
                 data = json.loads(response)
 
+                msgId = data.get('id')
+                if msgId is None:
+                    raise ActionException('server bug: incoming message has no id')
+
                 action = data['action']
                 action = '/'.join(action.split('/')[:2])
-                actionId = action + '::' + str(data['id'])
+                actionId = action + '::' + str(msgId)
 
                 if action == 'rtm/subscription':
                     actionId = action + '::' + data['body']['subscription_id']
