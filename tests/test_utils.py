@@ -17,14 +17,16 @@ def getFreePort():
     return random.randint(9000, 16000)
 
 
-def makeRunner(debugMemory=False, enableStats=False):
+def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
     host = 'localhost'
     port = getFreePort()
-    redisUrls = 'redis://localhost'
     redisPassword = None
     plugins = 'republish'
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause
+
+    if redisUrls is None:
+        redisUrls = 'redis://localhost'
 
     appsConfigPath = tempfile.mktemp()
     appsConfig = AppsConfig(appsConfigPath)
