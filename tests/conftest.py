@@ -9,6 +9,7 @@ from cobras.common.apps_config import AppsConfig
 from cobras.server.app import AppRunner
 
 import coloredlogs
+import pytest
 
 coloredlogs.install(level='INFO')
 
@@ -24,9 +25,6 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
     plugins = 'republish'
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause / FIXME(unused)
-
-    if redisUrls is None:
-        redisUrls = 'redis://localhost'
 
     if redisUrls is None:
         redisUrls = 'redis://localhost'
@@ -50,3 +48,24 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
     )
     asyncio.get_event_loop().run_until_complete(runner.setup())
     return runner, appsConfigPath
+
+
+@pytest.fixture()
+def runner():
+    runner, appsConfigPath = makeRunner(debugMemory=False)
+    yield runner
+
+    runner.terminate()
+    os.unlink(appsConfigPath)
+
+
+@pytest.fixture()
+def redisDownRunner():
+    redisUrls = 'redis://localhost:9999'
+    runner, appsConfigPath = makeRunner(
+        debugMemory=False, enableStats=False, redisUrls=redisUrls
+    )
+    yield runner
+
+    runner.terminate()
+    os.unlink(appsConfigPath)

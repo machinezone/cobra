@@ -49,7 +49,7 @@ def makeUniqueString():
 
 
 async def clientCoroutine(connection):
-    # Wait a bit
+    # Wait a bit FIXME
     await asyncio.sleep(0.1)
 
     await connection.connect()

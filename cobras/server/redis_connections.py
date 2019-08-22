@@ -23,7 +23,7 @@ class RedisConnections:
 
     async def create(self, appChannel=None):
         url = self.hashChannel(appChannel)
-        logging.debug(f'Hashing {appChannel} to url -> {url}')
+        logging.info(f'Hashing {appChannel} to url -> {url}')
 
         netloc = urlparse(url).netloc
         host, _, port = netloc.partition(':')
