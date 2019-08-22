@@ -1,22 +1,16 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
 
 import asyncio
-import gc
 import os
-import tempfile
 import uuid
 
 import pytest
 
 from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
-from cobras.client.health_check import (
-    getDefaultHealthCheckHttpUrl,
-    getDefaultHealthCheckUrl,
-    healthCheck,
-)
-from cobras.common.memory_debugger import MemoryDebugger
 from cobras.client.credentials import createCredentials
 from cobras.client.connection import Connection
+from cobras.client.connection import ActionException
+from cobras.client.health_check import getDefaultHealthCheckUrl
 
 from .test_utils import makeRunner
 
@@ -24,6 +18,18 @@ from .test_utils import makeRunner
 @pytest.fixture()
 def runner():
     runner, appsConfigPath = makeRunner(debugMemory=False)
+    yield runner
+
+    runner.terminate()
+    os.unlink(appsConfigPath)
+
+
+@pytest.fixture()
+def redisDownRunner():
+    redisUrls = 'redis://localhost:9999'
+    runner, appsConfigPath = makeRunner(
+        debugMemory=False, enableStats=False, redisUrls=redisUrls
+    )
     yield runner
 
     runner.terminate()
@@ -68,3 +74,35 @@ def test_read_write_delete(runner):
     connection = Connection(url, creds)
 
     asyncio.get_event_loop().run_until_complete(clientCoroutine(connection))
+
+
+async def redisDownClientCoroutine(connection):
+    await connection.connect()
+
+    # Test write which should fail
+    channel = makeUniqueString()
+    with pytest.raises(ActionException):
+        data = {"foo": makeUniqueString()}
+        await connection.write(channel, data)
+
+    # Test read which should fail
+    with pytest.raises(ActionException):
+        await connection.read(channel)
+
+    # Test delete which should fail
+    with pytest.raises(ActionException):
+        await connection.delete(makeUniqueString())
+
+
+def test_read_write_delete_redis_down(redisDownRunner):
+    '''Starts a server, then run a health check'''
+    port = redisDownRunner.port
+
+    url = getDefaultHealthCheckUrl(None, port)
+    role = getDefaultRoleForApp('health')
+    secret = getDefaultSecretForApp('health')
+
+    creds = createCredentials(role, secret)
+    connection = Connection(url, creds)
+
+    asyncio.get_event_loop().run_until_complete(redisDownClientCoroutine(connection))
