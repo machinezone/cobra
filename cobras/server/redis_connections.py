@@ -21,7 +21,7 @@ class RedisConnections:
         # https://www.paperplanes.de/2011/12/9/the-magic-of-consistent-hashing.html
         self.hr = HashRing(nodes=self.urls)
 
-    async def create(self, appChannel=None, useAioRedis=True):
+    async def create(self, appChannel=None):
         url = self.hashChannel(appChannel)
         logging.debug(f'Hashing {appChannel} to url -> {url}')
 
