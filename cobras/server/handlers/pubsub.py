@@ -201,12 +201,12 @@ async def handleSubscribe(
                 response = {
                     'action': 'rtm/subscribe/error',
                     'id': next(self.idIterator),
-                    'body': {}
+                    'body': {},
                 }
             else:
                 response['body']['redis_node'] = redisConnection.host
 
-            # Send response. By now 
+            # Send response. By now
             await self.state.respond(self.ws, response)
 
         async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:
