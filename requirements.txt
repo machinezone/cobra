@@ -1,5 +1,5 @@
 aioredis==1.2.0
-sentry-sdk==0.10.2
+sentry-sdk==0.11.1
 tabulate==0.8.3
 click==6.6
 hiredis==0.2.0

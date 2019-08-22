@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.6] - 2019-08-20
+
+### Changed
+
+- (server) upgrade sentry-sdk
+
 ## [1.6.5] - 2019-08-20
 
 ### Changed
