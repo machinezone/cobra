@@ -7,12 +7,12 @@
 [![Wheel](https://img.shields.io/pypi/wheel/cobras.svg)](https://img.shields.io/pypi/wheel/cobras)
 [![codecov](https://codecov.io/gh/machinezone/cobra/branch/master/graph/badge.svg)](https://codecov.io/gh/machinezone/cobra)
 
-Cobra is a realtime messaging server using Python3, WebSockets and Redis Streams. It was presented in great details during [RedisConf 2019](https://events.redislabs.com/redis-conf/redis-conf-2019/).
+Cobra is a realtime messaging server using Python3, WebSockets and Redis Streams. It was presented in great details during [RedisConf 2019](https://events.redislabs.com/redis-conf/redis-conf-2019/). Since then we've added history support which let cobra retain messages published to a channel that no-one is subscribed to. This makes it easier to blow up your systems through [OOMs](https://en.wikipedia.org/wiki/Out_of_memory) and fill your hard drives, but it makes cobra much more useful.
 
 * [slides](https://bsergean.github.io/redis_conf_2019/slides.html)
 * [youtube](https://www.youtube.com/watch?v=o8CC8qYfRQE&t=147s)
 
-[![Alt text](https://img.youtube.com/vi/o8CC8qYfRQE/0.jpg)](https://www.youtube.com/watch?v=o8CC8qYfRQE)
+[![Alt text](https://image.slidesharecdn.com/06benjaminsergeant-190507205253/95/real-time-health-analytics-with-websockets-python-3-and-redis-pubsub-benjamin-sergeant-1-638.jpg)](https://www.youtube.com/watch?v=o8CC8qYfRQE)
 
 Cobra has been used in production receiving heavy traffic for about a year. Since it was written in Python it was named after a snake as an hommage to a great programming language.
 

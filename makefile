@@ -2,22 +2,14 @@
 
 all: flake
 
-install-python:
+dev:
 	@echo "--> Installing Python dependencies"
 	# order matters here, base package must install first
-	cp requirements.txt /tmp/
 	pip install -U pip
-	pip install --requirement /tmp/requirements.txt
+	pip install --requirement requirements.txt
+	pip install --requirement tests/requirements.txt
 	pip install -e .
 	pip install "file://`pwd`#egg=cobras[dev]"
-
-install-python-tests:
-	pip install "file://`pwd`#egg=cobras[dev,tests]"
-
-develop-only: install-python install-python-tests 
-
-dev: develop
-develop: develop-only install-python-tests
 
 upload:
 	rm dist/*
@@ -27,7 +19,7 @@ upload:
 
 lint: flake
 
-indent: 
+indent:
 	black -S cobras tests
 
 flake:
