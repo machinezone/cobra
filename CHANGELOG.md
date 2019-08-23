@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - (server) upgrade sentry-sdk
+- change pre-commit ordering
+- cobra health failures are less noisy
+- make sure the health-check fails when redis is down
+- sort requirements file ...
+- more pre-commit fun
+- test client monitoring when redis is down
+- (linter) fix indentation
+- (doc) add note about some bad code
+- (wip/disabled) unittest / add code to check how monitoring works when redis is down
+- (server) when redis is down, and receiving a subscribe request, the server should send an error and it does not
+- (client) handle and throw explicit exception when the server sends a message without an id
+- read write test: add a test for when redis is down
+- test_utils makeRunner can take a redis config as an optional arg
+- remove unused parameter
+- update makefile + README
 
 ## [1.6.5] - 2019-08-20
 
