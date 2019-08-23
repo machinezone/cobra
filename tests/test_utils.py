@@ -1,14 +1,14 @@
 '''Copyright (c) 2019 Machine Zone, Inc. All rights reserved.'''
 
 import asyncio
-import tempfile
 import os
 import random
-
-from cobras.common.apps_config import AppsConfig
-from cobras.server.app import AppRunner
+import tempfile
+import uuid
 
 import coloredlogs
+from cobras.common.apps_config import AppsConfig
+from cobras.server.app import AppRunner
 
 coloredlogs.install(level='INFO')
 
@@ -50,3 +50,7 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
     )
     asyncio.get_event_loop().run_until_complete(runner.setup())
     return runner, appsConfigPath
+
+
+def makeUniqueString():
+    return uuid.uuid4().hex

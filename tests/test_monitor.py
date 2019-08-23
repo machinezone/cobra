@@ -116,7 +116,7 @@ def test_monitor_redis_down(redisDownRunner):
     connection = Connection(url, creds)
 
     # FIXME: bring this back
-    # asyncio.get_event_loop().run_until_complete(clientCoroutineRedisDown(connection))
+    asyncio.get_event_loop().run_until_complete(clientCoroutineRedisDown(connection))
 
     with pytest.raises(ActionException):
         monitor(connection)

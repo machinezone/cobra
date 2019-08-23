@@ -2,17 +2,17 @@
 
 import asyncio
 import os
-import uuid
 
 import pytest
-
-from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
-from cobras.client.credentials import createCredentials
-from cobras.client.connection import Connection
-from cobras.client.connection import ActionException
+from cobras.client.connection import ActionException, Connection
+from cobras.client.credentials import (
+    createCredentials,
+    getDefaultRoleForApp,
+    getDefaultSecretForApp,
+)
 from cobras.client.health_check import getDefaultHealthCheckUrl
 
-from .test_utils import makeRunner
+from .test_utils import makeRunner, makeUniqueString
 
 
 @pytest.fixture()
@@ -34,10 +34,6 @@ def redisDownRunner():
 
     runner.terminate()
     os.unlink(appsConfigPath)
-
-
-def makeUniqueString():
-    return uuid.uuid4().hex
 
 
 async def clientCoroutine(connection):

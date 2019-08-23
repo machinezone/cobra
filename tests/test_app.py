@@ -1,21 +1,14 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
 
-import asyncio
 import gc
 import os
-import tempfile
 
 import pytest
-
 from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
-from cobras.client.health_check import (
-    getDefaultHealthCheckHttpUrl,
-    getDefaultHealthCheckUrl,
-    healthCheck,
-)
+from cobras.client.health_check import getDefaultHealthCheckUrl, healthCheck
 from cobras.common.memory_debugger import MemoryDebugger
 
-from .test_utils import makeRunner
+from .test_utils import makeRunner, makeUniqueString
 
 
 @pytest.fixture()
@@ -43,7 +36,7 @@ def test_server(runner):
     url = getDefaultHealthCheckUrl(None, port)
     role = getDefaultRoleForApp('health')
     secret = getDefaultSecretForApp('health')
-    channel = 'foo'
+    channel = makeUniqueString()
 
     # Run 2 health-checks in a row
     healthCheck(url, role, secret, channel)
@@ -59,7 +52,7 @@ def test_server_again(debugMemoryRunner):
     url = getDefaultHealthCheckUrl(None, port)
     role = getDefaultRoleForApp('health')
     secret = getDefaultSecretForApp('health')
-    channel = 'foo'
+    channel = makeUniqueString()
 
     healthCheck(url, role, secret, channel)
 
@@ -68,7 +61,7 @@ def runTest(port):
     url = getDefaultHealthCheckUrl(None, port)
     role = getDefaultRoleForApp('health')
     secret = getDefaultSecretForApp('health')
-    channel = 'foo'
+    channel = makeUniqueString()
 
     for i in range(5):
         healthCheck(url, role, secret, channel)
