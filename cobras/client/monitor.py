@@ -12,13 +12,12 @@ from typing import Dict
 import byteformat
 import click
 import tabulate
-
-from cobras.client.client import subscribeClient
+from cobras.client.client import subscribeClient, unsafeSubcribeClient
 from cobras.client.connection import ActionFlow
 from cobras.common.algorithm import transpose
+from cobras.common.apps_config import STATS_APPKEY
 from cobras.common.throttle import Throttle
 from cobras.server.stats import DEFAULT_STATS_CHANNEL
-from cobras.common.apps_config import STATS_APPKEY
 
 
 def getDefaultMonitorUrl(host=None, port=None):
@@ -201,12 +200,25 @@ class MessageHandlerClass:
 
 
 def runMonitor(
-    url, credentials, raw, roleFilter, showNodes, showRoles, subscribers, system, once
+    url,
+    credentials,
+    raw,
+    roleFilter,
+    showNodes,
+    showRoles,
+    subscribers,
+    system,
+    once,
+    retry=True,
 ):
     position = None
 
+    handler = unsafeSubcribeClient
+    if retry:
+        handler = subscribeClient
+
     messageHandler = asyncio.get_event_loop().run_until_complete(
-        subscribeClient(
+        handler(
             url,
             credentials,
             DEFAULT_STATS_CHANNEL,

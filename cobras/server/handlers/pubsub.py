@@ -3,22 +3,22 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 import asyncio
-import logging
-import json
 import itertools
+import json
+import logging
 from typing import Dict
 
 from cobras.common.cobra_types import JsonDict
 from cobras.common.task_cleanup import addTaskCleanup
-from cobras.server.connection_state import ConnectionState
-from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 from cobras.common.throttle import Throttle
+from cobras.server.connection_state import ConnectionState
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.redis_subscriber import (
     RedisSubscriberMessageHandlerClass,
     redisSubscriber,
     validatePosition,
 )
+from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 
 
 async def handlePublish(
@@ -198,10 +198,13 @@ async def handleSubscribe(
         async def on_init(self, redisConnection):
             response = self.subscribeResponse
             if redisConnection is None:
+                msgId = response['id']
                 response = {
                     'action': 'rtm/subscribe/error',
-                    'id': next(self.idIterator),
-                    'body': {},
+                    'id': msgId,
+                    'body': {
+                        'error': 'subscribe error: server cannot connect to redis'
+                    },
                 }
             else:
                 response['body']['redis_node'] = redisConnection.host

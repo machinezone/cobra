@@ -1,24 +1,17 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
 
 import asyncio
-import gc
 import os
-import tempfile
 import uuid
 
 import pytest
-
-from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
-from cobras.client.health_check import (
-    getDefaultHealthCheckHttpUrl,
-    getDefaultHealthCheckUrl,
-    healthCheck,
+from cobras.client.connection import ActionException, Connection
+from cobras.client.credentials import (
+    createCredentials,
+    getDefaultRoleForApp,
+    getDefaultSecretForApp,
 )
-from cobras.common.memory_debugger import MemoryDebugger
-from cobras.client.credentials import createCredentials
-from cobras.client.connection import Connection
-from cobras.client.connection import ActionException
-from cobras.client.monitor import runMonitor, getDefaultMonitorUrl
+from cobras.client.monitor import getDefaultMonitorUrl, runMonitor
 
 from .test_utils import makeRunner
 
@@ -73,6 +66,7 @@ def monitor(connection):
         subscribers=True,
         system=False,
         once=True,
+        retry=False,
     )
 
 
@@ -88,8 +82,7 @@ def test_monitor(runner):
     connection = Connection(url, creds)
 
     asyncio.get_event_loop().run_until_complete(clientCoroutine(connection))
-    messageHandler = monitor(connection)
-    print(messageHandler)
+    monitor(connection)
 
 
 #
@@ -111,7 +104,7 @@ async def clientCoroutineRedisDown(connection):
     await connection.close()
 
 
-def _test_monitor_redis_down(redisDownRunner):
+def test_monitor_redis_down(redisDownRunner):
     '''Starts a server, then run a health check'''
     port = redisDownRunner.port
 
@@ -124,5 +117,6 @@ def _test_monitor_redis_down(redisDownRunner):
 
     # FIXME: bring this back
     # asyncio.get_event_loop().run_until_complete(clientCoroutineRedisDown(connection))
-    messageHandler = monitor(connection)
-    print(messageHandler)
+
+    with pytest.raises(ActionException):
+        monitor(connection)

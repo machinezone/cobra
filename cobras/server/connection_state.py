@@ -5,9 +5,9 @@ FIXME: use this to enforce publish+subscribe permissions.
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import json
 import logging
 import uuid
-import json
 
 import websockets
 
@@ -39,7 +39,7 @@ class ConnectionState:
 
     async def respond(self, ws, data):
         response = json.dumps(data)
-        logging.info(f"> {response}")
+        self.log(f"> {response}")
 
         try:
             await ws.send(response)

@@ -4,14 +4,13 @@ Copyright (c) 2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import asyncio
+import collections
 import itertools
 import json
-import collections
 import logging
 from enum import Flag, auto
 
 import websockets
-
 from cobras.common.auth_hash import computeHash
 
 
@@ -161,12 +160,12 @@ class Connection(object):
         actionId = self.computeDefaultActionId(pdu)
 
         data = json.dumps(pdu)
-        logging.info(f"> {data}")
+        logging.info(f"client > {data}")
         await self.websocket.send(data)
 
         # get the response
         data = await self.getActionResponse(actionId)
-        logging.info(f"< {data}")
+        logging.info(f"client < {data}")
 
         # validate response
         if data.get('action') != (pdu['action'] + '/ok'):

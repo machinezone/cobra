@@ -15,3 +15,7 @@ repos:
     hooks:
     - id: flake8
       args: [--max-line-length=88]
+-   repo: https://github.com/timothycrosley/isort
+    rev: ''
+    hooks:
+    - id: isort
