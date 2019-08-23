@@ -11,7 +11,7 @@ import sys
 import tracemalloc
 from tracemalloc import Filter
 
-import byteformat
+import humanfriendly
 import psutil
 
 DEFAULT_DURATION = 5
@@ -60,8 +60,8 @@ class MemoryDebugger:
             fmt = "{} new {} total / {} new {} total memory blocks: "
             print(
                 fmt.format(
-                    byteformat.format(stat.size_diff),
-                    byteformat.format(stat.size),
+                    humanfriendly.format_size(stat.size_diff),
+                    humanfriendly.format_size(stat.size),
                     stat.count_diff,
                     stat.count,
                 )
@@ -101,7 +101,7 @@ class MemoryDebugger:
         i = 0
         while True:
             # gc.collect()
-            print('RSS: ' + byteformat.format(self.p.memory_info().rss))
+            print('RSS: ' + humanfriendly.format_size(self.p.memory_info().rss))
             # Comment the next line to get a very simple mem print
             self.collect_stats()
             self.printTasksStats()

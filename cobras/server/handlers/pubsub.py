@@ -145,7 +145,6 @@ async def handleSubscribe(
             "id": pdu.get('id', 1),
             "body": {"error": errMsg},
         }
-        state.ok = False
         state.error = response
         await state.respond(ws, response)
         return

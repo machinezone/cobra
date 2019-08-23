@@ -9,8 +9,8 @@ import json
 import os
 from typing import Dict
 
-import byteformat
 import click
+import humanfriendly
 import tabulate
 from cobras.client.client import subscribeClient, unsafeSubcribeClient
 from cobras.client.connection import ActionFlow
@@ -65,7 +65,7 @@ class MessageHandlerClass:
         pass
 
     def humanReadableSize(self, key, val):
-        return byteformat.format(val) if '_bytes' in key else val
+        return humanfriendly.format_size(val) if '_bytes' in key else val
 
     def shouldProcessNode(self, node):
         return 'subscriber' in node if self.subscribers else True

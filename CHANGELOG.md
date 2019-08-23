@@ -1,6 +1,52 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.7] - 2019-08-21
+
+### Changed
+
+- More unittest to test failures in pubsub and health-checks. Above 80% test coverage now.
+
+```
+Name                                    Stmts   Miss  Cover
+-----------------------------------------------------------
+cobras/__init__.py                          0      0   100%
+cobras/client/__init__.py                   0      0   100%
+cobras/client/client.py                    89     46    48%
+cobras/client/connection.py               155     10    94%
+cobras/client/credentials.py               12      0   100%
+cobras/client/health_check.py              52     11    79%
+cobras/client/monitor.py                  130     52    60%
+cobras/client/publish.py                   14      0   100%
+cobras/common/__init__.py                   0      0   100%
+cobras/common/algorithm.py                  4      1    75%
+cobras/common/apps_config.py              139     33    76%
+cobras/common/auth_hash.py                  8      0   100%
+cobras/common/cobra_types.py                3      0   100%
+cobras/common/memoize.py                   11      0   100%
+cobras/common/memory_debugger.py           70     10    86%
+cobras/common/memory_usage.py              13      3    77%
+cobras/common/task_cleanup.py              12      4    67%
+cobras/common/throttle.py                  12      0   100%
+cobras/common/version.py                    3      0   100%
+cobras/server/__init__.py                   0      0   100%
+cobras/server/app.py                      143     16    89%
+cobras/server/connection_state.py          30      4    87%
+cobras/server/handlers/admin.py            58     32    45%
+cobras/server/handlers/auth.py             41     11    73%
+cobras/server/handlers/kv_store.py         96     20    79%
+cobras/server/handlers/pubsub.py          164     20    88%
+cobras/server/pipelined_publisher.py       40     14    65%
+cobras/server/pipelined_publishers.py      20      0   100%
+cobras/server/protocol.py                  65     24    63%
+cobras/server/redis_connections.py         24      0   100%
+cobras/server/redis_subscriber.py          57      5    91%
+cobras/server/stats.py                     97      8    92%
+cobras/server/stream_sql.py               129     11    91%
+-----------------------------------------------------------
+TOTAL                                    1691    335    80%
+```
+
 ## [1.6.6] - 2019-08-20
 
 ### Changed
