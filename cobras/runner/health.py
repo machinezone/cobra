@@ -9,7 +9,6 @@ import urllib.request
 
 import click
 import uvloop
-
 from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
 from cobras.client.health_check import (
     getDefaultHealthCheckChannel,
@@ -46,7 +45,7 @@ def health(url, http_url, http, role, secret, channel, retry):
     else:
         try:
             healthCheck(url, role, secret, channel, retry)
-        except ValueError as e:
+        except Exception as e:
             click.secho(f'System is unhealthy !!: {e}', fg='red')
             sys.exit(1)
 
