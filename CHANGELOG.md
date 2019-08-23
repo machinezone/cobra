@@ -1,6 +1,32 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.8] - 2019-08-23
+
+### Changed
+
+- (client) New --summary option for cobra publish, usually used to see how many messages can be sent to a server per second
+
+```
+(venv) cobra$ cobra publish --url 'ws://jeanserge.com/v2?appkey=_health' --repeat --delay 0.001 --secret A5a3BdEfbc6Df5AAFFcadE7F9Dd7F17E --role health
+Processing 1 items
+1 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+19 per seconds
+^C
+Aborted!
+```
+
 ## [1.6.7] - 2019-08-21
 
 ### Changed

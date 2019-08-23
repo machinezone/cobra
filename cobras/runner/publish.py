@@ -3,11 +3,11 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
-import logging
 import asyncio
 import datetime
 import functools
 import json
+import logging
 import os
 import random
 import tarfile
@@ -15,7 +15,6 @@ import uuid
 
 import click
 import uvloop
-
 from cobras.client.client import client
 from cobras.client.credentials import (
     createCredentials,
@@ -24,6 +23,7 @@ from cobras.client.credentials import (
 )
 from cobras.client.publish import computeEventTimeDeltas
 from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
+from cobras.common.throttle import Throttle
 
 root = os.path.dirname(os.path.realpath(__file__))
 dataDir = os.path.join(root, '..', 'data')
@@ -50,9 +50,13 @@ async def clientCallback(connection, **args):
     channel = args['channel']
     delay = args['delay']
     repeat = args['repeat']
+    summary = args['summary']
 
     if not item:  # FIXME: how can this happen ?
         return
+
+    throttle = Throttle(seconds=1)
+    cnt = 0
 
     while True:
         connectionId = uuid.uuid4().hex[:8]
@@ -60,27 +64,45 @@ async def clientCallback(connection, **args):
 
         N = len(eventsWithDeltas)
         now = datetime.datetime.now().strftime("%H:%M:%S.%f")
-        print(f"[{now}][{connectionId}] {N} events")
+        if not summary:
+            print(f"[{now}][{connectionId}] {N} events")
 
         for event, deltaMs in eventsWithDeltas:
             await sendEvent(connection, channel, event, connectionId)
 
             if deltaMs != 0:
-                print(f'sleeping for {deltaMs} ms')
+                if not summary:
+                    print(f'sleeping for {deltaMs} ms')
+
                 await asyncio.sleep(deltaMs / 1000)
             elif delay:
-                print(f'sleeping for {delay} ms')
+                if not summary:
+                    print(f'sleeping for {delay} ms')
+
                 await asyncio.sleep(delay)
 
         if not repeat:
             break
 
+        if summary:
+            cnt += 1
+            if throttle.exceedRate():
+                continue
 
-async def publishTask(url, credentials, items, channel, repeat, delay):
+            print(f'{cnt} message(s) sent per second')
+            cnt = 0
+
+
+async def publishTask(url, credentials, items, channel, repeat, delay, summary):
     tasks = []
     for item in items:
         publishClientCallback = functools.partial(
-            clientCallback, item=item, channel=channel, repeat=repeat, delay=delay
+            clientCallback,
+            item=item,
+            channel=channel,
+            repeat=repeat,
+            delay=delay,
+            summary=summary,
         )
 
         task = asyncio.ensure_future(client(url, credentials, publishClientCallback))
@@ -115,7 +137,7 @@ def buildItemList(path, limit):
     return items
 
 
-def run(url, channel, path, credentials, repeat, delay, limit):
+def run(url, channel, path, credentials, repeat, delay, limit, summary):
     items = buildItemList(path, limit)
     if len(items) == 0:
         print('Empty input file')
@@ -124,7 +146,7 @@ def run(url, channel, path, credentials, repeat, delay, limit):
     print(f'Processing {len(items)} items')
 
     asyncio.get_event_loop().run_until_complete(
-        publishTask(url, credentials, items, channel, repeat, delay)
+        publishTask(url, credentials, items, channel, repeat, delay, summary)
     )
 
 
@@ -136,6 +158,7 @@ def run(url, channel, path, credentials, repeat, delay, limit):
 @click.option('--secret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--repeat', is_flag=True)
 @click.option('--batch', is_flag=True)
+@click.option('--summary', is_flag=True)
 @click.option(
     '--batch_events_path',
     envvar='COBRA_PUBLISH_BATCH_EVENTS_PATH',
@@ -144,7 +167,17 @@ def run(url, channel, path, credentials, repeat, delay, limit):
 @click.option('--limit', default=256)
 @click.option('--delay', default=0.1)
 def publish(
-    url, channel, path, role, secret, batch, batch_events_path, limit, repeat, delay
+    url,
+    channel,
+    path,
+    role,
+    secret,
+    batch,
+    batch_events_path,
+    limit,
+    repeat,
+    delay,
+    summary,
 ):
     '''Publish to a channel
     '''
@@ -156,4 +189,4 @@ def publish(
 
     credentials = createCredentials(role, secret)
 
-    run(url, channel, path, credentials, repeat, delay, limit)
+    run(url, channel, path, credentials, repeat, delay, limit, summary)
