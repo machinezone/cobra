@@ -1,25 +1,20 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
 
 import asyncio
-import gc
-import os
-import tempfile
-import uuid
 import logging
+import os
+import uuid
 from typing import Dict
 
 import pytest
-
-from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
-from cobras.client.health_check import (
-    getDefaultHealthCheckHttpUrl,
-    getDefaultHealthCheckUrl,
-    healthCheck,
-)
-from cobras.common.memory_debugger import MemoryDebugger
-from cobras.client.credentials import createCredentials
-from cobras.client.connection import Connection, ActionFlow
 from cobras.client.client import subscribeClient
+from cobras.client.connection import ActionFlow, Connection
+from cobras.client.credentials import (
+    createCredentials,
+    getDefaultRoleForApp,
+    getDefaultSecretForApp,
+)
+from cobras.client.health_check import getDefaultHealthCheckUrl
 from cobras.common.throttle import Throttle
 
 from .test_utils import makeRunner
@@ -93,8 +88,15 @@ def startSubscriber(url, credentials, channel, resumeFromLastPositionId):
 
 
 async def disconnectSubscriptionConnection(connection):
-    openedConnections = await connection.adminGetConnections()
-    assert len(openedConnections) == 2
+    hasTwoConnections = False
+    for i in range(100):
+        openedConnections = await connection.adminGetConnections()
+        if len(openedConnections) == 2:
+            hasTwoConnections = True
+            break
+        await asyncio.sleep(0.001)
+
+    assert hasTwoConnections
 
     # Disconnect the other connection
     for openedConnection in openedConnections:
@@ -110,7 +112,7 @@ async def clientCoroutine(connection, channel, subscriberTask):
     await asyncio.sleep(0.1)
 
     for i in range(100):
-        if i == 50:
+        if i in (2, 25, 60, 80, 98):
             await disconnectSubscriptionConnection(connection)
 
         # publish one message
@@ -121,7 +123,7 @@ async def clientCoroutine(connection, channel, subscriberTask):
     await connection.close()
 
     # wait 100ms
-    await asyncio.sleep(0.1)
+    await asyncio.sleep(0.5)
     subscriberTask.cancel()
     messageHandler = subscriberTask.result()
 
@@ -138,7 +140,7 @@ def test_save_position(runner):
 
     creds = createCredentials(role, secret)
     connection = Connection(url, creds)
-    connectionToBeClosed = Connection(url, creds)
+    _ = Connection(url, creds)
 
     uniqueId = uuid.uuid4().hex[:8]
     channel = 'test_save_position_channel::' + uniqueId
