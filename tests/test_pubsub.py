@@ -139,3 +139,36 @@ def test_subscribe(runner):
     connection = Connection(url, creds)
 
     asyncio.get_event_loop().run_until_complete(subscribeClientCoroutine(connection))
+
+
+async def unsubscribeClientCoroutine(connection):
+    await connection.connect()
+
+    channel = makeUniqueString()
+    data = {"foo": makeUniqueString()}
+    await connection.publish(channel, data)
+
+    # Empty body
+    pdu = {"action": "rtm/unsubscribe", "body": {}}
+    with pytest.raises(ActionException):
+        await connection.send(pdu)
+
+    # Invalid subscription_id
+    pdu = {"action": "rtm/unsubscribe", "body": {'subscription_id': 'foo'}}
+    with pytest.raises(ActionException):
+        await connection.send(pdu)
+
+    await connection.close()
+
+
+def test_unsubscribe(runner):
+    port = runner.port
+
+    url = getDefaultHealthCheckUrl(None, port)
+    role = getDefaultRoleForApp('health')
+    secret = getDefaultSecretForApp('health')
+
+    creds = createCredentials(role, secret)
+    connection = Connection(url, creds)
+
+    asyncio.get_event_loop().run_until_complete(unsubscribeClientCoroutine(connection))
