@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.9] - 2019-08-23
+
+### Fixed
+
+Missing __init__.py file required to have a the handlers folder loaded.
+
 ## [1.6.8] - 2019-08-23
 
 ### Changed
