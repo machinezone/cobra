@@ -1,4 +1,4 @@
-FROM python:3.7.3-alpine3.10
+FROM python:3.7.4-alpine3.10
 
 RUN pip install --no-cache-dir --upgrade pip
 
@@ -8,7 +8,7 @@ RUN apk add --no-cache gcc musl-dev linux-headers make && \
     apk del --no-cache gcc musl-dev linux-headers make
 
 RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra
-RUN addgroup -S app && adduser -S -G app app 
+RUN addgroup -S app && adduser -S -G app app
 
 COPY --chown=app:app . .
 USER app

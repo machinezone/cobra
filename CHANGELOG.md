@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.10] - 2019-08-24
+
+### Changed
+
+* Upgrade uvloop dependency to 0.13.0 to hopefully solve [Fatal error on transport TCPTransport](https://github.com/MagicStack/uvloop/issues/244) kind of errors.
+* Dockerfile uses Python 3.7.4
+
 ## [1.6.9] - 2019-08-23
 
 ### Fixed
