@@ -12,7 +12,6 @@ import time
 import traceback
 
 import websockets
-
 from cobras.common.apps_config import STATS_APPKEY, AppsConfig
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.common.task_cleanup import addTaskCleanup
@@ -93,9 +92,7 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
             return http.HTTPStatus.OK, [], bytes(getVersion(), 'utf8') + b'\n'
 
         appkey = parseAppKey(path)
-        if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(
-            appkey
-        ):  # noqa
+        if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(appkey):
             return http.HTTPStatus.FORBIDDEN, [], b'KO\n'
 
 

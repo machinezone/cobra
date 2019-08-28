@@ -4,8 +4,9 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import asyncio
-import uuid
 import os
+import urllib
+import uuid
 from typing import Dict
 
 from cobras.client.client import subscribeClient, unsafeSubcribeClient
@@ -37,8 +38,24 @@ def getDefaultHealthCheckUrl(host=None, port=None):
     return f'ws://{host}:{port}/v2?appkey={HEALTH_APPKEY}'
 
 
-def healthCheck(url, role, secret, channel, retry=False):
+def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
     '''Perform a health check'''
+
+    if httpCheck:
+        # the first check to make is the simple HTTP one
+        parsedUrl = urllib.parse.urlparse(url)
+        netloc = parsedUrl.netloc
+        host, _, port = netloc.partition(':')
+
+        scheme = 'http' if parsedUrl.scheme == 'ws' else 'https'
+
+        httpUrl = f'{scheme}://{host}:{port}/health/'
+        print('url:', httpUrl)
+        with urllib.request.urlopen(httpUrl) as response:
+            html = response.read()
+            value = html.decode('utf8')
+            if value != 'OK\n':
+                raise ValueError(f'Invalid http response, {value} != OK')
 
     class MessageHandlerClass:
         def __init__(self, connection, args):

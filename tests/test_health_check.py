@@ -28,8 +28,7 @@ def test_health_check(runner):
     secret = getDefaultSecretForApp('health')
     channel = makeUniqueString()
 
-    # Run 2 health-checks in a row
-    healthCheck(url, role, secret, channel)
+    healthCheck(url, role, secret, channel, retry=False, httpCheck=False)
 
 
 @pytest.fixture()
