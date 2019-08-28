@@ -4,25 +4,24 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import base64
+import json
 import logging
 from typing import Dict
 from urllib.parse import parse_qs, urlparse
 
-import ujson
-
 from cobras.common.cobra_types import JsonDict
-from cobras.server.handlers.auth import handleHandshake, handleAuth
+from cobras.server.connection_state import ConnectionState
+from cobras.server.handlers.admin import (
+    handleAdminCloseConnection,
+    handleAdminGetConnections,
+)
+from cobras.server.handlers.auth import handleAuth, handleHandshake
+from cobras.server.handlers.kv_store import handleDelete, handleRead, handleWrite
 from cobras.server.handlers.pubsub import (
     handlePublish,
     handleSubscribe,
     handleUnSubscribe,
 )
-from cobras.server.handlers.kv_store import handleRead, handleWrite, handleDelete
-from cobras.server.handlers.admin import (
-    handleAdminGetConnections,
-    handleAdminCloseConnection,
-)
-from cobras.server.connection_state import ConnectionState
 
 
 async def badFormat(state: ConnectionState, ws, app: Dict, reason: str):
@@ -48,7 +47,7 @@ def parseAppKey(path):
 
 
 def validatePermissions(permissions, action):
-    group, sep, verb = action.partition('/')
+    group, _, verb = action.partition('/')
 
     if group == 'admin':
         return 'admin' in permissions
@@ -81,7 +80,7 @@ ACTION_HANDLERS_LUT = {
 
 async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes):
     try:
-        pdu: JsonDict = ujson.loads(msg)
+        pdu: JsonDict = json.loads(msg)
     except ValueError:
         msgEncoded = base64.b64encode(msg)
         errMsg = f'malformed json pdu: base64: {msgEncoded} raw: {msg}'

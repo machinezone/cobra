@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.6.11] - 2019-08-28
+
+### Fixed
+
+* Fixed a couple of pylint warnings
+* Stop depending on ujson
+
 ## [1.6.10] - 2019-08-24
 
 ### Changed

@@ -4,7 +4,6 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import click
-
 from cobras.common.apps_config import genSecret
 
 
@@ -17,5 +16,4 @@ def secret():
     cobra secret
     '''
 
-    secret = genSecret()
-    print(secret)
+    print(genSecret())

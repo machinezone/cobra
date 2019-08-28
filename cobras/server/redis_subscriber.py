@@ -3,14 +3,13 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
-import logging
 import asyncio
+import json
+import logging
 import re
 import traceback
 from abc import ABC, abstractmethod
 from typing import Optional
-
-import ujson
 
 from cobras.server.redis_connections import RedisConnections
 
@@ -80,7 +79,7 @@ async def redisSubscriber(
                 data = msg[b'json']
 
                 payloadSize = len(data)
-                msg = ujson.loads(data)
+                msg = json.loads(data)
                 ret = await messageHandler.handleMsg(msg, lastId.decode(), payloadSize)
                 if not ret:
                     break

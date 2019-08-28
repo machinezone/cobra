@@ -3,13 +3,12 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
-import logging
 import asyncio
+import logging
 from typing import Dict
 
 import click
 import uvloop
-
 from cobras.client.client import subscribeClient
 from cobras.client.connection import ActionFlow
 from cobras.client.credentials import (
@@ -47,8 +46,8 @@ class MessageHandlerClass:
 
         if self.args['resume_from_last_position']:
             return ActionFlow.SAVE_POSITION
-        else:
-            return ActionFlow.CONTINUE
+
+        return ActionFlow.CONTINUE
 
 
 @click.command()

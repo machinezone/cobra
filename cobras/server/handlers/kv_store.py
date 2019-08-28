@@ -7,11 +7,9 @@ FIXME: missing delete
 '''
 
 import asyncio
-import logging
 import json
-from typing import Optional, Dict
-
-import ujson
+import logging
+from typing import Dict, Optional
 
 from cobras.common.cobra_types import JsonDict
 from cobras.server.connection_state import ConnectionState
@@ -34,7 +32,7 @@ async def kvStoreRead(
 
     try:
         results = await connection.xrevrange(pattern, start, end, 1)
-        if len(results) == 0:
+        if not results:
             return None
 
         result = results[0]
@@ -42,7 +40,7 @@ async def kvStoreRead(
         msg = result[1]
         data = msg[b'json']
 
-        msg = ujson.loads(data)
+        msg = json.loads(data)
         return msg
 
     except asyncio.CancelledError:

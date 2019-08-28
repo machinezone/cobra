@@ -46,7 +46,7 @@ async def handleAdminCloseConnection(
         return
 
     found = False
-    for connectionId, (state, websocket) in app['connections'].items():
+    for connectionId, (_, websocket) in app['connections'].items():
         if connectionId == targetConnectionId:
             targetWebSocket = websocket
             found = True
@@ -86,12 +86,12 @@ async def handleAdminCloseAllConnection(
     action = pdu['action']
 
     websocketLists = []
-    for connectionId, (state, websocket) in app['connections'].items():
-        if connectionId != state.connection_id:
+    for connectionId, (st, websocket) in app['connections'].items():
+        if connectionId != st.connection_id:
             websocketLists.append(websocket)
 
-    for ws in websocketLists:
-        await ws.close()  # should this be shielded ?
+    for websocket in websocketLists:
+        await websocket.close()  # should this be shielded ?
 
     response = {"action": f"{action}/ok", "id": pdu.get('id', 1), "body": {}}
     await state.respond(ws, response)

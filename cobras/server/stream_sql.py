@@ -128,7 +128,7 @@ class StreamSqlFilter:
         val = val.strip()
         if val.startswith("'") and val.endswith("'"):
             val = val.replace("'", '')
-        elif val == 'true' or val == 'false':
+        elif val in ('true', 'false'):
             val = val == 'true'
         else:
             try:
@@ -176,6 +176,8 @@ class StreamSqlFilter:
             return val > expression.val
         elif expression.lowerThanExpression:
             return val < expression.val
+        else:
+            assert False, 'unexpected expression'
 
     def match(self, msg):
         if self.emptyFilter:
