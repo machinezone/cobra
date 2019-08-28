@@ -4,9 +4,9 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 """
 from __future__ import absolute_import
 
-import platform
 import os
 import sys
+
 from setuptools import find_packages, setup
 
 if sys.version_info[:2] < (3, 7):
@@ -19,7 +19,7 @@ with open(os.path.join(ROOT, "DOCKER_VERSION")) as f:
     VERSION = f.read().strip()
 
 
-dev_requires = ["wheel", "isort", "mypy", "twine", "black"]
+dev_requires = ["wheel", "isort", "mypy", "twine", "black", "pre-commit"]
 
 with open("requirements.txt") as f:
     install_requires = f.read().splitlines()

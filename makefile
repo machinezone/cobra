@@ -72,6 +72,7 @@ docker_tag:
 	oc import-image -n cobra-internal cobra:production
 
 docker:
+	git clean -dfx -e venv
 	docker build -t ${IMG} .
 	docker tag ${IMG} ${BUILD}
 	docker tag ${IMG} ${PROD}

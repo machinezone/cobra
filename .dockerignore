@@ -10,3 +10,4 @@ docker-compose.yml
 Procfile
 __pycache__
 makefile
+.mypy_cache
