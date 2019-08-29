@@ -41,11 +41,13 @@ class MessageHandlerClass:
         pass
 
     async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
+        '''We can receive the same position twice,
+        if it was processed but wasn't saved yet.
+        '''
         self.cnt += 1
         self.cntPerSec += 1
 
-        self.args['total'] += 1
-        self.args['ids'].append(message['iteration'])
+        self.args['ids'].add(message['iteration'])
 
         if message['iteration'] == 99:
             return ActionFlow.STOP
@@ -67,7 +69,7 @@ def startSubscriber(url, credentials, channel, resumeFromLastPositionId):
     stream_sql = None
     waitTime = 0.1
 
-    args = {"total": 0, "ids": []}
+    args = {"ids": set()}
 
     subscriberTask = asyncio.get_event_loop().create_task(
         subscribeClient(
@@ -127,7 +129,7 @@ async def clientCoroutine(connection, channel, subscriberTask):
     subscriberTask.cancel()
     messageHandler = subscriberTask.result()
 
-    assert messageHandler.args['total'] == 100
+    assert len(messageHandler.args['ids']) == 100
 
 
 def test_save_position(runner):
