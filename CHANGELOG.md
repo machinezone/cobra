@@ -1,12 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.6.12] - 2019-08-28
+## [1.7.0] - 2019-08-28
 
 ### Changed
 
 * rtm/delete delete a stream, instead of writing a null entry in it
 * health check delete temp channel/streams + test read/write/delete
+
+## [1.6.12] - 2019-08-28
+
+### Changed
+
 * Add optional http test in health-check, with --http_extra_check
 
 ## [1.6.11] - 2019-08-28

@@ -12,7 +12,7 @@ dev:
 	pip install "file://`pwd`#egg=cobras[dev]"
 
 upload:
-	rm dist/*
+	rm -rf dist/*
 	python setup.py sdist bdist_wheel
 	twine upload dist/*.whl
 	rm -rf build/
