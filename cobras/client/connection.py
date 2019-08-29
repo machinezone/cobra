@@ -104,11 +104,16 @@ class Connection(object):
 
                 await q.put(data)
 
+        except websockets.exceptions.ConnectionClosedOK as e:
+            self.stop.set_result(e)
+
         except Exception as e:
             logging.error(f'unexpected exception: {e}')
-
-            # propagate the exception to the caller
             self.stop.set_result(e)
+
+        finally:
+            if len(self.queues) != 0:
+                logging.warning(f'connection has pending queues: {self.queues}')
 
     def getQueue(self, action):
         q = self.queues[action]
@@ -150,7 +155,8 @@ class Connection(object):
 
         if self.stop in done:
             # Reraise the exception which was caught in self.waitForResponses
-            raise self.stop.result()
+            exception = self.stop.result()
+            raise exception
 
     async def send(self, pdu):
         # Set the message id

@@ -148,9 +148,6 @@ async def handleWrite(
 async def handleDelete(
     state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
 ):
-    # To delete an entry we publish an empty message
-    message = None
-
     # Missing channel
     channel = pdu.get('body', {}).get('channel')
     if channel is None:
@@ -164,14 +161,12 @@ async def handleDelete(
         await state.respond(ws, response)
         return
 
-    appkey = state.appkey
+    appChannel = '{}::{}'.format(state.appkey, channel)
 
     try:
-        pipelinedPublisher = await app['pipelined_publishers'].get(appkey, channel)
-
-        await pipelinedPublisher.publishNow(
-            (appkey, channel, json.dumps(message)), maxLen=1
-        )
+        redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
+        redisConnection = await redisConnections.create(appChannel)
+        await redisConnection.delete(appChannel)
     except Exception as e:
         errMsg = f'delete: cannot connect to redis {e}'
         logging.warning(errMsg)

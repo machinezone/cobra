@@ -44,4 +44,7 @@ class ConnectionState:
         try:
             await ws.send(response)
         except websockets.exceptions.ConnectionClosed as e:
-            logging.warning(f'Trying to write in a closed connection: {e}')
+            action = data.get('action')
+            logging.warning(
+                f'Trying to write action {action} in a closed connection: {e}'
+            )

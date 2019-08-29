@@ -5,12 +5,13 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 import os
+import random
 import urllib
 import uuid
 from typing import Dict
 
 from cobras.client.client import subscribeClient, unsafeSubcribeClient
-from cobras.client.connection import ActionFlow
+from cobras.client.connection import ActionFlow, Connection
 from cobras.client.credentials import createCredentials
 from cobras.common.apps_config import HEALTH_APPKEY
 
@@ -62,20 +63,41 @@ def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
             self.connection = connection
             self.channel = args['channel']
             self.content = args['content']
+            self.magicNumber = args['magic']
+            self.refAndroidId = args['android_id']
             self.subscriptionId = self.channel
-            self.parsedMessage = None
+            self.reason = ''
+            self.success = False
 
         async def on_init(self):
             await self.connection.publish(self.channel, self.content)
 
         async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
-            self.parsedMessage = message
+            if message.get('device.android_id') != self.refAndroidId:
+                self.reason = f'incorrect android_id: {message}'
+                return ActionFlow.STOP
+
+            if message.get('magic') != self.magicNumber:
+                self.reason = f'incorrect magic: {message}'
+                return ActionFlow.STOP
+
+            self.success = True
             return ActionFlow.STOP
+
+        def __del__(self):
+            '''delete the temp channel/stream we created'''
+
+            async def cleanupHandler(connection, channel):
+                await connection.delete(channel)
+
+            asyncio.get_event_loop().run_until_complete(
+                cleanupHandler(self.connection, self.channel)
+            )
 
     credentials = createCredentials(role, secret)
 
     position = None
-    magicNumber = 666
+    magicNumber = random.randint(0, 1000)
     refAndroidId = uuid.uuid4().hex
     content = {
         'device': {'game': 'test', 'android_id': refAndroidId},
@@ -89,7 +111,12 @@ def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
                          magic = {magicNumber}
     """
 
-    messageHandlerArgs = {'channel': channel, 'content': content}
+    messageHandlerArgs = {
+        'channel': channel,
+        'content': content,
+        'android_id': refAndroidId,
+        'magic': magicNumber,
+    }
 
     handler = unsafeSubcribeClient
     if retry:
@@ -107,10 +134,28 @@ def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
         )
     )
 
-    message = messageHandler.parsedMessage
+    if not messageHandler.success:
+        raise ValueError(messageHandler.reason)
 
-    if message.get('device.android_id') != refAndroidId:
-        raise ValueError(f'incorrect android_id: {message}')
+    # Read write delete support
+    async def kvHandler(url, credentials):
+        connection = Connection(url, credentials)
+        await connection.connect()
 
-    if magicNumber != message['magic']:
-        raise ValueError(f'incorrect magic: {message}')
+        key = uuid.uuid4().hex
+        val = uuid.uuid4().hex
+
+        await connection.write(key, val)
+        data = await connection.read(key)
+
+        if val != data:
+            raise ValueError('read/write test failed')
+
+        await connection.delete(key)
+        data = await connection.read(key)
+        if data is not None:
+            raise ValueError('delete/read test failed')
+
+        await connection.close()
+
+    asyncio.get_event_loop().run_until_complete(kvHandler(url, credentials))
