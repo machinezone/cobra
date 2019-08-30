@@ -36,7 +36,7 @@ mypy:
 	mypy --ignore-missing-imports cobras/server/*.py cobras/common/*.py
 
 pylint:
-	pylint -j 10 -r n -d C0103 -d C0111 -d C0330 -d W1401 -d W1203 -d W1202 `find cobras -name '*.py'`
+	pylint -E -j 10 -r n -d C0301 -d C0103 -d C0111 -d C0330 -d W1401 -d W1203 -d W1202 `find cobras -name '*.py'`
 
 coverage:
 	py.test -n 4 --disable-warnings --cov=cobras --cov-report html --cov-report term tests
