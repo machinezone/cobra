@@ -7,7 +7,6 @@ import base64
 import json
 import logging
 from typing import Dict
-from urllib.parse import parse_qs, urlparse
 
 from cobras.common.cobra_types import JsonDict
 from cobras.server.connection_state import ConnectionState
@@ -29,21 +28,6 @@ async def badFormat(state: ConnectionState, ws, app: Dict, reason: str):
     state.ok = False
     state.error = response
     await state.respond(ws, response)
-
-
-def parseAppKey(path):
-    '''
-    Parse url
-    path = /v2?appkey=FFFFFFFFFFFFEEEEEEEEEEEEE
-    '''
-    parseResult = urlparse(path)
-    args = parse_qs(parseResult.query)
-    appkey = args.get('appkey')
-    if appkey is None or not isinstance(appkey, list) or len(appkey) != 1:
-        return None
-
-    appkey = appkey[0]
-    return appkey
 
 
 def validatePermissions(permissions, action):

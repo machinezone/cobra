@@ -10,6 +10,7 @@ import importlib
 import logging
 import time
 import traceback
+from urllib.parse import parse_qs, urlparse
 
 import websockets
 from cobras.common.apps_config import STATS_APPKEY, AppsConfig
@@ -18,9 +19,24 @@ from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.version import getVersion
 from cobras.server.connection_state import ConnectionState
 from cobras.server.pipelined_publishers import PipelinedPublishers
-from cobras.server.protocol import parseAppKey, processCobraMessage
+from cobras.server.protocol import processCobraMessage
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
+
+
+def parseAppKey(path):
+    '''
+    Parse url
+    path = /v2?appkey=FFFFFFFFFFFFEEEEEEEEEEEEE
+    '''
+    parseResult = urlparse(path)
+    args = parse_qs(parseResult.query)
+    appkey = args.get('appkey')
+    if appkey is None or not isinstance(appkey, list) or len(appkey) != 1:
+        return None
+
+    appkey = appkey[0]
+    return appkey
 
 
 async def cobraHandler(websocket, path, app, redisUrls: str):
