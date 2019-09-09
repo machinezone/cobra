@@ -129,4 +129,5 @@ There would be no cobra without some other amazing open-source projects and tech
 
 - [Python](https://www.python.org/) (and [asyncio](https://realpython.com/async-io-python/), one of the killer python3 feature !)
 - [Redis](https://redis.io/), the swiss army knife of the internet which provide a very scalable publish/subscribe feature to dispatch messages while retaining them and allowing lookups of old messages (see [Redis Streams] (https://redis.io/topics/streams-intro).
-- The python [websockets](https://websockets.readthedocs.io/en/stable/intro.html) library, very elegantly implementing the [WebSockets](https://tools.ietf.org/html/rfc6455) protocol.
+- The python [websockets](https://websockets.readthedocs.io/en/stable/intro.html) library, very elegantly implementing the [WebSockets](https://tools.ietf.org/html/rfc6455) protocol using **asyncio**.
+- The python [aioredis](https://aioredis.readthedocs.io/en/v1.2.0/) library used to talk to Redis. This [redis labs](https://redislabs.com/blog/async-await-programming-basics-python-examples/) article explains some pitfalls with asyncio and how to get the best performance out of it.

@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.7.3] - 2019-09-09
+
+* client / when closing a connection, make sure to unsubscribe all subscriptions
+
 ## [1.7.1] - 2019-08-29
 
 ### Changed

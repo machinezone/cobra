@@ -5,6 +5,7 @@ Copyright (c) 2019 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 import collections
+import copy
 import itertools
 import json
 import logging
@@ -47,6 +48,12 @@ class Connection(object):
 
         self.task = None
 
+        self.subscriptions = set()
+
+    def __del__(self):
+        if self.task is not None:
+            self.task.cancel()
+
     async def connect(self):
         self.websocket = await websockets.connect(self.url)
         self.task = asyncio.create_task(self.waitForResponses())
@@ -76,10 +83,6 @@ class Connection(object):
             },
         }
         await self.send(challenge)
-
-    def __del__(self):
-        if self.task is not None:
-            self.task.cancel()
 
     async def waitForResponses(self):
         try:
@@ -219,6 +222,8 @@ class Connection(object):
         messageHandler = messageHandlerClass(self, messageHandlerArgs)
         await messageHandler.on_init()
 
+        self.subscriptions.add(subscriptionId)
+
         actionId = 'rtm/subscription::' + subscriptionId
 
         while True:
@@ -248,6 +253,8 @@ class Connection(object):
     async def unsubscribe(self, subscriptionId):
         pdu = {"action": "rtm/unsubscribe", "body": {"subscription_id": subscriptionId}}
         await self.send(pdu)
+
+        self.subscriptions.remove(subscriptionId)
 
     async def publish(self, channel, msg):
         pdu = {"action": "rtm/publish", "body": {"channel": channel, "message": msg}}
@@ -285,6 +292,14 @@ class Connection(object):
             raise ValueError(f'rpc/admin/get_connections_count failure {e}')
 
     async def close(self):
+        subscriptions = copy.copy(self.subscriptions)
+        for subscription in subscriptions:
+            await self.unsubscribe(subscription)
+
+        keys = [key for key in self.queues.keys()]
+        for actionId in keys:
+            self.deleteQueue(actionId)
+
         await self.websocket.close()
         close_status = websockets.exceptions.format_close(
             self.websocket.close_code, self.websocket.close_reason
