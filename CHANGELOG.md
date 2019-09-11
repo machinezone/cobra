@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.7.7] - 2019-09-11
+
+* bump sentry_sdk dep to 0.11.2
+
 ## [1.7.6] - 2019-09-11
 
 * server / connection state holds a userAgent and has a __repr__ method, this should work with sentry errors to identify bad clients
