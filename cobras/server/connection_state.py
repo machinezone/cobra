@@ -7,6 +7,8 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import json
 import logging
+import os
+import tempfile
 import uuid
 
 import websockets
@@ -26,7 +28,8 @@ class ConnectionState:
         self.nonce = None
         self.error = 'na'
 
-        self.path = f'/tmp/log_{self.connection_id}'
+        tempdir = tempfile.gettempdir()
+        self.path = os.path.join(tempdir, f'log_{self.connection_id}')
         self.fileLogging = False
 
     def log(self, msg):

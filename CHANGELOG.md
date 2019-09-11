@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.7.4] - 2019-09-10
+
+* server / make disk logging work on Windows by using tempfile.gettempdir() instead of /tmp/
+
 ## [1.7.3] - 2019-09-09
 
 * client / when closing a connection, make sure to unsubscribe all subscriptions
