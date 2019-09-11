@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.7.6] - 2019-09-11
+
+* server / connection state holds a userAgent and has a __repr__ method, this should work with sentry errors to identify bad clients
+
 ## [1.7.5] - 2019-09-11
 
 * server / connection id is 12 byte long, instead of 8. This might help with some rare collisions.

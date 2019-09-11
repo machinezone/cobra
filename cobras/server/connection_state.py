@@ -13,8 +13,9 @@ import websockets
 
 
 class ConnectionState:
-    def __init__(self, appkey):
+    def __init__(self, appkey, userAgent):
         self.appkey = appkey
+        self.userAgent = userAgent
 
         self.connection_id = uuid.uuid4().hex[:12]
         self.subscriptions = {}
@@ -49,3 +50,6 @@ class ConnectionState:
             logging.warning(
                 f'Trying to write action {action} in a closed connection: {e}'
             )
+
+    def __repr__(self):
+        return f"[{self.connection_id}::{self.role}::{self.userAgent}]"

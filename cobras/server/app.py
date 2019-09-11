@@ -44,7 +44,9 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
     msgCount = 0
     appkey = parseAppKey(path)  # appkey must have been validated
 
-    state: ConnectionState = ConnectionState(appkey)
+    userAgent = websocket.requestHeaders.get('User-Agent', 'na')
+
+    state: ConnectionState = ConnectionState(appkey, userAgent)
     state.log('appkey {}'.format(state.appkey))
 
     key = state.connection_id
@@ -110,6 +112,8 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
         appkey = parseAppKey(path)
         if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(appkey):
             return http.HTTPStatus.FORBIDDEN, [], b'KO\n'
+
+        self.requestHeaders = request_headers
 
 
 class AppRunner:
