@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.7.5] - 2019-09-11
+
+* server / connection id is 12 byte long, instead of 8. This might help with some rare collisions.
+
 ## [1.7.4] - 2019-09-10
 
 * server / make disk logging work on Windows by using tempfile.gettempdir() instead of /tmp/

@@ -1,7 +1,5 @@
 '''Small class to record data attached to a connection
 
-FIXME: use this to enforce publish+subscribe permissions.
-
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
@@ -18,7 +16,7 @@ class ConnectionState:
     def __init__(self, appkey):
         self.appkey = appkey
 
-        self.connection_id = uuid.uuid4().hex[:8]
+        self.connection_id = uuid.uuid4().hex[:12]
         self.subscriptions = {}
         self.ok = True
         self.role = 'na'

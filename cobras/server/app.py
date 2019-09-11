@@ -72,7 +72,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
         print(e)
         print('Generic Exception caught in {}'.format(traceback.format_exc()))
     finally:
-        del app['connections'][state.connection_id]
+        del app['connections'][key]
 
         subCount = len(state.subscriptions)
 
