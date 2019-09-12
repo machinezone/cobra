@@ -194,7 +194,7 @@ async def handleSubscribe(
         def log(self, msg):
             self.state.log(msg)
 
-        async def on_init(self, redisConnection):
+        async def on_init(self, redisConnection, streamExists, streamLength):
             response = self.subscribeResponse
             if redisConnection is None:
                 msgId = response['id']
@@ -206,7 +206,13 @@ async def handleSubscribe(
                     },
                 }
             else:
-                response['body']['redis_node'] = redisConnection.host
+                response['body'].update(
+                    {
+                        'redis_node': redisConnection.host,
+                        'stream_exists': streamExists,
+                        'stream_length': streamLength,
+                    }
+                )
 
             # Send response. By now
             await self.state.respond(self.ws, response)

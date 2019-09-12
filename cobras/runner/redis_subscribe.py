@@ -5,7 +5,6 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import click
 import uvloop
-
 from cobras.common.throttle import Throttle
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.redis_subscriber import (
@@ -23,8 +22,11 @@ class MessageHandlerClass(RedisSubscriberMessageHandlerClass):
     def log(self, msg):
         print(msg)
 
-    async def on_init(self, redisConnection):
-        pass
+    async def on_init(self, redisConnection, streamExists, streamLength):
+        if redisConnection is None:
+            print('Failure connecting to redis')
+        else:
+            print(f'stream exists: {streamExists} stream length: {streamLength}')
 
     async def handleMsg(self, msg: str, position: str, payloadSize: int) -> bool:
         self.cnt += 1

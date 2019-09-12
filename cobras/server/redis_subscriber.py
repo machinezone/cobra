@@ -32,7 +32,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def on_init(self):
+    async def on_init(self, streamExists: bool, streamLength: int):
         pass  # pragma: no cover
 
     @abstractmethod
@@ -56,10 +56,24 @@ async def redisSubscriber(
         logging.error(f"subcriber: cannot connect to redis {e}")
         connection = None
 
+    streamExists = False
+    streamLength = 0
+
+    if connection:
+        # query the stream size
+        try:
+            streamExists = await connection.exists(pattern) == 1
+            if streamExists:
+                results = await connection.xinfo(pattern)
+                streamLength = results[b'length']
+        except Exception as e:
+            logging.error(f"subcriber: cannot retreive stream metadata: {e}")
+            pass
+
     try:
-        await messageHandler.on_init(connection)
+        await messageHandler.on_init(connection, streamExists, streamLength)
     except Exception as e:
-        logging.error(f"subcriber: cannot initialize message handler: {e}")
+        logging.error(f'subcriber: cannot initialize message handler: {e}')
         connection = None
 
     if connection is None:
