@@ -22,6 +22,7 @@ from cobras.server.pipelined_publishers import PipelinedPublishers
 from cobras.server.protocol import processCobraMessage
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
+from sentry_sdk import configure_scope
 
 
 def parseAppKey(path):
@@ -57,11 +58,14 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
     state.log(f'(open) connections {connectionCount}')
 
     try:
-        async for message in websocket:
-            msgCount += 1
-            await processCobraMessage(state, websocket, app, message)
-            if not state.ok:
-                raise Exception(state.error)
+        with configure_scope() as scope:
+            scope.set_extra("user-agent", userAgent)
+
+            async for message in websocket:
+                msgCount += 1
+                await processCobraMessage(state, websocket, app, message)
+                if not state.ok:
+                    raise Exception(state.error)
 
     except websockets.exceptions.ProtocolError as e:
         print(e)

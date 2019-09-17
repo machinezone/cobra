@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.8.0] - 2019-09-17
+
+* server / record user-agent as a sentry context info
+
 ## [1.7.9] - 2019-09-17
 
 * server / log an error when a connection is made with an invalid appkey
