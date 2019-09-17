@@ -3,6 +3,7 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 import asyncio
+import contextvars
 import datetime
 import functools
 import http
@@ -23,6 +24,8 @@ from cobras.server.protocol import processCobraMessage
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
 from sentry_sdk import configure_scope
+
+userAgentVar = contextvars.ContextVar('user_agent')
 
 
 def parseAppKey(path):
@@ -46,6 +49,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
     appkey = parseAppKey(path)  # appkey must have been validated
 
     userAgent = websocket.requestHeaders.get('User-Agent', 'na')
+    userAgentVar.set(userAgent)
 
     state: ConnectionState = ConnectionState(appkey, userAgent)
     state.log('appkey {}'.format(state.appkey))
@@ -59,7 +63,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
 
     try:
         with configure_scope() as scope:
-            scope.set_extra("user-agent", userAgent)
+            scope.set_extra("user-agent", userAgentVar.get())
 
             async for message in websocket:
                 msgCount += 1

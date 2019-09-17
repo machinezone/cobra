@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.8.1] - 2019-09-17
+
+* server / user-agent recorded as a sentry context info is a python 3.7 Context Variable
+
 ## [1.8.0] - 2019-09-17
 
 * server / record user-agent as a sentry context info
