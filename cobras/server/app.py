@@ -119,8 +119,8 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
 
         appkey = parseAppKey(path)
         if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(appkey):
-            logging.error(f'Rejecting request with invalid appkey for {path}')
-            logging.error(f'Request headers: {request_headers}')
+            logging.warning(f'Rejecting request with invalid appkey for {path}')
+            logging.warning(f'Request headers: {request_headers}')
             return http.HTTPStatus.FORBIDDEN, [], b'KO\n'
 
         self.requestHeaders = request_headers

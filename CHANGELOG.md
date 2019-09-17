@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [1.8.1] - 2019-09-17
 
 * server / user-agent recorded as a sentry context info is a python 3.7 Context Variable
+* server / log a warning instead of an error when a connection is made with an invalid appkey
 
 ## [1.8.0] - 2019-09-17
 
