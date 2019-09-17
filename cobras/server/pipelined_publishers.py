@@ -11,11 +11,15 @@ from cobras.server.redis_connections import RedisConnections
 
 class PipelinedPublishers:
     def __init__(
-        self, redisConnections: RedisConnections, batchPublishSize: int
+        self,
+        redisConnections: RedisConnections,
+        batchPublishSize: int,
+        channelMaxLength: int,
     ) -> None:
         self.redisConnections = redisConnections
         self.pipelinedPublishers: dict = {}
         self.batchPublishSize: int = batchPublishSize
+        self.channelMaxLength: int = channelMaxLength
         self.lock = asyncio.Lock()
 
     async def get(self, appkey, channel):
@@ -40,6 +44,8 @@ class PipelinedPublishers:
                 return pipelinedPublisher
 
             db = await self.redisConnections.create(appChannel)
-            pipelinedPublisher = PipelinedPublisher(db, self.batchPublishSize)
+            pipelinedPublisher = PipelinedPublisher(
+                db, self.batchPublishSize, self.channelMaxLength
+            )
             self.pipelinedPublishers[key] = pipelinedPublisher
             return pipelinedPublisher

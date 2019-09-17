@@ -12,13 +12,12 @@ from typing import Optional
 
 
 class PipelinedPublisher:
-    def __init__(self, redis, batchSize=None):
+    def __init__(self, redis, batchSize=None, channelMaxLength=None):
         self.redis = redis
         self.queue = asyncio.Queue()
         self.batchSize = batchSize or 100
+        self.xaddMaxLength = channelMaxLength or 1000
         self.lock = asyncio.Lock()
-
-        self.xaddMaxLength = 1000
 
     async def publishAll(self):
         pipe = self.redis.pipeline()

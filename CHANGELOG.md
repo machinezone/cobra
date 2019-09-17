@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.8.2] - 2019-09-17
+
+* server / add a channel_max_length apps config parameter that limits how many messages can be retained in a single channel. Still default to a 1000 messages. The parameter is a global, top level yaml config for now. It is likely that we will make it a per appkey settings. In the example below we set it to 100. This parameter is helpful if you are trying to use cobra to transfer large messages.
+
+```
+$ head ~/.cobra.yaml
+batch_publish_size: 50
+channel_max_length: 100
+```
+
 ## [1.8.1] - 2019-09-17
 
 * server / user-agent recorded as a sentry context info is a python 3.7 Context Variable

@@ -176,6 +176,7 @@ class AppRunner:
             logging.error(f'failure to import {plugins}')
 
         self.app['batch_publish_size'] = appsConfig.getBatchPublishSize()
+        self.app['channel_max_length'] = appsConfig.getChannelMaxLength()
         self.server = None
 
     async def init_app(self):
@@ -188,9 +189,12 @@ class AppRunner:
         redisUrls = self.app['redis_urls']
         redisPassword = self.app['redis_password']
         batchPublishSize = self.app['batch_publish_size']
+        channelMaxLength = self.app['channel_max_length']
         redisConnections = RedisConnections(redisUrls, redisPassword)
 
-        pipelinedPublishers = PipelinedPublishers(redisConnections, batchPublishSize)
+        pipelinedPublishers = PipelinedPublishers(
+            redisConnections, batchPublishSize, channelMaxLength
+        )
         self.app['pipelined_publishers'] = pipelinedPublishers
 
         serverStats = ServerStats(pipelinedPublishers, STATS_APPKEY)

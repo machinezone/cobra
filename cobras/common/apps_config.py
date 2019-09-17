@@ -4,12 +4,12 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import base64
+import binascii
+import gzip
+import io
 import logging
 import os
 import tempfile
-import gzip
-import binascii
-import io
 from pathlib import Path
 from random import getrandbits, randint
 from typing import List
@@ -94,6 +94,9 @@ class AppsConfig:
 
     def getBatchPublishSize(self):
         return self.data.get('batch_publish_size', -1)
+
+    def getChannelMaxLength(self):
+        return self.data.get('channel_max_length', 1000)
 
     def generateDefaultConfig(self):
         self.data['apps'] = {}
