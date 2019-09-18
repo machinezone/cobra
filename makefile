@@ -80,4 +80,6 @@ docker:
 
 docker_push: docker_tag
 
+deploy: docker docker_push
+
 dummy: docker
