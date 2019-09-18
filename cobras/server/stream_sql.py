@@ -4,6 +4,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import collections
+import fnmatch
 import logging
 
 StreamSQLExpression = collections.namedtuple(
@@ -128,6 +129,9 @@ class StreamSqlFilter:
         val = val.strip()
         if val.startswith("'") and val.endswith("'"):
             val = val.replace("'", '')
+            if likeExpression:
+                val = val.replace('%', '*')
+                val = val.replace('_', '?')
         elif val in ('true', 'false'):
             val = val == 'true'
         else:
@@ -169,7 +173,7 @@ class StreamSqlFilter:
         if expression.equalExpression:
             return expression.val == val
         elif expression.likeExpression:
-            return expression.val in val
+            return fnmatch.fnmatch(val, expression.val)
         elif expression.differentExpression:
             return expression.val != val
         elif expression.largerThanExpression:
@@ -184,10 +188,14 @@ class StreamSqlFilter:
             return self.transform(msg)
 
         if isinstance(msg, list):
-            msg = msg[0]
+            if len(msg) == 0:
+                logging.error('Bad type for {}, expecting non empty list'.format(msg))
+                return False
+            else:
+                msg = msg[0]
 
         if not isinstance(msg, dict):
-            logging.error('Bad type for {}'.format(msg))
+            logging.error('Bad type for {}, expecting dictionary'.format(msg))
             return False
 
         if self.andExpr:

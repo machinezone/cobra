@@ -47,7 +47,7 @@ def test_answer_bad_message_none():
     assert not match_stream_sql_filter(sql_filter, msg)
 
 
-def test_answer_bad_message_list():
+def test_answer_bad_message_dictionary():
     sql_filter = "select * from blah"
     msg = {}
 
@@ -108,12 +108,30 @@ def test_check_or_combination():
 
 
 def test_like_statement():
-    miso_sql_filter = "SELECT * from blah WHERE device.game LIKE 'iso'"
+    miso_sql_filter = "SELECT * from blah WHERE device.game LIKE '_iso'"
     miso_msg = {'device': {'game': 'miso'}}
     ody_msg = {'device': {'game': 'ody'}}
 
     assert match_stream_sql_filter(miso_sql_filter, miso_msg)
     assert not match_stream_sql_filter(miso_sql_filter, ody_msg)
+
+
+def test_like_statement2():
+    miso_sql_filter = "SELECT * from blah WHERE device.game LIKE '*iso'"
+    miso_msg = {'device': {'game': 'werwerweriso'}}
+    ody_msg = {'device': {'game': 'ody'}}
+
+    assert match_stream_sql_filter(miso_sql_filter, miso_msg)
+    assert not match_stream_sql_filter(miso_sql_filter, ody_msg)
+
+
+def test_like_statement3():
+    miso_sql_filter = "SELECT * from blah WHERE session LIKE '*aa'"
+    good_session = {'session': 'asdcasdcasdcadscaa'}
+    bad_session = {'session': 'asdcasdcasdcadcasbb'}
+
+    assert match_stream_sql_filter(miso_sql_filter, good_session)
+    assert not match_stream_sql_filter(miso_sql_filter, bad_session)
 
 
 def test_booleans_true():
@@ -201,7 +219,8 @@ def test_select_with_subfields_1():
     sql_filter = """SELECT device.app_version from `blah`
                  """
     hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
-    miss = {'data': {'file_count': 15}}
+    # FIXME: implement 'fail case'
+    # miss = {'data': {'file_count': 15}}
 
     assert {"device.app_version": "4.3.2"} == match_stream_sql_filter(sql_filter, hit)
 
