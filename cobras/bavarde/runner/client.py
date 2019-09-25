@@ -13,7 +13,6 @@ import threading
 import sys
 
 import click
-import uvloop
 
 from cobras.bavarde.client.client import runClient
 
@@ -38,9 +37,6 @@ DEFAULT_SECRET = 'ccc02DE4Ed8CAB9aEfC8De3e13BfBE5E'
 @click.option('--stream_sql')
 def client(url, role, secret, channel, position, username, stream_sql, verbose, dev):
     '''WRITEME'''
-
-    uvloop.install()
-
     if os.getenv('DEBUG') is not None or verbose:
         pprint.pprint(locals())
 
