@@ -7,10 +7,9 @@ import asyncio
 import logging
 
 import click
-import uvloop
 
 # from cobras.client.kv_store import readClient
-from cobras.client.connection import Connection, ActionException
+from cobras.client.connection import ActionException, Connection
 from cobras.client.credentials import (
     createCredentials,
     getDefaultRoleForApp,
@@ -30,9 +29,6 @@ DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={PUBSUB_APPKEY}'
 def write(url, role, secret, channel, data):
     '''Write to the cobra key value store
     '''
-
-    uvloop.install()
-
     credentials = createCredentials(role, secret)
 
     async def handler(url, credentials, channel, data):

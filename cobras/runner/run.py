@@ -3,15 +3,13 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import logging
 import os
 import sys
-import logging
 
 import click
 import sentry_sdk
-import uvloop
-
-from cobras.common.apps_config import getDefaultAppsConfigPath, generateAppsConfig
+from cobras.common.apps_config import generateAppsConfig, getDefaultAppsConfigPath
 from cobras.server.app import AppRunner
 
 
@@ -71,8 +69,6 @@ def run(
     '''
     if prod:
         os.environ['COBRA_PROD'] = '1'
-
-    uvloop.install()
 
     if sentry and sentry_url:
         sentry_sdk.init(sentry_url)

@@ -1,4 +1,3 @@
-
 with open('DOCKER_VERSION') as f:
     version = f.read()
 

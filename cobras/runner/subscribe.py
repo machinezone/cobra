@@ -8,7 +8,6 @@ import logging
 from typing import Dict
 
 import click
-import uvloop
 from cobras.client.client import subscribeClient
 from cobras.client.connection import ActionFlow
 from cobras.client.credentials import (
@@ -63,8 +62,6 @@ def subscribe(
 ):
     '''Subscribe to a channel
     '''
-
-    uvloop.install()
 
     credentials = createCredentials(role, secret)
 

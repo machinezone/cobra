@@ -7,8 +7,6 @@ import asyncio
 import logging
 
 import click
-import uvloop
-
 from cobras.client.connection import Connection
 from cobras.client.credentials import (
     createCredentials,
@@ -51,7 +49,6 @@ def admin(url, role, secret, action, connection_id):
     \b
     cobra admin --action disconnect --connection_id 3919dc67
     '''
-    uvloop.install()
 
     credentials = createCredentials(role, secret)
 

@@ -9,12 +9,12 @@ repos:
     -   id: trailing-whitespace
     -   id: debug-statements
     -   id: requirements-txt-fixer
--   repo: https://github.com/timothycrosley/isort
-    rev: ''
-    hooks:
-    - id: isort
+# -   repo: https://github.com/timothycrosley/isort
+#     rev: ''
+#     hooks:
+#     - id: isort
 -   repo: https://github.com/psf/black
-    rev: 19.3b0
+    rev: ''
     hooks:
     - id: black
       args: [-S]

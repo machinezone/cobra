@@ -4,14 +4,12 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import click
-import uvloop
-
 from cobras.client.credentials import (
     createCredentials,
     getDefaultRoleForApp,
     getDefaultSecretForApp,
 )
-from cobras.client.monitor import runMonitor, getDefaultMonitorUrl
+from cobras.client.monitor import getDefaultMonitorUrl, runMonitor
 
 
 @click.command()
@@ -39,8 +37,6 @@ def monitor(
 ):
     '''Monitor cobra
     '''
-
-    uvloop.install()
 
     credentials = createCredentials(role, secret)
     runMonitor(

@@ -14,7 +14,6 @@ import tarfile
 import uuid
 
 import click
-import uvloop
 from cobras.client.client import client
 from cobras.client.credentials import (
     createCredentials,
@@ -181,9 +180,6 @@ def publish(
 ):
     '''Publish to a channel
     '''
-
-    uvloop.install()
-
     if batch:
         path = batch_events_path
 

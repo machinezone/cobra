@@ -4,7 +4,6 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import click
-import uvloop
 from cobras.common.throttle import Throttle
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.redis_subscriber import (
@@ -60,8 +59,6 @@ def redis_subscribe(redis_urls, redis_password, channel, position, appkey):
     \b
     cobra subscribe --redis_urls 'redis://localhost:7001;redis://localhost:7002' --channel foo --appkey bar  # noqa
     '''
-
-    uvloop.install()
 
     appChannel = '{}::{}'.format(appkey, channel)
     redisConnections = RedisConnections(redis_urls, redis_password)

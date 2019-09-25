@@ -8,7 +8,6 @@ import sys
 import urllib.request
 
 import click
-import uvloop
 from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
 from cobras.client.health_check import (
     getDefaultHealthCheckChannel,
@@ -36,7 +35,6 @@ def health(url, http_url, http, http_extra_check, role, secret, channel, retry):
     cobra health --http --http_url 'http://127.0.0.1:8765/health/'
     \b
     '''
-    uvloop.install()
 
     if http:
         print('url:', http_url)

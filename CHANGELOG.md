@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2019-09-25
+
+* bump aio-redis dependency to 1.3.0
+
+## [2.0.0] - 2019-09-19
+
+* cobra Works with python3.8 (beta4 at this point)
+
 ## [1.9.0] - 2019-09-18
 
 * server / LIKE expression follows more closely the SQL standard, using globbing/fnmatch to evaluate expressions. LIKE can be used to compute startswith and endswith queries for strings. % (match all) and _ (match one) characters are supported, and mapped to * and ? fnmatch globbing special characters.
