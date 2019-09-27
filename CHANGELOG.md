@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2019-09-27
+
+* fix redis connection leak in rtm/delete
+
 ## [2.1.0] - 2019-09-25
 
 * bump aio-redis dependency to 1.3.0

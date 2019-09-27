@@ -167,6 +167,7 @@ async def handleDelete(
         redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
         redisConnection = await redisConnections.create(appChannel)
         await redisConnection.delete(appChannel)
+        redisConnection.close()
     except Exception as e:
         errMsg = f'delete: cannot connect to redis {e}'
         logging.warning(errMsg)
