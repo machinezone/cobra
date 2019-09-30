@@ -39,25 +39,32 @@ def getDefaultHealthCheckUrl(host=None, port=None):
     return f'ws://{host}:{port}/v2?appkey={HEALTH_APPKEY}'
 
 
-def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
-    '''Perform a health check'''
+def healthCheckKVStore(url, credentials):
+    # Read write delete support
+    async def kvHandler(url, credentials):
+        connection = Connection(url, credentials)
+        await connection.connect()
 
-    if httpCheck:
-        # the first check to make is the simple HTTP one
-        parsedUrl = urllib.parse.urlparse(url)
-        netloc = parsedUrl.netloc
-        host, _, port = netloc.partition(':')
+        key = uuid.uuid4().hex
+        val = uuid.uuid4().hex
 
-        scheme = 'http' if parsedUrl.scheme == 'ws' else 'https'
+        await connection.write(key, val)
+        data = await connection.read(key)
 
-        httpUrl = f'{scheme}://{host}:{port}/health/'
-        print('url:', httpUrl)
-        with urllib.request.urlopen(httpUrl) as response:
-            html = response.read()
-            value = html.decode('utf8')
-            if value != 'OK\n':
-                raise ValueError(f'Invalid http response, {value} != OK')
+        if val != data:
+            raise ValueError('read/write test failed')
 
+        await connection.delete(key)
+        data = await connection.read(key)
+        if data is not None:
+            raise ValueError('delete/read test failed')
+
+        await connection.close()
+
+    asyncio.get_event_loop().run_until_complete(kvHandler(url, credentials))
+
+
+def healthCheckPubSub(url, credentials, channel, retry):
     class MessageHandlerClass:
         def __init__(self, connection, args):
             self.connection = connection
@@ -93,8 +100,6 @@ def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
             asyncio.get_event_loop().run_until_complete(
                 cleanupHandler(self.connection, self.channel)
             )
-
-    credentials = createCredentials(role, secret)
 
     position = None
     magicNumber = random.randint(0, 1000)
@@ -137,25 +142,30 @@ def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
     if not messageHandler.success:
         raise ValueError(messageHandler.reason)
 
-    # Read write delete support
-    async def kvHandler(url, credentials):
-        connection = Connection(url, credentials)
-        await connection.connect()
 
-        key = uuid.uuid4().hex
-        val = uuid.uuid4().hex
+def healthCheckHttp(url):
+    # the first check to make is the simple HTTP one
+    parsedUrl = urllib.parse.urlparse(url)
+    netloc = parsedUrl.netloc
+    host, _, port = netloc.partition(':')
 
-        await connection.write(key, val)
-        data = await connection.read(key)
+    scheme = 'http' if parsedUrl.scheme == 'ws' else 'https'
 
-        if val != data:
-            raise ValueError('read/write test failed')
+    httpUrl = f'{scheme}://{host}:{port}/health/'
+    print('url:', httpUrl)
+    with urllib.request.urlopen(httpUrl) as response:
+        html = response.read()
+        value = html.decode('utf8')
+        if value != 'OK\n':
+            raise ValueError(f'Invalid http response, {value} != OK')
 
-        await connection.delete(key)
-        data = await connection.read(key)
-        if data is not None:
-            raise ValueError('delete/read test failed')
 
-        await connection.close()
+def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
+    '''Perform a health check'''
 
-    asyncio.get_event_loop().run_until_complete(kvHandler(url, credentials))
+    credentials = createCredentials(role, secret)
+
+    if httpCheck:
+        healthCheckHttp(url)
+    healthCheckPubSub(url, credentials, channel, retry)
+    healthCheckKVStore(url, credentials)
