@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.3] - 2019-09-30
+
+* redis subscription: detect max number of clients reached error and fail rtm/subscribe commands
+
 ## [2.1.2] - 2019-09-27
 
 * fix redis connection leak in rtm/delete
@@ -11,7 +15,7 @@ All notable changes to this project will be documented in this file.
 
 ## [2.0.0] - 2019-09-19
 
-* cobra Works with python3.8 (beta4 at this point)
+* cobra works with python3.8 (beta4 at this point)
 
 ## [1.9.0] - 2019-09-18
 

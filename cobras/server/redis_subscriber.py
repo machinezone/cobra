@@ -56,6 +56,13 @@ async def redisSubscriber(
         logging.error(f"subcriber: cannot connect to redis {e}")
         connection = None
 
+    # Ping the connection first
+    try:
+        await connection.ping()
+    except Exception as e:
+        logging.error(f"subcriber: cannot ping redis {e}")
+        connection = None
+
     streamExists = False
     streamLength = 0
 
