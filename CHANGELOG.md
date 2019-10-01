@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.6] - 2019-10-01
+
+* display all http headers when catching zlib decompression error explicitly and logging an error
+
 ## [2.1.5] - 2019-10-01
 
 * catch zlib decompression error explicitly and log an error including the connection id

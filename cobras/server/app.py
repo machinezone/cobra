@@ -7,6 +7,7 @@ import datetime
 import functools
 import http
 import importlib
+import json
 import logging
 import time
 import traceback
@@ -128,7 +129,10 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
         try:
             return await super().read_message()
         except zlib.error as e:
-            logging.error('%s, %s, %s', self.connection_id, self.userAgent, e)
+            headers = json.dumps({k: v for (k, v) in self.requestHeaders.raw_items()})
+            logging.error(
+                '%s, %s, %s, %s', self.connection_id, self.userAgent, headers, e
+            )
             raise
 
 
