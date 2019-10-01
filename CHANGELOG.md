@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.5] - 2019-10-01
+
+* catch zlib decompression error explicitly and log an error including the connection id
+
 ## [2.1.4] - 2019-09-30
 
 * sentry integration / report the user agent properly using the current sentry Hub (see https://github.com/getsentry/sentry-python/issues/483)

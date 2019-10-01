@@ -3,7 +3,6 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 import asyncio
-import contextvars
 import datetime
 import functools
 import http
@@ -11,6 +10,7 @@ import importlib
 import logging
 import time
 import traceback
+import zlib
 from urllib.parse import parse_qs, urlparse
 
 import websockets
@@ -23,10 +23,6 @@ from cobras.server.pipelined_publishers import PipelinedPublishers
 from cobras.server.protocol import processCobraMessage
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
-from sentry_sdk import configure_scope, Hub
-
-userAgentVar = contextvars.ContextVar('user_agent')
-UNKNOWN_USER_AGENT = 'na'
 
 
 def parseAppKey(path):
@@ -49,11 +45,14 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
     msgCount = 0
     appkey = parseAppKey(path)  # appkey must have been validated
 
-    userAgent = websocket.requestHeaders.get('User-Agent', UNKNOWN_USER_AGENT)
-    userAgentVar.set(userAgent)
+    userAgent = websocket.requestHeaders.get('User-Agent', 'unknown-user-agent')
 
     state: ConnectionState = ConnectionState(appkey, userAgent)
     state.log('appkey {}'.format(state.appkey))
+
+    # For debugging
+    websocket.userAgent = userAgent
+    websocket.connection_id = state.connection_id
 
     key = state.connection_id
     app['connections'][key] = (state, websocket)
@@ -63,16 +62,11 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
     state.log(f'(open) connections {connectionCount}')
 
     try:
-        with Hub(Hub.current):
-            with configure_scope() as scope:
-                if userAgentVar.get() != UNKNOWN_USER_AGENT:
-                    scope.set_tag("user-agent", userAgentVar.get())
-
-                async for message in websocket:
-                    msgCount += 1
-                    await processCobraMessage(state, websocket, app, message)
-                    if not state.ok:
-                        raise Exception(state.error)
+        async for message in websocket:
+            msgCount += 1
+            await processCobraMessage(state, websocket, app, message)
+            if not state.ok:
+                raise Exception(state.error)
 
     except websockets.exceptions.ProtocolError as e:
         print(e)
@@ -127,6 +121,15 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
             return http.HTTPStatus.FORBIDDEN, [], b'KO\n'
 
         self.requestHeaders = request_headers
+
+    async def read_message(self):
+        '''Override that method for debugging'''
+
+        try:
+            return await super().read_message()
+        except zlib.error as e:
+            logging.error('%s, %s, %s', self.connection_id, self.userAgent, e)
+            raise
 
 
 class AppRunner:
