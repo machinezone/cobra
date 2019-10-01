@@ -23,9 +23,10 @@ from cobras.server.pipelined_publishers import PipelinedPublishers
 from cobras.server.protocol import processCobraMessage
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
-from sentry_sdk import configure_scope
+from sentry_sdk import configure_scope, Hub
 
 userAgentVar = contextvars.ContextVar('user_agent')
+UNKNOWN_USER_AGENT = 'na'
 
 
 def parseAppKey(path):
@@ -48,7 +49,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
     msgCount = 0
     appkey = parseAppKey(path)  # appkey must have been validated
 
-    userAgent = websocket.requestHeaders.get('User-Agent', 'na')
+    userAgent = websocket.requestHeaders.get('User-Agent', UNKNOWN_USER_AGENT)
     userAgentVar.set(userAgent)
 
     state: ConnectionState = ConnectionState(appkey, userAgent)
@@ -62,14 +63,16 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
     state.log(f'(open) connections {connectionCount}')
 
     try:
-        with configure_scope() as scope:
-            scope.set_extra("user-agent", userAgentVar.get())
+        with Hub(Hub.current):
+            with configure_scope() as scope:
+                if userAgentVar.get() != UNKNOWN_USER_AGENT:
+                    scope.set_tag("user-agent", userAgentVar.get())
 
-            async for message in websocket:
-                msgCount += 1
-                await processCobraMessage(state, websocket, app, message)
-                if not state.ok:
-                    raise Exception(state.error)
+                async for message in websocket:
+                    msgCount += 1
+                    await processCobraMessage(state, websocket, app, message)
+                    if not state.ok:
+                        raise Exception(state.error)
 
     except websockets.exceptions.ProtocolError as e:
         print(e)

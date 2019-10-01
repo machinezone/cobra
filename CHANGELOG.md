@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.4] - 2019-09-30
+
+* sentry integration / report the user agent properly using the current sentry Hub (see https://github.com/getsentry/sentry-python/issues/483)
+
 ## [2.1.3] - 2019-09-30
 
 * redis subscription: detect max number of clients reached error and fail rtm/subscribe commands
