@@ -131,7 +131,11 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
         except zlib.error as e:
             headers = json.dumps({k: v for (k, v) in self.requestHeaders.raw_items()})
             logging.error(
-                '%s, %s, %s, %s', self.connection_id, self.userAgent, headers, e
+                'Error in zlib for %s, %s, %s, %s',
+                self.connection_id,
+                self.userAgent,
+                headers,
+                e,
             )
             raise
 
@@ -262,10 +266,8 @@ class AppRunner:
         self.terminate()
 
     def closeRedis(self):
-        # FIXME (is that sufficient to close redis ?)
-        db = self.app['redis']
+        db = self.app['pipelined_publishers']
         db.close()
-        asyncio.ensure_future(db.wait_closed())
 
     async def closeServer(self):
         # Now close websocket server
@@ -273,5 +275,6 @@ class AppRunner:
         await self.server.wait_closed()
 
     def terminate(self):
+        self.closeRedis()
         asyncio.get_event_loop().run_until_complete(self.cleanup())
         asyncio.get_event_loop().run_until_complete(self.closeServer())
