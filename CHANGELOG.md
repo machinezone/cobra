@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.8] - 2019-10-08
+
+* bump sentry_sdk to 0.12.3
+
 ## [2.1.7] - 2019-10-02
 
 * redis connections from the pipelined publishers are closed when terminating the app (mostly useful to get rid of python 3.8rc1 warnings when running the unittest)
