@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.8] - 2019-10-15
+
+* bump tabulate to 0.8.5
+
 ## [2.1.8] - 2019-10-08
 
 * bump sentry_sdk to 0.12.3
