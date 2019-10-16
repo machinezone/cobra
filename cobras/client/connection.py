@@ -132,34 +132,32 @@ class Connection(object):
 
     async def getActionResponse(self, actionId, retainQueue=False):
         '''
-        This could be as simple as:
-            data = await self.getQueue(actionId).get()
+        We need to check for cancellation (the websocket connection got closed)
 
-        Unfortunately we need to handle exception in the
-        'fetch response coroutine' so that we can rethrow them here
+        Tried multiple approach and the one below does not
+        leak memory and permit cancellation.
+
+        See https://bsergean.github.io/asyncio_leak/index.html
         '''
-        incoming = asyncio.ensure_future(self.getQueue(actionId).get())
 
-        done, pending = await asyncio.wait(
-            [incoming, self.stop], return_when=asyncio.FIRST_COMPLETED
-        )
+        q = self.getQueue(actionId)
+        while True:
+            try:
+                data = q.get_nowait()
+                q.task_done()
+                break
+            except asyncio.QueueEmpty:
+                await asyncio.sleep(0.0001)  # => max 10000 msg/s
 
-        # Cancel pending tasks to avoid leaking them.
-        if incoming in pending:
-            incoming.cancel()
+                if self.stop.done():
+                    # Reraise the exception which was caught in self.waitForResponses
+                    exception = self.stop.result()
+                    raise exception
 
-        if incoming in done:
-            data = incoming.result()
+        if not retainQueue:
+            self.deleteQueue(actionId)
 
-            if not retainQueue:
-                self.deleteQueue(actionId)
-
-            return data
-
-        if self.stop in done:
-            # Reraise the exception which was caught in self.waitForResponses
-            exception = self.stop.result()
-            raise exception
+        return data
 
     async def send(self, pdu):
         # Set the message id

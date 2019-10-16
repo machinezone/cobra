@@ -8,6 +8,7 @@ import logging
 from typing import Dict
 
 import click
+from cobras.common.memory_debugger import MemoryDebugger
 from cobras.client.client import subscribeClient
 from cobras.client.connection import ActionFlow
 from cobras.client.credentials import (
@@ -29,7 +30,8 @@ class MessageHandlerClass:
         self.args = args
 
     async def on_init(self):
-        pass
+        memoryDebugger = MemoryDebugger(noTraceMalloc=True)
+        self.memoryDebuggerTask = asyncio.create_task(memoryDebugger.run())
 
     async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
         self.cnt += 1

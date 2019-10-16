@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.1] - 2019-10-16
+
+* Fix a memory leak in the client connection class
+
 ## [2.2.0] - 2019-10-15
 
 * Add a --debug_memory_no_tracemalloc option to cobra run to have a 'slim' memory debugging mode.
