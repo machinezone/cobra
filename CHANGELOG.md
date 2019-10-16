@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.2] - 2019-10-16
+
+* Bump to python 3.8.0 proper. getVersion utility can take a module name.
+
 ## [2.2.1] - 2019-10-16
 
 * Fix a memory leak in the client connection class

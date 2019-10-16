@@ -1,5 +1,5 @@
 # Build stage
-FROM python:3.8.0b4-alpine3.10 as build
+FROM python:3.8.0-alpine3.10 as build
 env PIP_DOWNLOAD_CACHE=/opt/pip_cache
 
 # Install build dependencies
