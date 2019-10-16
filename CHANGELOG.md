@@ -1,7 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.1.8] - 2019-10-15
+## [2.2.0] - 2019-10-15
+
+* Add a --debug_memory_no_tracemalloc option to cobra run to have a 'slim' memory debugging mode.
+
+## [2.1.9] - 2019-10-15
 
 * bump tabulate to 0.8.5
 

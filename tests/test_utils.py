@@ -24,6 +24,7 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
     plugins = 'republish'
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause / FIXME(unused)
+    debugMemoryNoTracemalloc = False
 
     if redisUrls is None:
         redisUrls = 'redis://localhost'
@@ -43,6 +44,7 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
         redisPassword,
         appsConfigPath,
         debugMemory,
+        debugMemoryNoTracemalloc,
         plugins,
         enableStats,
         maxSubscriptions,

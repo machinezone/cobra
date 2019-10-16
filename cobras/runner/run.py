@@ -34,6 +34,11 @@ from cobras.server.app import AppRunner
 @click.option('--prod', envvar='COBRA_PROD', is_flag=True)
 @click.option('--plugins', envvar='COBRA_PLUGINS')
 @click.option('--debug_memory', envvar='COBRA_DEBUG_MEMORY', is_flag=True)
+@click.option(
+    '--debug_memory_no_tracemalloc',
+    envvar='COBRA_DEBUG_MEMORY_NO_TRACEMALLOC',
+    is_flag=True,
+)
 @click.option('--sentry', envvar='COBRA_SENTRY', is_flag=True)
 @click.option('--sentry_url', envvar='COBRA_SENTRY_URL')
 @click.option('--no_stats', envvar='COBRA_NO_STATS', is_flag=True)
@@ -52,6 +57,7 @@ def run(
     apps_config_path,
     apps_config_path_content,
     debug_memory,
+    debug_memory_no_tracemalloc,
     plugins,
     sentry,
     sentry_url,
@@ -94,6 +100,7 @@ def run(
         redis_password,
         apps_config_path,
         debug_memory,
+        debug_memory_no_tracemalloc,
         plugins,
         not no_stats,
         max_subscriptions,

@@ -152,6 +152,7 @@ class AppRunner:
         redisPassword,
         appsConfigPath,
         debugMemory,
+        debugMemoryNoTracemalloc,
         plugins,
         enableStats,
         maxSubscriptions,
@@ -164,6 +165,7 @@ class AppRunner:
         self.app['idle_timeout'] = idleTimeout
 
         self.app['memory_debugger'] = debugMemory
+        self.app['memory_debugger_no_tracemalloc'] = debugMemoryNoTracemalloc
         self.app['redis_urls'] = redisUrls
         self.app['redis_password'] = redisPassword
 
@@ -219,7 +221,9 @@ class AppRunner:
             addTaskCleanup(self.serverStatsTask)
 
         if self.app.get('memory_debugger'):
-            memoryDebugger = MemoryDebugger()
+            memoryDebugger = MemoryDebugger(
+                noTraceMalloc=self.app.get('memory_debugger_no_tracemalloc')
+            )
             self.app['memory_debugger'] = memoryDebugger
 
             self.memoryDebuggerTask = asyncio.create_task(memoryDebugger.run())

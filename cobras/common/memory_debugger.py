@@ -18,7 +18,14 @@ DEFAULT_DURATION = 5
 
 
 class MemoryDebugger:
-    def __init__(self, duration=None, steps=None, mode=None):
+    def __init__(
+        self,
+        duration=None,
+        steps=None,
+        mode=None,
+        noTraceMalloc=False,
+        printAllTasks=False,
+    ):
         tracemalloc.start(10)
 
         self.duration = duration
@@ -37,7 +44,8 @@ class MemoryDebugger:
         self.filters = [Filter(inclusive=True, filename_pattern="**")]
         self.p = psutil.Process()
 
-        self.printAllTasks = False
+        self.printAllTasks = printAllTasks
+        self.noTraceMalloc = noTraceMalloc
 
     def collect_stats(self):
         self.snapshots.append(tracemalloc.take_snapshot())
@@ -102,8 +110,10 @@ class MemoryDebugger:
         while True:
             # gc.collect()
             print('RSS: ' + humanfriendly.format_size(self.p.memory_info().rss))
-            # Comment the next line to get a very simple mem print
-            self.collect_stats()
+
+            if not self.noTraceMalloc:
+                self.collect_stats()
+
             self.printTasksStats()
 
             if self.steps is not None and i == self.steps:
