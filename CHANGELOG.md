@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.3] - 2019-10-17
+
+* Docker file second layer still reference an old Python. Default read/write subcommands channel clashes with the default publish/subcribe, so make it unique. Add --repeat option to write subcommand to indefinitely write.
+
 ## [2.2.2] - 2019-10-16
 
 * Bump to python 3.8.0 proper. getVersion utility can take a module name.

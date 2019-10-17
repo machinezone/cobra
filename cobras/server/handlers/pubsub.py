@@ -83,7 +83,11 @@ async def handlePublish(
             await state.respond(ws, response)
             return
 
-    response = {"action": "rtm/publish/ok", "id": pdu.get('id', 1), "body": {}}
+    response = {
+        "action": "rtm/publish/ok",
+        "id": pdu.get('id', 1),
+        "body": {'channels': channels},
+    }
     await state.respond(ws, response)
 
     # Stats

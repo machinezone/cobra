@@ -10,7 +10,7 @@ COPY requirements.txt /tmp
 RUN pip install --cache-dir=/opt/pip_cache --user --requirement /tmp/requirements.txt
 
 # Runtime stage
-FROM python:3.8.0b4-alpine3.10 as runtime
+FROM python:3.8.0-alpine3.10 as runtime
 RUN addgroup -S app && adduser -S -G app app
 
 COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
