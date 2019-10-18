@@ -3,7 +3,7 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
-import json
+import rapidjson as json
 import logging
 import os
 import tempfile

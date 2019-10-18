@@ -4,7 +4,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 import asyncio
 import itertools
-import json
+import rapidjson as json
 import logging
 from typing import Dict
 

@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2019-10-18
+
+* Switch to rapidjson from standard json as it is noticeably faster, the only downside is that it takes longer to install / make Docker containers
+
 ## [2.2.5] - 2019-10-17
 
 * Bump sentry_sdk dependency

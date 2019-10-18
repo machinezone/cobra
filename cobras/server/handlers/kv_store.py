@@ -7,7 +7,7 @@ FIXME: missing delete
 '''
 
 import asyncio
-import json
+import rapidjson as json
 import logging
 from typing import Dict, Optional
 

@@ -7,7 +7,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import asyncio
 import collections
 import datetime
-import json
+import rapidjson as json
 import os
 import platform
 import time

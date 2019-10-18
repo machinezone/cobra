@@ -7,7 +7,7 @@ import datetime
 import functools
 import http
 import importlib
-import json
+import rapidjson as json
 import logging
 import time
 import traceback

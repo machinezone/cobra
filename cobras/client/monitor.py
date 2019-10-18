@@ -5,7 +5,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 import collections
-import json
+import rapidjson as json
 import os
 from typing import Dict
 
@@ -32,7 +32,7 @@ def getDefaultMonitorUrl(host=None, port=None):
 def writeJson(data):
     '''JSON Pretty printer'''
 
-    return json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
+    return json.dumps(data, sort_keys=True, indent=4)
 
 
 class MessageHandlerClass:

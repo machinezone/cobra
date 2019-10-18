@@ -3,7 +3,7 @@ FROM python:3.8.0-alpine3.10 as build
 env PIP_DOWNLOAD_CACHE=/opt/pip_cache
 
 # Install build dependencies
-RUN apk add --no-cache gcc musl-dev linux-headers make
+RUN apk add --no-cache gcc g++ musl-dev linux-headers make
 
 # Install dependant packages
 COPY requirements.txt /tmp
