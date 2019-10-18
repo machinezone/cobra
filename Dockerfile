@@ -13,6 +13,8 @@ RUN pip install --cache-dir=/opt/pip_cache --user --requirement /tmp/requirement
 FROM python:3.8.0-alpine3.10 as runtime
 RUN addgroup -S app && adduser -S -G app app
 
+RUN apk add --no-cache libstdc++
+
 COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
 
 RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra
