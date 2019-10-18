@@ -233,7 +233,9 @@ class Connection(object):
             ret = await messageHandler.handleMsg(message, position)
 
             if resumeFromLastPositionId and ret == ActionFlow.SAVE_POSITION:
-                await self.write(resumeFromLastPositionId, position)
+                # for performance reason this work should happen in its own task
+                # FIXME error handling / handle exceptions from self.write
+                asyncio.create_task(self.write(resumeFromLastPositionId, position))
 
             if ret == ActionFlow.STOP:
                 break

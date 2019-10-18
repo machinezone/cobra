@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.4] - 2019-10-17
+
+* Fix performance problem when saving the last position received when subscribing (--resume_from_last_position)
+
 ## [2.2.3] - 2019-10-17
 
 * Docker file second layer still reference an old Python. Default read/write subcommands channel clashes with the default publish/subcribe, so make it unique. Add --repeat option to write subcommand to indefinitely write.
