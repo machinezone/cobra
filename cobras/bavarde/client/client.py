@@ -19,6 +19,7 @@ import websockets
 from cobras.client.client import subscribeClient
 from cobras.client.connection import ActionFlow
 from cobras.client.credentials import createCredentials
+from cobras.common.task_cleanup import addTaskCleanup
 
 
 def exit_from_event_loop_thread(
@@ -114,6 +115,7 @@ async def runClient(
             url, credentials, channel, position, stream_sql, MessageHandlerClass, args
         )
     )
+    addTaskCleanup(task)
 
     try:
         while True:

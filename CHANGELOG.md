@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.3.1] - 2019-10-18
+
+* All tasks are given an exception handler to log errors into sentry
+
 ## [2.3.0] - 2019-10-18
 
 * Switch to rapidjson from standard json as it is noticeably faster, the only downside is that it takes longer to install / make Docker containers

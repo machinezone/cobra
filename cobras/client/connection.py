@@ -13,6 +13,7 @@ from enum import Flag, auto
 
 import websockets
 from cobras.common.auth_hash import computeHash
+from cobras.common.task_cleanup import addTaskCleanup
 
 
 class AuthException(Exception):
@@ -57,6 +58,7 @@ class Connection(object):
     async def connect(self):
         self.websocket = await websockets.connect(self.url)
         self.task = asyncio.create_task(self.waitForResponses())
+        addTaskCleanup(self.task)
         self.stop = asyncio.get_running_loop().create_future()
 
         role = self.creds['role']
@@ -235,7 +237,10 @@ class Connection(object):
             if resumeFromLastPositionId and ret == ActionFlow.SAVE_POSITION:
                 # for performance reason this work should happen in its own task
                 # FIXME error handling / handle exceptions from self.write
-                asyncio.create_task(self.write(resumeFromLastPositionId, position))
+                task = asyncio.create_task(
+                    self.write(resumeFromLastPositionId, position)
+                )
+                addTaskCleanup(task)
 
             if ret == ActionFlow.STOP:
                 break

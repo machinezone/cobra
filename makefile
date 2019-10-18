@@ -22,6 +22,8 @@ lint: flake
 indent:
 	black -S cobras tests
 
+format: indent
+
 flake:
 	flake8 --max-line-length=88 `find cobras -name '*.py'`
 
