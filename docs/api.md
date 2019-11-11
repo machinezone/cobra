@@ -327,6 +327,7 @@ Channel names
 
 Request
 
+```
 {
   "action":"rtm/publish",
   "id":RequestId OPTIONAL,
@@ -335,11 +336,11 @@ Request
     "message":Message
   }
 }
+```
 
 Response (OK)
 
-Response (error)
-
+```
 {
   "action":"rtm/publish/ok",
   "id": RequestId,
@@ -347,7 +348,11 @@ Response (error)
     "position":Position
   }
 }
+```
 
+Response (error)
+
+```
 {
   "action":"rtm/publish/error",
   "id":RequestId,
@@ -356,6 +361,7 @@ Response (error)
     "reason":ErrorReason
    }
 }
+```
 
 Field
 
@@ -455,6 +461,7 @@ Subscribe without streamview (no filter field)
 
 Request
 
+```
 {
   "action":"rtm/subscribe",
   "id":RequestId OPTIONAL,
@@ -470,11 +477,11 @@ Request
     } OPTIONAL
   }
 }
+```
 
 Response (ok)
 
-Response (error)
-
+```
 {
   "action":"rtm/subscribe/ok",
   "id":RequestId
@@ -483,7 +490,11 @@ Response (error)
     "subscription_id":SubId
   }
 }
+```
 
+Response (error)
+
+```
 {
   "action":"rtm/subscribe/error",
   "id":RequestId,
@@ -493,11 +504,13 @@ Response (error)
     "subscription_id":SubId
    }
 }
+```
 
 Subscribe with streamview (filter field)
 
 Request
 
+```
 {
   "action":"rtm/subscribe",
   "id":RequestId OPTIONAL,
@@ -514,11 +527,11 @@ Request
     } OPTIONAL
   }
 }
+```
 
 Response (ok)
 
-Response (error)
-
+```
 {
   "action":"rtm/subscribe/ok",
   "id":RequestId,
@@ -527,7 +540,11 @@ Response (error)
     "subscription_id":SubId
   }
 }
+```
 
+Response (error)
+
+```
 {
   "action":"rtm/subscribe/error",
   "id":RequestId,
@@ -537,6 +554,7 @@ Response (error)
     "subscription_id":SubId
    }
 }
+```
 
 Field
 
@@ -737,6 +755,7 @@ Updating a subscription
 
 Subscription data
 
+```
 {
   "action":"rtm/subscription/data",
   "body":{
@@ -745,11 +764,11 @@ Subscription data
     "subscription_id":SubId
    }
 }
+```
 
 Subscription info
 
-Subscription error
-
+```
 {
   "action":"rtm/subscription/info",
   "body":{
@@ -760,7 +779,11 @@ Subscription error
     "missed_message_count":Count OPTIONAL
    }
 }
+```
 
+Subscription error
+
+```
 {
  "action":"rtm/subscription/error",
   "body":{
@@ -771,6 +794,7 @@ Subscription error
     "missed_message_count":Count OPTIONAL
    }
 }
+```
 
 Field
 
@@ -872,6 +896,7 @@ Meaning
 
 Request
 
+```
 {
   "action":"rtm/unsubscribe",
   "id":RequestId OPTIONAL,
@@ -879,11 +904,11 @@ Request
     "subscription_id":SubId
   }
 }
+```
 
 Response (ok)
 
-Response (error)
-
+```
 {
   "action":"rtm/unsubscribe/ok",
   "id":RequestId,
@@ -892,7 +917,11 @@ Response (error)
     "subscription_id":SubId
   }
 }
+```
 
+Response (error)
+
+```
 {
   "action":"rtm/unsubscribe/error",
   "id":RequestId,
@@ -902,6 +931,7 @@ Response (error)
     "subscription_id":SubId OPTIONAL
    }
 }
+```
 
 Field
 
@@ -973,6 +1003,7 @@ Meaning
 
 Request
 
+```
 {
   "action":"rtm/read",
   "id":RequestId OPTIONAL,
@@ -981,11 +1012,11 @@ Request
     "position":Position OPTIONAL
    }
 }
+```
 
 Response (ok)
 
-Response (error)
-
+```
 {
   "action":"rtm/read/ok",
   "id":RequestId,
@@ -994,7 +1025,11 @@ Response (error)
     "message":Message
   }
 }
+```
 
+Response (error)
+
+```
 {
   "action":"rtm/read/error",
   "id":RequestId,
@@ -1003,6 +1038,7 @@ Response (error)
     "reason":ErrorReason
   }
 }
+```
 
 Field
 
@@ -1098,6 +1134,7 @@ Meaning
 
 Request
 
+```
 {
   "action":"rtm/delete",
   "id":RequestId OPTIONAL,
@@ -1105,11 +1142,11 @@ Request
     "channel":Channel
   }
 }
+```
 
 Response (ok)
 
-Response (error)
-
+```
 {
   "action":"rtm/delete/ok",
   "id":RequestId,
@@ -1117,7 +1154,11 @@ Response (error)
     "position":Position OPTIONAL
   }
 }
+```
 
+Response (error)
+
+```
 {
   "action":"rtm/delete/error",
   "id":RequestId,
@@ -1126,6 +1167,7 @@ Response (error)
     "reason":ErrorReason
   }
 }
+```
 
 Field
 
@@ -1228,6 +1270,7 @@ Handshake PDU
 
 Request
 
+```
 {
   "action":"auth/handshake",
   "id":RequestId OPTIONAL
@@ -1238,11 +1281,11 @@ Request
      }
   }
 }
+```
 
 Response (ok)
 
-Response (error)
-
+```
 {
   "action":"auth/handshake/ok",
   "id":RequestId,
@@ -1252,7 +1295,11 @@ Response (error)
      }
   }
 }
+```
 
+Response (error)
+
+```
 {
   "action":"auth/handshake/error",
   "id":RequestId,
@@ -1262,6 +1309,7 @@ Response (error)
    }
   }
 }
+```
 
 Field
 
@@ -1339,6 +1387,7 @@ Authenticate PDU
 
 Request
 
+```
 {
   "action":"auth/authenticate",
   "id":RequestId OPTIONAL,
@@ -1349,17 +1398,21 @@ Request
     }
   }
 }
+```
 
 Response (ok)
 
-Response (error)
-
+```
 {
   "action":"auth/authenticate/ok",
   "id":RequestId,
   "body":{}
 }
+```
 
+Response (error)
+
+```
 {
   "action":"auth/authenticate/error",
   "id":RequestId,
@@ -1368,6 +1421,7 @@ Response (error)
     "reason":ErrorReason
   }
 }
+```
 
 Field
 
