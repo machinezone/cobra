@@ -24,13 +24,13 @@ in the same order.
 
 ## Protocol Data Unit (PDU)
 
-Definition
+### Definition
 
    A PDU is a unit, formatted in JSON or CBOR, with a specific structure
    enabling meaningful communication between RTM and clients. Each PDU is
    encoded into a single WebSocket frame. RTM supports UTF-8.
 
-PDU encoding
+### PDU encoding
 
    We use custom self-explanatory "mini schema" to define the format of
    JSON PDUs. It uses JSON syntax to describe fields, followed by
@@ -49,12 +49,12 @@ PDU encoding
 }
 ```
 
-JSON PDUs
+### JSON PDUs
 
    JSON PDUs are JSON objects. In languages other than JavaScript, use a
    JSON API to convert native objects to a canonical JSON form.
 
-WebSocket for RTM
+### WebSocket for RTM
 
 Endpoint
 
@@ -85,7 +85,7 @@ Content negotiation
    JSON to publish messages, but you connect to RTM and request CBOR, you
    receive CBOR messages.
 
-PDU types
+### PDU types
 
    A PDU can represent any of the following units of communication:
      * A request to RTM. A request to perform an action, for example, to
@@ -98,14 +98,14 @@ PDU types
        informational or error messages, or system error messages, sent by
        RTM to the client.
 
-PDU size
+### PDU size
 
    User generated "payload" is limited to 64kB: such as message in the
    Publish PDU or filter in the Subscribe PDU. The total size of an
    unparsed PDU is limited to 65kB. RTM may drop the client connection if
    the size exceeds the limit.
 
-PDU fields
+### PDU fields
 
 action field
 
