@@ -63,10 +63,10 @@ class MemoryDebugger:
             old_snapshot.filter_traces(self.filters), kind
         )
 
-        print('\n\n== Memory report ==')
+        self.log('\n\n== Memory report ==')
         for stat in stats[:10]:
             fmt = "{} new {} total / {} new {} total memory blocks: "
-            print(
+            self.log(
                 fmt.format(
                     humanfriendly.format_size(stat.size_diff),
                     humanfriendly.format_size(stat.size),
@@ -75,18 +75,24 @@ class MemoryDebugger:
                 )
             )
             for line in stat.traceback.format():
-                print(line)
-            print()
+                self.log(line)
+            self.log()
 
     def printTasksStats(self):
         tasks = asyncio.all_tasks()
-        print('#{} tasks'.format(len(tasks)))
+        self.log('#{} tasks'.format(len(tasks)))
 
         if self.printAllTasks:
             for task in tasks:
-                print(task)
-                print()
-        print()
+                self.log(task)
+                self.log()
+        self.log()
+
+    def log(self, msg=None):
+        if msg is None:
+            sys.stderr.write('\n')
+        else:
+            sys.stderr.write(msg + '\n')
 
     def analyzeGarbage(self):
         '''Garbage seems to be constant, so we should not worry about it
@@ -102,14 +108,14 @@ class MemoryDebugger:
             garbage.append(sys.getsizeof(item))
 
         garbage.sort()
-        print(garbage)
-        print(sum(garbage))
+        self.log(garbage)
+        self.log(sum(garbage))
 
     async def run(self):
         i = 0
         while True:
             # gc.collect()
-            print('RSS: ' + humanfriendly.format_size(self.p.memory_info().rss))
+            self.log('RSS: ' + humanfriendly.format_size(self.p.memory_info().rss))
 
             if not self.noTraceMalloc:
                 self.collect_stats()
