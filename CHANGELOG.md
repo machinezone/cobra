@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.3.3] - 2019-11-12
+
+* (common) Write memory statistics on stderr instead of stdout
+
 ## [2.3.2] - 2019-10-18
 
 * (client) In connection code, bring back slower code which does not leak and is exception safe
