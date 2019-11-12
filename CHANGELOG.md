@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.3.5] - 2019-11-12
+
+* (build) tweak requirements file, to mark sentry as a loose dependency
+
 ## [2.3.4] - 2019-11-12
 
 * (common) Write memory statistics on stderr instead of stdout
