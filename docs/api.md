@@ -277,34 +277,19 @@ ErrorReason | text   | Human readable error description.
 
 RTM may return the following unclassified errors:
  * "authorization_denied"
- * "cbor_parse_error"
  * "invalid_format"
  * "invalid_operation"
  * "invalid_service"
  * "json_parse_error"
 
-   To learn more about any of these errors, see [49]Unclassified Errors.
-
-Publish-specific errors
-
-   The following errors are specific to a publish operation:
-
-error value
-
-Meaning
-
-   "channel_quota_exceeded" Your publish request specified a channel that
-   doesn't yet exist. RTM couldn't create the channel, because you
-   exceeded your quota for the number of channels per project.
-
-   The "action" field is always "rtm/publish/error"
+To learn more about any of these errors, see Unclassified Errors.
 
 ## Subscribe PDU
 
    A client subscribes to a channel by sending a request Subscribe PDU to
    RTM.
 
-Position
+### Position
 
    By default, a new subscription starts at the next channel position
    (from the next published message, see position in [51]Channels). That
@@ -312,7 +297,7 @@ Position
    may start a subscription at an  earlier (historic) message by
    specifying the position in the subscribe request PDU.
 
-subscription_id
+### subscription_id
 
    A subscription is identified by the subscription_id field. Multiple
    subscriptions can be made to the same channel, as long as different
@@ -325,7 +310,7 @@ subscription_id
    and the channel field is optional (the channel name must match what is
    specified in the filter (view) field).
 
-Subscribe without streamview (no filter field)
+### Subscribe without streamview (no filter field)
 
 Request
 
