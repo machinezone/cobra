@@ -265,51 +265,13 @@ Response (error)
 }
 ```
 
-<table>
-<thead>
-    <tr>
-        <td>Field</td>
-        <td>Type</td>
-        <td>Description</td>
-    </tr>
-</thead>
-</tbody>
-
-   ChannelName
-
-   string
-
-   The name of the channel to publish to.
-
-   Message
-
-   value
-
-   The message to publish to the channel.
-
-   Message size is limited to 64 kB. RTM may disconnect if the size
-   exceeds the limit. See PDU Size in [45]Protocol Data Unit
-   (PDU) section.
-   Although any value is allowed, publishers should
-   publish object messages so that subscribers using streamviews see the
-   message. See [46]Views.
-
-   Position
-
-   string
-
-   The channel location of the published message. See Position in
-   [47]Channels.
-
-   ErrorName
-
-   string
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-   Human readable error description. See [48]Error Reference.
+Field       | Type   | Description
+-----       | ----   | -----------
+ChannelName | string | The name of the channel to publish to.
+Message     | value  | The message to publish to the channel.
+Position    | string | The channel location of the published message.
+ErrorName   | string | Possible errors are listed in the sections following this table.
+ErrorReason | text   | Human readable error description.
 
 Unclassified errors
 
