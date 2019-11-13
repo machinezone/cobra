@@ -273,15 +273,15 @@ Position    | string | The channel location of the published message.
 ErrorName   | string | Possible errors are listed in the sections following this table.
 ErrorReason | text   | Human readable error description.
 
-Unclassified errors
+### Unclassified errors
 
-   RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"
+RTM may return the following unclassified errors:
+ * "authorization_denied"
+ * "cbor_parse_error"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"
 
    To learn more about any of these errors, see [49]Unclassified Errors.
 
