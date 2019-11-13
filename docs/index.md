@@ -123,6 +123,10 @@ To run in production you will need a redis (version > 5) instance. Here are envi
   value: BIGBLOGOFDATA
 ```
 
+# Contributing
+
+Cobra is developed on [github](https://github.com/machinezone/cobra). We'd love to hear about how you use it ; opening up an issue in github is ok for that. If things don't work as expected, please create an issue in github, or even better a pull request if you know how to fix your problem.
+
 # Thank you
 
 There would be no cobra without some other amazing open-source projects and tech. Here are 3 very remarkable ones.
