@@ -23,6 +23,8 @@ There are 4 operations that a client can execute against a cobra server: *publis
 * *write*: record some data (addressed by a key)
 * *read*: retrieve data
 
+Interested ? Go read the [docs](https://machinezone.github.io/cobra/) ! If things don't work as expected, please create an issue in github, or even better a pull request if you know how to fix your problem.
+
 # News
 
 Cobra is actively being developed, check out the [changelog](CHANGELOG.md) to know what's cooking.

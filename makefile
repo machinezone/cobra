@@ -51,6 +51,12 @@ trail:
 	test `uname` = Linux || sed -E -i '' -e 's/[[:space:]]*$$//' `find src tests -name '*.py'`
 	test `uname` = Darwin || sed -i 's/[ \t]*$$//' `find src tests -name '*.py'`
 
+#  python -m venv venv
+#  source venv/bin/activate
+#  pip install mkdocs
+doc:
+	mkdocs gh-deploy
+
 clean:
 	find src tests -name '*.pyc' -delete
 	rm -f *.pyc
