@@ -111,7 +111,6 @@ action field
 
 Action component | Meaning | Parsing rules
 ---------------- | ------- | -------------
-
 service | Name of the service responsible for handling incoming requests or sending responses and unsolicited PDUs. | The first part of the action string up to the first backslash character `/'.
 operation | Operation the client wants the service to perform. | After the first backslash character "/" up to the outcome or end of the string. Note that it may contain backslashes as part of the operation.
 outcome | Represents the result of the request or the type of information provided to the client. | Present only in responses and unsolicited PDUs. The part after the last backslash "/".
