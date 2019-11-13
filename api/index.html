@@ -146,7 +146,6 @@
             <li><a href="#hash-computation-example">Hash computation example</a></li>
         <li class="main "><a href="#error-reference">Error Reference</a></li>
             <li><a href="#error-types">Error types</a></li>
-        <li class="main "><a href="#mini-schema-reference">Mini-schema Reference</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
@@ -1385,54 +1384,7 @@ present, specific to a PDU type.</p>
 <td>Errors returned in direct response to a request sent by a client, or unsolicited errors associated with a particular operation.</td>
 </tr>
 </tbody>
-</table>
-<h2 id="mini-schema-reference">Mini-schema Reference</h2>
-<p>The format for a PDU is the concrete transfer syntax, and the PDU
-   specifications used in this reference use a specific pattern based on
-   JSON. The specifications may include different keywords as placeholders
-   for the types of variable data.</p>
-<p>Datatype</p>
-<p>Examples</p>
-<p>Description</p>
-<p>string</p>
-<p>"abc", "json-data", ""</p>
-<p>Any string that conforms to the JSON or CBOR string data structure,
-   depending on the protocol in use.</p>
-<p>text</p>
-<p>"Hello, world"</p>
-<p>Similar to string, but contains text designed for users to read.</p>
-<p>int</p>
-<p>42, 3</p>
-<p>Any non-negative  signed integer value that conforms to the JSON number
-   data structure, without fractions or exponents.</p>
-<p>CBOR has separate types for unsigned integer, negative integer, and
-   float.</p>
-<p>boolean
-   true, false</p>
-<p>For JSON, a boolean value.</p>
-<p>CBOR uses major type 7 additional type 20 for boolean false, and major
-   type 7 additional type 21 for boolean true.</p>
-<p>value</p>
-<p>null, true, false, 42, "Hello, world", [3.14, 2.71], {"key":"value"}</p>
-<p>Any value of any valid JSON or CBOR type</p>
-<p>object</p>
-<p>{"key":"value"}</p>
-<p>Any JSON object or CBOR map</p>
-<p>Structure</p>
-<p>xxx =
-type or placeholder</p>
-<p>Examples</p>
-<p>Description</p>
-<p>[]<em> []
-   [1, 2, 3]
-   [int]</em>
-   An array of zero or more xxx structures
-   [xxx]+ [1]
-   ["abc", "def"] An array of one or more values of the specified type or
-   placeholders. For example, [string()]+ indicates non-empty array of
-   strings.
-   xxx1 | xxx2 true | false Value can be either of the two listed values
-   or placeholders.</p></div>
+</table></div>
         </div>
 
         <footer class="col-md-12">
