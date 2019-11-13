@@ -91,14 +91,11 @@ wss://example.com/v2?appkey=46832Af7f7cba8df8Fa2Bd5CE8B7D99E
 
 ### PDU size
 
-   User generated "payload" is limited to 64kB: such as message in the
-   Publish PDU or filter in the Subscribe PDU. The total size of an
-   unparsed PDU is limited to 65kB. RTM may drop the client connection if
-   the size exceeds the limit.
+   User generated "payload" is unlimited.
 
 ### PDU fields
 
-action field
+#### action field
 
    The action field specifies the purpose of a PDU and determines the
    content of the body.
@@ -115,43 +112,7 @@ service | Name of the service responsible for handling incoming requests or send
 operation | Operation the client wants the service to perform. | After the first backslash character "/" up to the outcome or end of the string. Note that it may contain backslashes as part of the operation.
 outcome | Represents the result of the request or the type of information provided to the client. | Present only in responses and unsolicited PDUs. The part after the last backslash "/".
 
-The following table summarizes possible values used in the action field:
-
-Service
-
-Operation
-
-Outcome
-
-   rtm
-
-   publish
-   subscribe
-   unsubscribe
-
-   read
-   write
-   delete
-
-   ok
-   error
-
-   subscription
-
-   data
-   info
-   ok
-   error
-
-   auth
-
-   handshake
-   authenticate
-
-   ok
-   error
-
-id field
+#### id field
 
    The id field in a request PDU instructs RTM to send a response and
    enables a client to match a response to a request. If the id field is
@@ -184,7 +145,7 @@ Description
    RTM does not enforce uniqueness on the id field. Two requests with the
    same id are treated as two separate requests by RTM.
 
-body field
+#### body field
 
    The body field's content is specific to the PDU's action. The structure
    and semantics of the body field's content must be followed for each
@@ -192,7 +153,7 @@ body field
 
    See the definitions of the specific PDU types.
 
-Channels [42]Direct link
+#### Channels
 
    Channels are named streams of messages.
 
@@ -200,7 +161,7 @@ Channels [42]Direct link
    channels with the same name, RTM treats them as separate channels: they
    have their own content, history, settings, permissions, etc.
 
-Subscription
+### Subscription
 
    Subscriptions are clients' interest in messages published to a channel,
    accepted and served by RTM.
@@ -211,7 +172,7 @@ Subscription
    more involved cases, message data can be filtered or/and transformed
    (see [43]Views).
 
-Position
+#### Position
 
    A position is a message offset relative to other messages in the
    channel. It uniquely identifies the location of the message in the
@@ -226,30 +187,11 @@ Position
    channel or to subscribe from a specific position, typically in order to
    avoid skipping messages when re-subscribing.
 
-Operation
+#### Implicit channel creation and deletion
 
-PDU type
-
-Position meaning
-
-   RTM includes position (in responses or data PDUs).
-   publish, write, delete ok response Location of the published message
-   subscribe ok response Location of the first message to be received for
-   the subscription
-   unsubscribe ok response Location that can be used to seamlessly
-   resubscribe
-   subscription unsolicited data next location after the last message
-   contained in the PDU. Client can use this location to resubscribe
-   preserving stream continuity (no message loss).
-   User can include position (in request PDUs)
-   subscribe request Location to start a subscription at
-   read request Location from which to read a message
-
-Implicit channel creation and deletion
-
-   Channel instances are automatically created by RTM on demand: upon the
-   first subscribe or publish request to a specified channel name, RTM
-   creates a corresponding channel instance.
+   Channel instances are automatically created by RTM on demand: upon the first
+   subscribe or publish request to a specified channel name, RTM creates a
+   corresponding channel instance.
 
    RTM automatically garbage collects channels when it is safe to do so
    (channel is empty and no one has been accessing it for some time).
@@ -258,12 +200,7 @@ Implicit channel creation and deletion
    managing channel bookkeeping in Dev Portal, such as setting permissions
    or history for specific channel names or namespaces.
 
-Channel permissions
-
-   Channel access can be controlled by configuring publish and subscribe
-   permissions (akin to write/read permissions) in Dev Portal.
-
-Channel history
+#### Channel history
 
    In addition to forwarding published messages to all subscribers, RTM
    also stores all messages for at least 1 minute. Additionally, longer
@@ -276,7 +213,7 @@ Channel history
    message; similarly read operation can retrieve messages published in
    the past.
 
-Channel names
+#### Channel names
 
    Channel names are case sensitive.
 
