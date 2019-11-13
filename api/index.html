@@ -95,13 +95,48 @@
             <li><a href="#position_1">Position</a></li>
             <li><a href="#subscription_id">subscription_id</a></li>
             <li><a href="#subscribe-without-streamview-no-filter-field">Subscribe without streamview (no filter field)</a></li>
+            <li><a href="#subscribe-with-streamview-filter-field">Subscribe with streamview (filter field)</a></li>
+            <li><a href="#unclassified-errors_1">Unclassified errors</a></li>
+            <li><a href="#subscribe-specific-errors">Subscribe-specific errors</a></li>
+            <li><a href="#out_of_sync-and-fast_forward">out_of_sync and fast_forward</a></li>
+            <li><a href="#updating-a-subscription">Updating a subscription</a></li>
         <li class="main "><a href="#subscription-pdus-unsolicited">Subscription PDUs (unsolicited)</a></li>
+            <li><a href="#subscription-data">Subscription data</a></li>
+            <li><a href="#subscription-info">Subscription info</a></li>
+            <li><a href="#subscription-error">Subscription error</a></li>
+            <li><a href="#unsolicited-subscribe-errors">Unsolicited subscribe errors</a></li>
             <li><a href="#unsolicited-subscribe-info-messages">Unsolicited subscribe info messages</a></li>
         <li class="main "><a href="#unsubscribe-pdu">Unsubscribe PDU</a></li>
+            <li><a href="#request_2">Request</a></li>
+            <li><a href="#response-ok_2">Response (ok)</a></li>
+            <li><a href="#response-error_2">Response (error)</a></li>
+            <li><a href="#unclassified-errors_2">Unclassified errors</a></li>
+            <li><a href="#unsubscribe-specific-errors">Unsubscribe-specific errors</a></li>
         <li class="main "><a href="#read-pdu">Read PDU</a></li>
+            <li><a href="#request_3">Request</a></li>
+            <li><a href="#response-ok_3">Response (ok)</a></li>
+            <li><a href="#response-error_3">Response (error)</a></li>
+            <li><a href="#unclassified-errors_3">Unclassified errors</a></li>
+            <li><a href="#read-specific-errors">Read-specific errors</a></li>
         <li class="main "><a href="#write-pdu">Write PDU</a></li>
         <li class="main "><a href="#delete-pdu">Delete PDU</a></li>
+            <li><a href="#request_4">Request</a></li>
+            <li><a href="#response-ok_4">Response (ok)</a></li>
+            <li><a href="#response-error_4">Response (error)</a></li>
+            <li><a href="#unclassified-errors_4">Unclassified errors</a></li>
+            <li><a href="#delete-specific-errors">Delete-specific errors</a></li>
+            <li><a href="#using-delete">Using delete</a></li>
         <li class="main "><a href="#handshake-authenticate-pdus">Handshake &amp; Authenticate PDUs</a></li>
+        <li class="main "><a href="#handshake-pdu">Handshake PDU</a></li>
+            <li><a href="#request_5">Request</a></li>
+            <li><a href="#response-ok_5">Response (ok)</a></li>
+            <li><a href="#response-error_5">Response (error)</a></li>
+            <li><a href="#unclassified-errors_5">Unclassified errors</a></li>
+            <li><a href="#handshake-specific-errors">Handshake-specific errors</a></li>
+        <li class="main "><a href="#authenticate-pdu">Authenticate PDU</a></li>
+            <li><a href="#request_6">Request</a></li>
+            <li><a href="#response-ok_6">Response (ok)</a></li>
+            <li><a href="#response-error_6">Response (error)</a></li>
         <li class="main "><a href="#error-reference">Error Reference</a></li>
         <li class="main "><a href="#mini-schema-reference">Mini-schema Reference</a></li>
     </ul>
@@ -427,7 +462,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Subscribe with streamview (filter field)</p>
+<h3 id="subscribe-with-streamview-filter-field">Subscribe with streamview (filter field)</h3>
 <h4 id="request_1">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscribe&quot;,
@@ -511,12 +546,12 @@ in the same order.</p>
 </tr>
 <tr>
 <td>RequestId</td>
-<td>int</td>
+<td>int or string</td>
 <td>See id field in PDU section.</td>
 </tr>
 </tbody>
 </table>
-<h4 id="unclassified-errors_1">Unclassified errors</h4>
+<h3 id="unclassified-errors_1">Unclassified errors</h3>
 <p>RTM may return the following unclassified errors:
  * "authorization_denied"
  * "invalid_format"
@@ -524,21 +559,35 @@ in the same order.</p>
  * "invalid_service"
  * "json_parse_error"</p>
 <p>To learn more about any of these errors, see Unclassified Errors.</p>
-<h4 id="subscribe-specific-errors">Subscribe-specific errors</h4>
-<p>error value</p>
-<p>Meaning</p>
-<p>"already_subscribed" You requested a new subscription with
-   subscription_id set to an active subscription id, and you didn't
-   specify "force" : true.
-   "expired_position" RTM expired the message at the position you
-   specified in position. The message is no longer available.
-   "invalid_filter" (for a streamview subscription only): The stream SQL
-   you specified in filter is invalid.
-   "subscription_quota_exceeded" You tried to add a subscription or
-   streamview, but you exceeded the quota for the number of subscriptions
-   or streamviews per project.</p>
+<h3 id="subscribe-specific-errors">Subscribe-specific errors</h3>
+<table>
+<thead>
+<tr>
+<th>error value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>already_subscribed</td>
+<td>You requested a new subscription with subscription_id set to an active subscription id, and you didn't specify "force" : true.</td>
+</tr>
+<tr>
+<td>expired_position</td>
+<td>RTM expired the message at the position you specified in position. The message is no longer available.</td>
+</tr>
+<tr>
+<td>invalid_filter</td>
+<td>(for a streamview subscription only): The stream SQL you specified in filter is invalid.</td>
+</tr>
+<tr>
+<td>subscription_quota_exceeded</td>
+<td>You tried to add a subscription or streamview, but you exceeded the quota for the number of subscriptions or streamviews per project.</td>
+</tr>
+</tbody>
+</table>
 <p>The "action" field is always "action":"rtm/subscribe/error".</p>
-<p>out_of_sync and fast_forward</p>
+<h3 id="out_of_sync-and-fast_forward">out_of_sync and fast_forward</h3>
 <p>RTM sends subscription messages to the client as fast as the physical
    network link to the client allows it. If the rate of incoming
    (published) messages is higher than the outgoing rate (rate at which
@@ -553,7 +602,7 @@ in the same order.</p>
    to true in the request Subscribe PDU. In this case, RTM "fast-forwards"
    the client to the oldest not yet deleted message, instead of forcing
    unsubscription, and sends an info Subscription PDU.</p>
-<p>Updating a subscription</p>
+<h3 id="updating-a-subscription">Updating a subscription</h3>
 <p>filter and period fields can be changed on-the-fly for a pre-existing
    active subscription: by sending a Subscribe PDU with the force field
    set to true. Without "force":true, RTM responds with an
@@ -577,7 +626,7 @@ in the same order.</p>
        fast-forward has not been enabled, RTM sends an out_of_sync error
        and unsubscribes the client (see out_of_sync in [60]Subscribe PDU
        section).</p>
-<p>Subscription data</p>
+<h4 id="subscription-data">Subscription data</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscription/data&quot;,
   &quot;body&quot;:{
@@ -588,7 +637,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Subscription info</p>
+<h4 id="subscription-info">Subscription info</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscription/info&quot;,
   &quot;body&quot;:{
@@ -601,7 +650,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Subscription error</p>
+<h4 id="subscription-error">Subscription error</h4>
 <pre><code>{
  &quot;action&quot;:&quot;rtm/subscription/error&quot;,
   &quot;body&quot;:{
@@ -665,7 +714,7 @@ in the same order.</p>
 </tr>
 </tbody>
 </table>
-<p>Unsolicited subscribe errors</p>
+<h4 id="unsolicited-subscribe-errors">Unsolicited subscribe errors</h4>
 <p>RTM may return one of these errors for an active subscription:</p>
 <table>
 <thead>
@@ -708,7 +757,7 @@ in the same order.</p>
    Unsubscribe PDU request to RTM.</p>
 <p>In case a client endpoint has multiple subscriptions to the same
    channel, it must send a PDU for each subscription it wants to end.</p>
-<p>Request</p>
+<h4 id="request_2">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/unsubscribe&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -718,7 +767,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (ok)</p>
+<h4 id="response-ok_2">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/unsubscribe/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -729,7 +778,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (error)</p>
+<h4 id="response-error_2">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/unsubscribe/error&quot;,
   &quot;id&quot;:RequestId,
@@ -741,39 +790,61 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Field</p>
-<p>Type</p>
-<p>Description</p>
-<p>SubId</p>
-<p>string</p>
-<p>Id of the subscription that you want to cancel.</p>
-<p>Position</p>
-<p>string</p>
-<p>RTM response includes current location in the channel message stream at
-   the time unsubscribe operation has completed.
-   Enables a client to resubscribe to the channel from the position where
-   it unsubscribed</p>
-<p>ErrorName</p>
-<p>string</p>
-<p>Possible errors are listed in the sections following this table.</p>
-<p>ErrorReason</p>
-<p>text</p>
-<p>Human readable error description. See [64]Error Reference.</p>
-<p>Unclassified errors</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SubId</td>
+<td>string</td>
+<td>Id of the subscription that you want to cancel.</td>
+</tr>
+<tr>
+<td>Position</td>
+<td>string</td>
+<td>RTM response includes current location in the channel message stream at the time unsubscribe operation has completed. Enables a client to resubscribe to the channel from the position where it unsubscribed</td>
+</tr>
+<tr>
+<td>ErrorName</td>
+<td>string</td>
+<td>Possible errors are listed in the sections following this table.</td>
+</tr>
+<tr>
+<td>ErrorReason</td>
+<td>text</td>
+<td>Human readable error description. See [64]Error Reference.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="unclassified-errors_2">Unclassified errors</h4>
 <p>RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"</p>
-<p>To learn more about any of these errors, see [65]Unclassified Errors.</p>
-<p>Unsubscribe-specific errors</p>
+ * "authorization_denied"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"</p>
+<p>To learn more about any of these errors, see Unclassified Errors.</p>
+<h4 id="unsubscribe-specific-errors">Unsubscribe-specific errors</h4>
 <p>The following errors are specific to an unsubscribe operation:</p>
-<p>error value</p>
-<p>Meaning</p>
-<p>"not_subscribed" You tried to unsubscribe from a subscription that
-   doesn't exist.</p>
+<table>
+<thead>
+<tr>
+<th>error value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>not_subscribed</td>
+<td>You tried to unsubscribe from a subscription that doesn't exist.</td>
+</tr>
+</tbody>
+</table>
 <p>The "action" field is always "action":"rtm/unsubscribe/error".</p>
 <h2 id="read-pdu">Read PDU</h2>
 <p>A particular message in a channel can be retrieved by sending a Read
@@ -782,7 +853,7 @@ in the same order.</p>
    there is no position specified, RTM defaults to the position of the
    latest message in the channel. A null message in the response PDU means
    that there were no messages at that position.</p>
-<p>Request</p>
+<h4 id="request_3">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/read&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -793,7 +864,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (ok)</p>
+<h4 id="response-ok_3">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/read/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -804,7 +875,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (error)</p>
+<h4 id="response-error_3">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/read/error&quot;,
   &quot;id&quot;:RequestId,
@@ -815,43 +886,71 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Field</p>
-<p>Type</p>
-<p>Description</p>
-<p>ChannelName</p>
-<p>string</p>
-<p>The name of the channel to read from.</p>
-<p>Position</p>
-<p>string</p>
-<p>The channel location to retrieve a message at.</p>
-<p>See position in the Channels section.</p>
-<p>Message</p>
-<p>value</p>
-<p>Message returned by RTM.</p>
-<p>ErrorName</p>
-<p>string</p>
-<p>Possible errors are listed in the sections following this table.</p>
-<p>ErrorReason</p>
-<p>text</p>
-<p>Human readable error description. See [67]Error Reference.</p>
-<p>RequestId</p>
-<p>int | string</p>
-<p>See id Field in the [68]Channels section.</p>
-<p>Unclassified errors</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ChannelName</td>
+<td>string</td>
+<td>The name of the channel to read from.</td>
+</tr>
+<tr>
+<td>Position</td>
+<td>string</td>
+<td>The channel location to retrieve a message at. See position in the Channels section.</td>
+</tr>
+<tr>
+<td>Message</td>
+<td>value</td>
+<td>Message returned by RTM.</td>
+</tr>
+<tr>
+<td>ErrorName</td>
+<td>string</td>
+<td>Possible errors are listed in the sections following this table.</td>
+</tr>
+<tr>
+<td>ErrorReason</td>
+<td>text</td>
+<td>Human readable error description. See Error Reference.</td>
+</tr>
+<tr>
+<td>RequestId</td>
+<td>int or string</td>
+<td>See id Field in the Channels section.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="unclassified-errors_3">Unclassified errors</h4>
 <p>RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"</p>
-<p>To learn more about any of these errors, see [69]Unclassified Errors.</p>
-<p>Read-specific errors</p>
+ * "authorization_denied"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"</p>
+<p>To learn more about any of these errors, see Unclassified Errors.</p>
+<h4 id="read-specific-errors">Read-specific errors</h4>
 <p>The following errors are specific to a read operation:</p>
-<p>error value</p>
-<p>Meaning</p>
-<p>"expired_position" The message at the position you tried to read from
-   no longer exists, because RTM expired it.</p>
+<table>
+<thead>
+<tr>
+<th>error value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>expired_position</td>
+<td>The message at the position you tried to read from no longer exists, because RTM expired it.</td>
+</tr>
+</tbody>
+</table>
 <p>The "action" field is always "action":"rtm/read/error".</p>
 <h2 id="write-pdu">Write PDU</h2>
 <p>Write PDU is provided for key-value (dictionary storage) semantics:
@@ -869,7 +968,7 @@ in the same order.</p>
 <p>Sending a delete PDU request is the same as publishing or writing a
    null value to the channel.</p>
 <p>A delete operation requires publish permission.</p>
-<p>Request</p>
+<h4 id="request_4">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/delete&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -879,7 +978,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (ok)</p>
+<h4 id="response-ok_4">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/delete/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -889,7 +988,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (error)</p>
+<h4 id="response-error_4">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/delete/error&quot;,
   &quot;id&quot;:RequestId,
@@ -900,29 +999,43 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Field</p>
-<p>Type</p>
-<p>Description</p>
-<p>ChannelName</p>
-<p>string</p>
-<p>The name of the channel.</p>
-<p>Position</p>
-<p>string</p>
-<p>Present only in a response.</p>
-<p>Channel location at which the message has been deleted, when purge is
-   false.</p>
-<p>When purge is true, position is not returned.</p>
-<p>See position in the [72]Channels section.</p>
-<p>ErrorName</p>
-<p>string</p>
-<p>Possible errors are listed in the sections following this table.</p>
-<p>ErrorReason</p>
-<p>text</p>
-<p>Human readable error description. See [73]Error Reference.</p>
-<p>RequestId</p>
-<p>int | string</p>
-<p>See id field in the [74]PDU section.</p>
-<p>Unclassified errors</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ChannelName</td>
+<td>string</td>
+<td>The name of the channel.</td>
+</tr>
+<tr>
+<td>Position</td>
+<td>string</td>
+<td>Present only in a response. Channel location at which the message has been deleted, when purge is false. When purge is true, position is not returned. See position in the Channels section.</td>
+</tr>
+<tr>
+<td>ErrorName</td>
+<td>string</td>
+<td>Possible errors are listed in the sections following this table.</td>
+</tr>
+<tr>
+<td>ErrorReason</td>
+<td>text</td>
+<td>Human readable error description. See Error Reference.</td>
+</tr>
+<tr>
+<td>RequestId</td>
+<td>int or string</td>
+<td>See id field in the PDU section.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="unclassified-errors_4">Unclassified errors</h4>
 <p>RTM may return the following unclassified errors:
      * "authorization_denied"
      * "cbor_parse_error"
@@ -931,20 +1044,36 @@ in the same order.</p>
      * "invalid_service"
      * "json_parse_error"</p>
 <p>To learn more about any of these errors, see [75]Unclassified Errors.</p>
-<p>Delete-specific errors</p>
+<h4 id="delete-specific-errors">Delete-specific errors</h4>
 <p>The following errors are specific to a delete operation:</p>
-<p>error value</p>
-<p>Meaning</p>
-<p>"expired_position" The message you tried to delete no longer exists,
-   because RTM expired it.</p>
+<table>
+<thead>
+<tr>
+<th>error value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>expired_position</td>
+<td>The message at the position you tried to read from no longer exists, because RTM expired it.</td>
+</tr>
+</tbody>
+</table>
 <p>The "action" field is always "action":"rtm/delete/error".</p>
-<p>Using delete</p>
+<h3 id="using-delete">Using delete</h3>
 <p>Deleting a channel message is the same as publishing or writing null to
-   the channel. For example, these three requests to RTM accomplish
-   identical result:</p>
-<p>{"action":"rtm/publish","body":{"channel":"x","message":null}}</p>
-<p>{"action":"rtm/write","body":{"channel":"x","message":null}}</p>
-<p>{"action":"rtm/delete","body":{"channel":"x"}}</p>
+the channel. For example, these three requests to RTM accomplish
+identical result:</p>
+<pre><code>   {&quot;action&quot;:&quot;rtm/publish&quot;,&quot;body&quot;:{&quot;channel&quot;:&quot;x&quot;,&quot;message&quot;:null}}
+</code></pre>
+
+<pre><code>   {&quot;action&quot;:&quot;rtm/write&quot;,&quot;body&quot;:{&quot;channel&quot;:&quot;x&quot;,&quot;message&quot;:null}}
+</code></pre>
+
+<pre><code>   {&quot;action&quot;:&quot;rtm/delete&quot;,&quot;body&quot;:{&quot;channel&quot;:&quot;x&quot;}}
+</code></pre>
+
 <h2 id="handshake-authenticate-pdus">Handshake &amp; Authenticate PDUs</h2>
 <p>RTM uses role-based authentication and authorization. Roles and their
    channel permissions are configured in [77]Dev Portal.</p>
@@ -952,13 +1081,13 @@ in the same order.</p>
    the default role. You can acquire different permissions by
    authenticating for a different role. You do this in a two-step process
    using the handshake and then the authenticate PDU.</p>
-<p>Handshake PDU</p>
+<h2 id="handshake-pdu">Handshake PDU</h2>
 <p>To start the authentication process, you send a handshake PDU to obtain
    a nonce that you use to construct an authentication hash.</p>
 <p>If the request succeeds, RTM returns the nonce. In case of an error,
    RTM cancels the handshake request. For example, an error may occur if
    the role you specify doesn't exist in the Dev Portal.</p>
-<p>Request</p>
+<h4 id="request_5">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/handshake&quot;,
   &quot;id&quot;:RequestId OPTIONAL
@@ -971,7 +1100,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (ok)</p>
+<h4 id="response-ok_5">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/handshake/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -983,7 +1112,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (error)</p>
+<h4 id="response-error_5">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/handshake/error&quot;,
   &quot;id&quot;:RequestId,
@@ -995,43 +1124,68 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Field</p>
-<p>Type</p>
-<p>Description</p>
-<p>AuthMethod</p>
-<p>string</p>
-<p>Method of authentication to perform. Only "role_secret" is currently
-   supported.</p>
-<p>Role</p>
-<p>string</p>
-<p>Role to authenticate as.</p>
-<p>Nonce</p>
-<p>string</p>
-<p>Cryptographic random value to be combined with the secret by the client
-   to produce the hash. Hash is sent in rtm/authenticate request.</p>
-<p>ErrorName</p>
-<p>string</p>
-<p>Possible errors are listed in the sections following this table.</p>
-<p>ErrorReason</p>
-<p>text</p>
-<p>Human readable error description. See [78]Error Reference.</p>
-<p>Unclassified errors</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AuthMethod</td>
+<td>string</td>
+<td>Method of authentication to perform. Only "role_secret" is currently supported.</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>string</td>
+<td>Role to authenticate as.</td>
+</tr>
+<tr>
+<td>Nonce</td>
+<td>string</td>
+<td>Cryptographic random value to be combined with the secret by the client to produce the hash. Hash is sent in rtm/authenticate request.</td>
+</tr>
+<tr>
+<td>ErrorName</td>
+<td>string</td>
+<td>Possible errors are listed in the sections following this table.</td>
+</tr>
+<tr>
+<td>ErrorReason</td>
+<td>text</td>
+<td>Human readable error description. See Error Reference.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="unclassified-errors_5">Unclassified errors</h4>
 <p>RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"</p>
-<p>To learn more about any of these errors, see [79]Unclassified Errors.</p>
-<p>Handshake-specific errors</p>
+ * "authorization_denied"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"</p>
+<p>To learn more about any of these errors, see Unclassified Errors.</p>
+<h4 id="handshake-specific-errors">Handshake-specific errors</h4>
 <p>RTM may return the following errors in response to a handshake request:</p>
-<p>error value</p>
-<p>Meaning</p>
-<p>"auth_method_not_allowed" In the handshake PDU, method is not set to
-   "role_secret".</p>
+<table>
+<thead>
+<tr>
+<th>error value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>auth_method_not_allowed</td>
+<td>In the handshake PDU, method is not set to "role_secret".</td>
+</tr>
+</tbody>
+</table>
 <p>The "action" field is always "action":"auth/handshake/error".</p>
-<p>Authenticate PDU</p>
+<h2 id="authenticate-pdu">Authenticate PDU</h2>
 <p>You send the authenticate PDU to complete the authentication process.
    After authentication is complete, your client has the permissions
    associated with the role with which it has authenticated.</p>
@@ -1039,7 +1193,7 @@ in the same order.</p>
    This can occur, for example, if your calculated hash doesn't match the
    value calculated by RTM, or if the role you specify doesn't exist in
    the Dev Portal.</p>
-<p>Request</p>
+<h4 id="request_6">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/authenticate&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -1052,7 +1206,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (ok)</p>
+<h4 id="response-ok_6">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/authenticate/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -1060,7 +1214,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (error)</p>
+<h4 id="response-error_6">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/authenticate/error&quot;,
   &quot;id&quot;:RequestId,
