@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Api - cobra</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+
+                <!-- Collapsed navigation -->
+                <div class="navbar-header">
+                    <!-- Expander button -->
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="..">cobra</a>
+                </div>
+
+                <!-- Expanded navigation -->
+                <div class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li >
+                                <a href="..">Home</a>
+                            </li>
+                            <li class="active">
+                                <a href="./">Api</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li >
+                                <a rel="next" href="..">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="disabled">
+                                <a rel="prev" >
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#overview">Overview</a></li>
+            <li><a href="#message-order-guarantees">Message order guarantees</a></li>
+        <li class="main "><a href="#protocol-data-unit-pdu">Protocol Data Unit (PDU)</a></li>
+            <li><a href="#definition">Definition</a></li>
+            <li><a href="#pdu-encoding">PDU encoding</a></li>
+            <li><a href="#json-pdus">JSON PDUs</a></li>
+            <li><a href="#websocket-for-rtm">WebSocket for RTM</a></li>
+            <li><a href="#pdu-types">PDU types</a></li>
+            <li><a href="#pdu-size">PDU size</a></li>
+            <li><a href="#pdu-fields">PDU fields</a></li>
+            <li><a href="#subscription">Subscription</a></li>
+        <li class="main "><a href="#publish-pdu">Publish PDU</a></li>
+            <li><a href="#unclassified-errors">Unclassified errors</a></li>
+        <li class="main "><a href="#subscribe-pdu">Subscribe PDU</a></li>
+            <li><a href="#position_1">Position</a></li>
+            <li><a href="#subscription_id">subscription_id</a></li>
+            <li><a href="#subscribe-without-streamview-no-filter-field">Subscribe without streamview (no filter field)</a></li>
+        <li class="main "><a href="#subscription-pdus-unsolicited">Subscription PDUs (unsolicited)</a></li>
+        <li class="main "><a href="#unsubscribe-pdu">Unsubscribe PDU</a></li>
+        <li class="main "><a href="#read-pdu">Read PDU</a></li>
+        <li class="main "><a href="#write-pdu">Write PDU</a></li>
+        <li class="main "><a href="#delete-pdu">Delete PDU</a></li>
+        <li class="main "><a href="#handshake-authenticate-pdus">Handshake &amp; Authenticate PDUs</a></li>
+        <li class="main "><a href="#error-reference">Error Reference</a></li>
+        <li class="main "><a href="#mini-schema-reference">Mini-schema Reference</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h2 id="overview">Overview</h2>
+<p>The RTM protocol is our wire protocol, which enables direct two-way
+communication between a client and RTM. Clients communicate with RTM by
+establishing a secure WebSocket connection and exchanging JSON- or
+CBOR-encoded units.</p>
+<p>RTM implements the publish-subscribe pattern where users publish
+messages to a channel and all subscribers to that channel receive those
+messages.</p>
+<p>The RTM API defines the structure, rules and semantics for exchanging
+the JSON objects. We call these JSON objects Protocol Data Units
+(PDUs). A PDU can carry a request to RTM to perform a particular action
+(such as to publish a message), its response from RTM, or an
+unsolicited message, such as subscription data.</p>
+<h3 id="message-order-guarantees">Message order guarantees</h3>
+<p>RTM  forwards published messages to the subscribers in the same order
+as it received them. The order of messages between different publishers
+is not guaranteed. All subscribers will receive the published messages
+in the same order.</p>
+<h2 id="protocol-data-unit-pdu">Protocol Data Unit (PDU)</h2>
+<h3 id="definition">Definition</h3>
+<p>A PDU is a unit, formatted in JSON or CBOR, with a specific structure
+   enabling meaningful communication between RTM and clients. Each PDU is
+   encoded into a single WebSocket frame. RTM supports UTF-8.</p>
+<h3 id="pdu-encoding">PDU encoding</h3>
+<p>We use custom self-explanatory "mini schema" to define the format of
+   JSON PDUs. It uses JSON syntax to describe fields, followed by
+   their type or placeholder values (which in turned are defined the same
+   way). Fields order does not matter. See [41]Mini-schema Reference for
+   more details.</p>
+<p>The following mini schema  defines the structure of a PDU. Note that
+   this structure holds for all PDUs in RTM API.</p>
+<pre><code>{
+     &quot;action&quot;: string,
+     &quot;id&quot;: string | integer OPTIONAL,
+     &quot;body&quot;: object
+}
+</code></pre>
+
+<h3 id="json-pdus">JSON PDUs</h3>
+<p>JSON PDUs are JSON objects. In languages other than JavaScript, use a
+   JSON API to convert native objects to a canonical JSON form.</p>
+<h3 id="websocket-for-rtm">WebSocket for RTM</h3>
+<p>Endpoint</p>
+<p>The WebSocket connection string for RTM has the syntax:</p>
+<pre><code>&lt;endpoint&gt;/&lt;rtm_version&gt;?appkey=&lt;appkey&gt;
+</code></pre>
+
+<ul>
+<li><endpoint>: Endpoint string from Dev Portal, for example
+   wss://example.com</li>
+<li><rtm_version>: Current version of RTM, for example v2. The current
+   version is listed at the beginning of the RTM API documentation</li>
+<li><appkey>: Appkey from Dev Portal</li>
+</ul>
+<p>For example:</p>
+<pre><code>wss://example.com/v2?appkey=46832Af7f7cba8df8Fa2Bd5CE8B7D99E
+</code></pre>
+
+<h3 id="pdu-types">PDU types</h3>
+<p>A PDU can represent any of the following units of communication:
+     * A request to RTM. A request to perform an action, for example, to
+       publish a message.
+     * A response from RTM. The response to a client request.
+     * Unsolicited subscription messages from RTM. Messages as they have
+       been published to the channel for simple subscriptions, or
+       resulting messages for subscriptions with views.
+     * An unsolicited error or information updates. Channel-specific
+       informational or error messages, or system error messages, sent by
+       RTM to the client.</p>
+<h3 id="pdu-size">PDU size</h3>
+<p>User generated "payload" is unlimited.</p>
+<h3 id="pdu-fields">PDU fields</h3>
+<h4 id="action-field">action field</h4>
+<p>The action field specifies the purpose of a PDU and determines the
+   content of the body.</p>
+<p>The action field consists of up to three components separated by
+   forward slash: <service>/<operation>/<outcome>.</p>
+<p>The following table explains the meaning of each component, as well as
+   the rule for parsing it out from the full action string value:</p>
+<table>
+<thead>
+<tr>
+<th>Action component</th>
+<th>Meaning</th>
+<th>Parsing rules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>service</td>
+<td>Name of the service responsible for handling incoming requests or sending responses and unsolicited PDUs.</td>
+<td>The first part of the action string up to the first backslash character `/'.</td>
+</tr>
+<tr>
+<td>operation</td>
+<td>Operation the client wants the service to perform.</td>
+<td>After the first backslash character "/" up to the outcome or end of the string. Note that it may contain backslashes as part of the operation.</td>
+</tr>
+<tr>
+<td>outcome</td>
+<td>Represents the result of the request or the type of information provided to the client.</td>
+<td>Present only in responses and unsolicited PDUs. The part after the last backslash "/".</td>
+</tr>
+</tbody>
+</table>
+<h4 id="id-field">id field</h4>
+<p>The id field in a request PDU instructs RTM to send a response and
+   enables a client to match a response to a request. If the id field is
+   not present in a request, RTM does not acknowledge it: no response will
+   be sent to a client, regardless of the outcome. Note that id field and
+   its semantics applies to every PDU in the RTM protocol.</p>
+<p>The id field can be an integer or a string.</p>
+<p>Even though specifying id field in a request is optional, only a few
+   cases benefit from omitting it (e.g. high throughput publishing);  some
+   operation cannot be completed without id at all (e.g. authentication).
+   Clients should specify id in a request, unless client logic identified
+   a concrete motivation not to do so, for a specific use case.</p>
+<p>Use the following rules and guidelines with the id field:</p>
+<p>Rule/Guideline</p>
+<p>Description</p>
+<p>Include id field to get a response from RTM</p>
+<p>In most cases, there is no significant traffic savings from omitting
+   the id but by doing so, client forfeits an opportunity to detect
+   failing requests (error outcome).</p>
+<p>Avoid reusing id value in different requests</p>
+<p>RTM does not enforce uniqueness on the id field. Two requests with the
+   same id are treated as two separate requests by RTM.</p>
+<h4 id="body-field">body field</h4>
+<p>The body field's content is specific to the PDU's action. The structure
+   and semantics of the body field's content must be followed for each
+   action field type.</p>
+<p>See the definitions of the specific PDU types.</p>
+<h4 id="channels">Channels</h4>
+<p>Channels are named streams of messages.</p>
+<p>A channel is unique per Dev Portal project. If two projects have
+   channels with the same name, RTM treats them as separate channels: they
+   have their own content, history, settings, permissions, etc.</p>
+<h3 id="subscription">Subscription</h3>
+<p>Subscriptions are clients' interest in messages published to a channel,
+   accepted and served by RTM.</p>
+<p>In the simplest case, a subscription establishes a client's interest in
+   all messages as they arrive in a channel. Clients may also request a
+   subscription to include past messages (see history and position). In
+   more involved cases, message data can be filtered or/and transformed
+   (see [43]Views).</p>
+<h4 id="position">Position</h4>
+<p>A position is a message offset relative to other messages in the
+   channel. It uniquely identifies the location of the message in the
+   channel and may refer to an expired (no longer stored), available
+   (stored, retrievable), or future (not yet occupied location) message.</p>
+<p>The next channel position is the first available unoccupied position in
+   a channel. The next published message to arrive is placed at this
+   position.</p>
+<p>The position field can be used to read a particular message from a
+   channel or to subscribe from a specific position, typically in order to
+   avoid skipping messages when re-subscribing.</p>
+<h4 id="implicit-channel-creation-and-deletion">Implicit channel creation and deletion</h4>
+<p>Channel instances are automatically created by RTM on demand: upon the first
+   subscribe or publish request to a specified channel name, RTM creates a
+   corresponding channel instance.</p>
+<p>RTM automatically garbage collects channels when it is safe to do so
+   (channel is empty and no one has been accessing it for some time).</p>
+<p>Channel instance creation and deletion should not be confused with
+   managing channel bookkeeping in Dev Portal, such as setting permissions
+   or history for specific channel names or namespaces.</p>
+<h4 id="channel-history">Channel history</h4>
+<p>In addition to forwarding published messages to all subscribers, RTM
+   also stores all messages for at least 1 minute. Additionally, longer
+   storage is available with channel history: users can configure how many
+   messages should be stored for a longer period of time for a given
+   channel. History settings are configured in Dev Portal and default to
+   one message for 6 hours.</p>
+<p>A subscription to a channel can be requested starting at a historical
+   message; similarly read operation can retrieve messages published in
+   the past.</p>
+<h4 id="channel-names">Channel names</h4>
+<p>Channel names are case sensitive.</p>
+<p>Channel names starting with character `$' are reserved by RTM.</p>
+<h2 id="publish-pdu">Publish PDU</h2>
+<p>Messages can be published to a channel by sending a Publish PDU request
+   to RTM.</p>
+<p>The following specification shows the publish request and response
+   PDUs:</p>
+<p>Request</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/publish&quot;,
+  &quot;id&quot;:RequestId OPTIONAL,
+  &quot;body&quot;:{
+    &quot;channel&quot;:ChannelName,
+    &quot;message&quot;:Message
+  }
+}
+</code></pre>
+
+<p>Response (OK)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/publish/ok&quot;,
+  &quot;id&quot;: RequestId,
+  &quot;body&quot;:{
+    &quot;position&quot;:Position
+  }
+}
+</code></pre>
+
+<p>Response (error)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/publish/error&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName,
+    &quot;reason&quot;:ErrorReason
+   }
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ChannelName</td>
+<td>string</td>
+<td>The name of the channel to publish to.</td>
+</tr>
+<tr>
+<td>Message</td>
+<td>value</td>
+<td>The message to publish to the channel.</td>
+</tr>
+<tr>
+<td>Position</td>
+<td>string</td>
+<td>The channel location of the published message.</td>
+</tr>
+<tr>
+<td>ErrorName</td>
+<td>string</td>
+<td>Possible errors are listed in the sections following this table.</td>
+</tr>
+<tr>
+<td>ErrorReason</td>
+<td>text</td>
+<td>Human readable error description.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="unclassified-errors">Unclassified errors</h3>
+<p>RTM may return the following unclassified errors:
+ * "authorization_denied"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"</p>
+<p>To learn more about any of these errors, see Unclassified Errors.</p>
+<h2 id="subscribe-pdu">Subscribe PDU</h2>
+<p>A client subscribes to a channel by sending a request Subscribe PDU to
+   RTM.</p>
+<h3 id="position_1">Position</h3>
+<p>By default, a new subscription starts at the next channel position
+   (from the next published message, see position in [51]Channels). That
+   is, no previously published (historic) messages are returned. A client
+   may start a subscription at an  earlier (historic) message by
+   specifying the position in the subscribe request PDU.</p>
+<h3 id="subscription_id">subscription_id</h3>
+<p>A subscription is identified by the subscription_id field. Multiple
+   subscriptions can be made to the same channel, as long as different
+   subscription id's are used.</p>
+<p>For a subscription without a view (default), the subscription_id must
+   be equal to the channel name, and is optional.</p>
+<p>For a subscription with a view, the subscription_id field is required
+   and the channel field is optional (the channel name must match what is
+   specified in the filter (view) field).</p>
+<h3 id="subscribe-without-streamview-no-filter-field">Subscribe without streamview (no filter field)</h3>
+<h4 id="request">Request</h4>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/subscribe&quot;,
+  &quot;id&quot;:RequestId OPTIONAL,
+  &quot;body&quot;:{
+    &quot;channel&quot;:ChannelName,
+    &quot;subscription_id&quot;:SubId OPTIONAL,
+    &quot;force&quot;:Force OPTIONAL,
+    &quot;fast_forward&quot;:FastForward OPTIONAL,
+    &quot;position&quot;:Position OPTIONAL,
+    &quot;history&quot;:{
+      &quot;count&quot;:Count OPTIONAL,
+      &quot;age&quot;:Age OPTIONAL
+    } OPTIONAL
+  }
+}
+</code></pre>
+
+<h4 id="response-ok">Response (ok)</h4>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/subscribe/ok&quot;,
+  &quot;id&quot;:RequestId
+  &quot;body&quot;:{
+    &quot;position&quot;:Position,
+    &quot;subscription_id&quot;:SubId
+  }
+}
+</code></pre>
+
+<h4 id="response-error">Response (error)</h4>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/subscribe/error&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName,
+    &quot;reason&quot;:ErrorReason OPTIONAL,
+    &quot;subscription_id&quot;:SubId
+   }
+}
+</code></pre>
+
+<p>Subscribe with streamview (filter field)</p>
+<h4 id="request_1">Request</h4>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/subscribe&quot;,
+  &quot;id&quot;:RequestId OPTIONAL,
+  &quot;body&quot;:{
+    &quot;filter&quot;:SQL,
+    &quot;subscription_id&quot;:SubId,
+    &quot;force&quot;:Force OPTIONAL,
+    &quot;fast_forward&quot;:FastForward OPTIONAL,
+    &quot;period&quot;:Period OPTIONAL,
+    &quot;position&quot;:Position OPTIONAL,
+    &quot;history&quot;:{
+      &quot;count&quot;:Count OPTIONAL,
+      &quot;age&quot;:Age OPTIONAL
+    } OPTIONAL
+  }
+}
+</code></pre>
+
+<h4 id="response-ok_1">Response (ok)</h4>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/subscribe/ok&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;position&quot;:Position,
+    &quot;subscription_id&quot;:SubId
+  }
+}
+</code></pre>
+
+<h4 id="response-error_1">Response (error)</h4>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/subscribe/error&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName,
+    &quot;reason&quot;:ErrorReason OPTIONAL,
+    &quot;subscription_id&quot;:SubId
+   }
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ChannelName</td>
+<td>string</td>
+<td>The name of the channel to subscribe to.</td>
+</tr>
+<tr>
+<td>SubId</td>
+<td>string</td>
+<td>Either a channel name or a unique client-generated identifier for the subscription (when applicable)</td>
+</tr>
+<tr>
+<td>Position</td>
+<td>string</td>
+<td>Channel location to start the subscription at. Default is the next channel position.</td>
+</tr>
+<tr>
+<td>SQL</td>
+<td>string</td>
+<td>SQL statement to run on messages before sending them to the client. See Views.</td>
+</tr>
+<tr>
+<td>ErrorName</td>
+<td>string</td>
+<td>Possible errors are listed in the sections following this table.</td>
+</tr>
+<tr>
+<td>ErrorReason</td>
+<td>text</td>
+<td>Human readable error description. See Error Reference.</td>
+</tr>
+<tr>
+<td>RequestId</td>
+<td>int</td>
+<td>See id field in PDU section.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="unclassified-errors_1">Unclassified errors</h4>
+<p>RTM may return the following unclassified errors:
+ * "authorization_denied"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"</p>
+<p>To learn more about any of these errors, see Unclassified Errors.</p>
+<h4 id="subscribe-specific-errors">Subscribe-specific errors</h4>
+<p>error value</p>
+<p>Meaning</p>
+<p>"already_subscribed" You requested a new subscription with
+   subscription_id set to an active subscription id, and you didn't
+   specify "force" : true.
+   "expired_position" RTM expired the message at the position you
+   specified in position. The message is no longer available.
+   "invalid_filter" (for a streamview subscription only): The stream SQL
+   you specified in filter is invalid.
+   "subscription_quota_exceeded" You tried to add a subscription or
+   streamview, but you exceeded the quota for the number of subscriptions
+   or streamviews per project.</p>
+<p>The "action" field is always "action":"rtm/subscribe/error".</p>
+<p>out_of_sync and fast_forward</p>
+<p>RTM sends subscription messages to the client as fast as the physical
+   network link to the client allows it. If the rate of incoming
+   (published) messages is higher than the outgoing rate (rate at which
+   messages are delivered to a particular client subscription), we say
+   that a client subscription is falling behind. If this situation
+   persists, undelivered messages accumulate on the RTM side and
+   eventually RTM expires (deletes) them. By default, messages are deleted
+   after 60 seconds and the last message in a channel - after 6h. We call
+   this situation out_of_sync: messages stream continuity cannot be
+   sustained for a subscriber; message drop is inevitable.</p>
+<p>Subscriber can change this behavior by setting the fast_forward field
+   to true in the request Subscribe PDU. In this case, RTM "fast-forwards"
+   the client to the oldest not yet deleted message, instead of forcing
+   unsubscription, and sends an info Subscription PDU.</p>
+<p>Updating a subscription</p>
+<p>filter and period fields can be changed on-the-fly for a pre-existing
+   active subscription: by sending a Subscribe PDU with the force field
+   set to true. Without "force":true, RTM responds with an
+   already_subscribed error and does not update the current subscription.</p>
+<h2 id="subscription-pdus-unsolicited">Subscription PDUs (unsolicited)</h2>
+<p>RTM sends subscription data (channel messages) or subscription related
+   status (info or error) using subscription PDUs.</p>
+<p>Subscription PDU can be:
+     * data.  A subscription data PDU delivers channel messages (possibly
+       filtered and transformed messages in case of a viewed
+       subscription). Note that a single subscription data PDU can contain
+       multiple messages grouped in the array messages field (for
+       optimization purposes).
+     * info. A subscription Info PDU contains information about a
+       subscription, which includes the type of info and the reason why
+       RTM sent it. For a fast_forward info, it also includes the count of
+       skipped messages due to RTM fast-forwarding the subscription.
+     * error. A subscription error PDU notifies of subscription
+       termination (forceful unsubscription) due to a subscription-related
+       error. For example, if a client subscription falls behind and
+       fast-forward has not been enabled, RTM sends an out_of_sync error
+       and unsubscribes the client (see out_of_sync in [60]Subscribe PDU
+       section).</p>
+<p>Subscription data</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/subscription/data&quot;,
+  &quot;body&quot;:{
+    &quot;position&quot;:Position,
+    &quot;messages&quot;:[Message]*,
+    &quot;subscription_id&quot;:SubId
+   }
+}
+</code></pre>
+
+<p>Subscription info</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/subscription/info&quot;,
+  &quot;body&quot;:{
+    &quot;info&quot;:InfoType,
+    &quot;reason&quot;:InfoReason,
+    &quot;position&quot;:Position,
+    &quot;subscription_id:SubId,
+    &quot;missed_message_count&quot;:Count OPTIONAL
+   }
+}
+</code></pre>
+
+<p>Subscription error</p>
+<pre><code>{
+ &quot;action&quot;:&quot;rtm/subscription/error&quot;,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName,
+    &quot;reason&quot;:ErrorReason,
+    &quot;position&quot;:Position,
+    &quot;subscription_id&quot;:SubId,
+    &quot;missed_message_count&quot;:Count OPTIONAL
+   }
+}
+</code></pre>
+
+<p>Field</p>
+<p>Type</p>
+<p>Description</p>
+<p>Position</p>
+<p>string</p>
+<p>See position in the [61]Channels section.
+   Provided to enable clients to resubscribe preserving stream continuity
+   (in the event of a disconnect).</p>
+<p>Message</p>
+<p>value</p>
+<p>A channel message (as it was published, or - when applicable - a
+   message result according to the subscription view)</p>
+<p>SubId</p>
+<p>string</p>
+<p>Id for the subscription for which the PDU was sent.</p>
+<p>InfoType</p>
+<p>string</p>
+<p>Information type. See Service-Specific Info Messages.</p>
+<p>InfoReason</p>
+<p>text</p>
+<p>In the sections following this table, see "Unsolicited subscribe info
+   messages".</p>
+<p>Count</p>
+<p>int</p>
+<p>Number of skipped messages in the channel.</p>
+<p>ErrorName</p>
+<p>string</p>
+<p>Possible errors are listed in the sections following this table.</p>
+<p>ErrorReason</p>
+<p>text</p>
+<p>Human readable error description. See [62]Error Reference.</p>
+<p>Unsolicited subscribe errors</p>
+<p>RTM may return one of these errors for an active subscription:</p>
+<p>error value</p>
+<p>Meaning</p>
+<p>"out_of_sync" The message position for the subscription is pointing to
+   an expired message, and your subscribe PDU didn't specify
+   "fast_forward" : true. RTM unsubscribes you, and it may drop your
+   connection.
+   expired_position Your subscribe PDU specified the "position" field, but
+   its value points to an expired message.</p>
+<p>The "action" field is always "action":"rtm/subscription/error".</p>
+<p>Unsolicited subscribe info messages</p>
+<p>RTM may return this info message for an active subscription:</p>
+<p>info value</p>
+<p>Meaning</p>
+<p>fast_forward Because your subscribe PDU specified "fast_forward" :
+   true, RTM performed a fast forward in response to an out of sync
+   condition. You receive this info PDU in addition to an error PDU with
+   error set to "expired_position".</p>
+<p>The "action" field is always "action":"rtm/subscription/info".</p>
+<h2 id="unsubscribe-pdu">Unsubscribe PDU</h2>
+<p>A subscriber requests to terminate its subscription by sending an
+   Unsubscribe PDU request to RTM.</p>
+<p>In case a client endpoint has multiple subscriptions to the same
+   channel, it must send a PDU for each subscription it wants to end.</p>
+<p>Request</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/unsubscribe&quot;,
+  &quot;id&quot;:RequestId OPTIONAL,
+  &quot;body&quot;:{
+    &quot;subscription_id&quot;:SubId
+  }
+}
+</code></pre>
+
+<p>Response (ok)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/unsubscribe/ok&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;position&quot;:Position,
+    &quot;subscription_id&quot;:SubId
+  }
+}
+</code></pre>
+
+<p>Response (error)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/unsubscribe/error&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName,
+    &quot;reason&quot;:ErrorReason,
+    &quot;subscription_id&quot;:SubId OPTIONAL
+   }
+}
+</code></pre>
+
+<p>Field</p>
+<p>Type</p>
+<p>Description</p>
+<p>SubId</p>
+<p>string</p>
+<p>Id of the subscription that you want to cancel.</p>
+<p>Position</p>
+<p>string</p>
+<p>RTM response includes current location in the channel message stream at
+   the time unsubscribe operation has completed.
+   Enables a client to resubscribe to the channel from the position where
+   it unsubscribed</p>
+<p>ErrorName</p>
+<p>string</p>
+<p>Possible errors are listed in the sections following this table.</p>
+<p>ErrorReason</p>
+<p>text</p>
+<p>Human readable error description. See [64]Error Reference.</p>
+<p>Unclassified errors</p>
+<p>RTM may return the following unclassified errors:
+     * "authorization_denied"
+     * "cbor_parse_error"
+     * "invalid_format"
+     * "invalid_operation"
+     * "invalid_service"
+     * "json_parse_error"</p>
+<p>To learn more about any of these errors, see [65]Unclassified Errors.</p>
+<p>Unsubscribe-specific errors</p>
+<p>The following errors are specific to an unsubscribe operation:</p>
+<p>error value</p>
+<p>Meaning</p>
+<p>"not_subscribed" You tried to unsubscribe from a subscription that
+   doesn't exist.</p>
+<p>The "action" field is always "action":"rtm/unsubscribe/error".</p>
+<h2 id="read-pdu">Read PDU</h2>
+<p>A particular message in a channel can be retrieved by sending a Read
+   PDU request to RTM.</p>
+<p>RTM returns the message at the position specified in the request. If
+   there is no position specified, RTM defaults to the position of the
+   latest message in the channel. A null message in the response PDU means
+   that there were no messages at that position.</p>
+<p>Request</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/read&quot;,
+  &quot;id&quot;:RequestId OPTIONAL,
+  &quot;body&quot;:{
+    &quot;channel&quot;:ChannelName,
+    &quot;position&quot;:Position OPTIONAL
+   }
+}
+</code></pre>
+
+<p>Response (ok)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/read/ok&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;position&quot;:Position,
+    &quot;message&quot;:Message
+  }
+}
+</code></pre>
+
+<p>Response (error)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/read/error&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName,
+    &quot;reason&quot;:ErrorReason
+  }
+}
+</code></pre>
+
+<p>Field</p>
+<p>Type</p>
+<p>Description</p>
+<p>ChannelName</p>
+<p>string</p>
+<p>The name of the channel to read from.</p>
+<p>Position</p>
+<p>string</p>
+<p>The channel location to retrieve a message at.</p>
+<p>See position in the Channels section.</p>
+<p>Message</p>
+<p>value</p>
+<p>Message returned by RTM.</p>
+<p>ErrorName</p>
+<p>string</p>
+<p>Possible errors are listed in the sections following this table.</p>
+<p>ErrorReason</p>
+<p>text</p>
+<p>Human readable error description. See [67]Error Reference.</p>
+<p>RequestId</p>
+<p>int | string</p>
+<p>See id Field in the [68]Channels section.</p>
+<p>Unclassified errors</p>
+<p>RTM may return the following unclassified errors:
+     * "authorization_denied"
+     * "cbor_parse_error"
+     * "invalid_format"
+     * "invalid_operation"
+     * "invalid_service"
+     * "json_parse_error"</p>
+<p>To learn more about any of these errors, see [69]Unclassified Errors.</p>
+<p>Read-specific errors</p>
+<p>The following errors are specific to a read operation:</p>
+<p>error value</p>
+<p>Meaning</p>
+<p>"expired_position" The message at the position you tried to read from
+   no longer exists, because RTM expired it.</p>
+<p>The "action" field is always "action":"rtm/read/error".</p>
+<h2 id="write-pdu">Write PDU</h2>
+<p>Write PDU is provided for key-value (dictionary storage) semantics:
+   channel name represents a key and the last (and the only used) message
+   the channel represents a value. In other words, a channel serves as a
+   dictionary entry.</p>
+<p>Current implementation and specifications are the same as publish PDU
+   but using write operation in action: "action":"rtm/write".</p>
+<h2 id="delete-pdu">Delete PDU</h2>
+<p>The delete PDU is provided for key-value (dictionary storage) semantics
+   to erase a value for a given key. The key is represented by a channel,
+   and only the last message in the channel is relevant (represents the
+   value). Hence, publishing a null value serves as deletion of the the
+   previous value (if any).</p>
+<p>Sending a delete PDU request is the same as publishing or writing a
+   null value to the channel.</p>
+<p>A delete operation requires publish permission.</p>
+<p>Request</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/delete&quot;,
+  &quot;id&quot;:RequestId OPTIONAL,
+  &quot;body&quot;:{
+    &quot;channel&quot;:Channel
+  }
+}
+</code></pre>
+
+<p>Response (ok)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/delete/ok&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;position&quot;:Position OPTIONAL
+  }
+}
+</code></pre>
+
+<p>Response (error)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;rtm/delete/error&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName,
+    &quot;reason&quot;:ErrorReason
+  }
+}
+</code></pre>
+
+<p>Field</p>
+<p>Type</p>
+<p>Description</p>
+<p>ChannelName</p>
+<p>string</p>
+<p>The name of the channel.</p>
+<p>Position</p>
+<p>string</p>
+<p>Present only in a response.</p>
+<p>Channel location at which the message has been deleted, when purge is
+   false.</p>
+<p>When purge is true, position is not returned.</p>
+<p>See position in the [72]Channels section.</p>
+<p>ErrorName</p>
+<p>string</p>
+<p>Possible errors are listed in the sections following this table.</p>
+<p>ErrorReason</p>
+<p>text</p>
+<p>Human readable error description. See [73]Error Reference.</p>
+<p>RequestId</p>
+<p>int | string</p>
+<p>See id field in the [74]PDU section.</p>
+<p>Unclassified errors</p>
+<p>RTM may return the following unclassified errors:
+     * "authorization_denied"
+     * "cbor_parse_error"
+     * "invalid_format"
+     * "invalid_operation"
+     * "invalid_service"
+     * "json_parse_error"</p>
+<p>To learn more about any of these errors, see [75]Unclassified Errors.</p>
+<p>Delete-specific errors</p>
+<p>The following errors are specific to a delete operation:</p>
+<p>error value</p>
+<p>Meaning</p>
+<p>"expired_position" The message you tried to delete no longer exists,
+   because RTM expired it.</p>
+<p>The "action" field is always "action":"rtm/delete/error".</p>
+<p>Using delete</p>
+<p>Deleting a channel message is the same as publishing or writing null to
+   the channel. For example, these three requests to RTM accomplish
+   identical result:</p>
+<p>{"action":"rtm/publish","body":{"channel":"x","message":null}}</p>
+<p>{"action":"rtm/write","body":{"channel":"x","message":null}}</p>
+<p>{"action":"rtm/delete","body":{"channel":"x"}}</p>
+<h2 id="handshake-authenticate-pdus">Handshake &amp; Authenticate PDUs</h2>
+<p>RTM uses role-based authentication and authorization. Roles and their
+   channel permissions are configured in [77]Dev Portal.</p>
+<p>When you first connect to RTM, your client is established with
+   the default role. You can acquire different permissions by
+   authenticating for a different role. You do this in a two-step process
+   using the handshake and then the authenticate PDU.</p>
+<p>Handshake PDU</p>
+<p>To start the authentication process, you send a handshake PDU to obtain
+   a nonce that you use to construct an authentication hash.</p>
+<p>If the request succeeds, RTM returns the nonce. In case of an error,
+   RTM cancels the handshake request. For example, an error may occur if
+   the role you specify doesn't exist in the Dev Portal.</p>
+<p>Request</p>
+<pre><code>{
+  &quot;action&quot;:&quot;auth/handshake&quot;,
+  &quot;id&quot;:RequestId OPTIONAL
+  &quot;body&quot;:{
+    &quot;method&quot;:AuthMethod,
+    &quot;data&quot;:{
+      &quot;role&quot;:Role
+     }
+  }
+}
+</code></pre>
+
+<p>Response (ok)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;auth/handshake/ok&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;data&quot;:{
+      &quot;nonce&quot;:Nonce
+     }
+  }
+}
+</code></pre>
+
+<p>Response (error)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;auth/handshake/error&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName,
+    &quot;reason&quot;:ErrorReason
+   }
+  }
+}
+</code></pre>
+
+<p>Field</p>
+<p>Type</p>
+<p>Description</p>
+<p>AuthMethod</p>
+<p>string</p>
+<p>Method of authentication to perform. Only "role_secret" is currently
+   supported.</p>
+<p>Role</p>
+<p>string</p>
+<p>Role to authenticate as.</p>
+<p>Nonce</p>
+<p>string</p>
+<p>Cryptographic random value to be combined with the secret by the client
+   to produce the hash. Hash is sent in rtm/authenticate request.</p>
+<p>ErrorName</p>
+<p>string</p>
+<p>Possible errors are listed in the sections following this table.</p>
+<p>ErrorReason</p>
+<p>text</p>
+<p>Human readable error description. See [78]Error Reference.</p>
+<p>Unclassified errors</p>
+<p>RTM may return the following unclassified errors:
+     * "authorization_denied"
+     * "cbor_parse_error"
+     * "invalid_format"
+     * "invalid_operation"
+     * "invalid_service"
+     * "json_parse_error"</p>
+<p>To learn more about any of these errors, see [79]Unclassified Errors.</p>
+<p>Handshake-specific errors</p>
+<p>RTM may return the following errors in response to a handshake request:</p>
+<p>error value</p>
+<p>Meaning</p>
+<p>"auth_method_not_allowed" In the handshake PDU, method is not set to
+   "role_secret".</p>
+<p>The "action" field is always "action":"auth/handshake/error".</p>
+<p>Authenticate PDU</p>
+<p>You send the authenticate PDU to complete the authentication process.
+   After authentication is complete, your client has the permissions
+   associated with the role with which it has authenticated.</p>
+<p>In case of an error, RTM cancels the entire authentication request.
+   This can occur, for example, if your calculated hash doesn't match the
+   value calculated by RTM, or if the role you specify doesn't exist in
+   the Dev Portal.</p>
+<p>Request</p>
+<pre><code>{
+  &quot;action&quot;:&quot;auth/authenticate&quot;,
+  &quot;id&quot;:RequestId OPTIONAL,
+  &quot;body&quot;:{
+    &quot;method&quot;:AuthMethod,
+    &quot;credentials&quot;:{
+      &quot;hash&quot;:Hash
+    }
+  }
+}
+</code></pre>
+
+<p>Response (ok)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;auth/authenticate/ok&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{}
+}
+</code></pre>
+
+<p>Response (error)</p>
+<pre><code>{
+  &quot;action&quot;:&quot;auth/authenticate/error&quot;,
+  &quot;id&quot;:RequestId,
+  &quot;body&quot;:{
+    &quot;error&quot;:ErrorName
+    &quot;reason&quot;:ErrorReason
+  }
+}
+</code></pre>
+
+<p>Field</p>
+<p>Type</p>
+<p>Description</p>
+<p>AuthMethod</p>
+<p>text</p>
+<p>Method of authentication to perform. Only "role_secret" is currently
+   supported.</p>
+<p>Role</p>
+<p>text</p>
+<p>Role to authenticate as.</p>
+<p>Project roles and their permissions  are managed in Dev Portal.</p>
+<p>Hash</p>
+<p>string</p>
+<p>HMAC-MD5 hash value computed for the secret key and the nonce received
+   in rtm/handshake/ok.</p>
+<p>ErrorName</p>
+<p>string</p>
+<p>Possible errors are listed in the sections following this table.</p>
+<p>ErrorReason</p>
+<p>text</p>
+<p>Human readable error description. See [80]Error Reference.</p>
+<p>Unclassified errors</p>
+<p>RTM may return the following unclassified errors:
+     * "authorization_denied"
+     * "cbor_parse_error"
+     * "invalid_format"
+     * "invalid_operation"
+     * "invalid_service"
+     * "json_parse_error"</p>
+<p>To learn more about any of these errors, see [81]Unclassified Errors.</p>
+<p>Authenticate-specific errors</p>
+<p>RTM may return the following errors in response to a authentication
+   request:</p>
+<p>error value</p>
+<p>Meaning</p>
+<p>"authentication_failed" In your authentication PDU, the value of "hash"
+   is invalid.
+   "auth_method_not_allowed" In the authentication PDU, the value of
+   "method" is not set to "role_secret".</p>
+<p>The "action" field is always "action":"auth/authenticate/error".</p>
+<p>Hash computation</p>
+<p>The hash is calculated for a secret key (K) and a nonce (N).  The
+   secret key is obtained from the Dev Portal; the nonce is received in
+   handshake response PDU.</p>
+<p>Hash = base64( HMAC-MD5( utf8(K), utf8(N) ) )</p>
+<p>Existing HMAC-MD5 implementations are commonly available for any
+   language. For completeness:</p>
+<p>HMAC-MD5 is the algorithm specified in [[82]RFC 2104] using MD5
+   [[83]RFC 1321] as the underlying hash function. base64 is a string
+   representation of a byte array described in [[84]RFC 3548]. Note that
+   the result of the base64 operation is the actual hash value and shall
+   be used as it is. utf8 is the binary representation of string described
+   in [[85]RFC 3629].</p>
+<p>Hash computation example</p>
+<pre><code>Let secret key K = &quot;secret-key&quot; and nonce N = &quot;nonce&quot;
+
+utf8(K) = [73 65 63 72 65 74 2D 6B 65 79]
+utf8(N) = [6E 6F 6E 63 65]
+HMAC-MD5(utf8(SK), utf8(N)) = [1B 5D 80 F0 3B 74 45 D8 C7 37 1F 0F D2 57 22 F7]
+hash = 'G12A8Dt0RdjHNx8P0lci9w=='
+</code></pre>
+
+<h2 id="error-reference">Error Reference</h2>
+<p>Every error includes error and reason fields. Additional fields may be
+   present, specific to a PDU type.</p>
+<p>Error PDU body</p>
+<p>{
+  "error": string,
+  "reason": text,
+  // other PDU-specific fields
+}</p>
+<p>error</p>
+<p>Name of the error. This string is intended for use in code.</p>
+<p>reason</p>
+<p>Describes the error. This text is intended for human use; the text may
+   change in the future and should not be used in code conditioning logic.</p>
+<p>Error types</p>
+<p>Errors are categorized into two types:</p>
+<p>Error Type</p>
+<p>Description</p>
+<p>Unclassified</p>
+<p>Errors not associated with a particular operation. It may be unknown
+   which operation is triggering it, or potentially affecting overall
+   communication consistency.</p>
+<p>For example, if RTM cannot parse a PDU or cannot parse an action, it
+   has no choice but to return a general system error.</p>
+<p>Operation-specific</p>
+<p>Errors returned in direct response to a request sent by a client, or
+   unsolicited errors associated with a particular operation.</p>
+<h2 id="mini-schema-reference">Mini-schema Reference</h2>
+<p>The format for a PDU is the concrete transfer syntax, and the PDU
+   specifications used in this reference use a specific pattern based on
+   JSON. The specifications may include different keywords as placeholders
+   for the types of variable data.</p>
+<p>Datatype</p>
+<p>Examples</p>
+<p>Description</p>
+<p>string</p>
+<p>"abc", "json-data", ""</p>
+<p>Any string that conforms to the JSON or CBOR string data structure,
+   depending on the protocol in use.</p>
+<p>text</p>
+<p>"Hello, world"</p>
+<p>Similar to string, but contains text designed for users to read.</p>
+<p>int</p>
+<p>42, 3</p>
+<p>Any non-negative  signed integer value that conforms to the JSON number
+   data structure, without fractions or exponents.</p>
+<p>CBOR has separate types for unsigned integer, negative integer, and
+   float.</p>
+<p>boolean
+   true, false</p>
+<p>For JSON, a boolean value.</p>
+<p>CBOR uses major type 7 additional type 20 for boolean false, and major
+   type 7 additional type 21 for boolean true.</p>
+<p>value</p>
+<p>null, true, false, 42, "Hello, world", [3.14, 2.71], {"key":"value"}</p>
+<p>Any value of any valid JSON or CBOR type</p>
+<p>object</p>
+<p>{"key":"value"}</p>
+<p>Any JSON object or CBOR map</p>
+<p>Structure</p>
+<p>xxx =
+type or placeholder</p>
+<p>Examples</p>
+<p>Description</p>
+<p>[]<em> []
+   [1, 2, 3]
+   [int]</em>
+   An array of zero or more xxx structures
+   [xxx]+ [1]
+   ["abc", "def"] An array of one or more values of the specified type or
+   placeholders. For example, [string()]+ indicates non-empty array of
+   strings.
+   xxx1 | xxx2 true | false Value can be either of the two listed values
+   or placeholders.</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
