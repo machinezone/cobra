@@ -59,31 +59,22 @@ in the same order.
 Endpoint
 
    The WebSocket connection string for RTM has the syntax:
-<endpoint>/<rtm_version>?appkey=<appkey>
 
-     * <endpoint>: Endpoint string from Dev Portal, for example
-       wss://example.com
-     * <rtm_version>: Current version of RTM, for example v2. The current
-       version is listed at the beginning of the RTM API documentation
-     * <appkey>: Appkey from Dev Portal
+```
+<endpoint>/<rtm_version>?appkey=<appkey>
+```
+
+ * <endpoint>: Endpoint string from Dev Portal, for example
+   wss://example.com
+ * <rtm_version>: Current version of RTM, for example v2. The current
+   version is listed at the beginning of the RTM API documentation
+ * <appkey>: Appkey from Dev Portal
 
    For example:
+
+```
 wss://example.com/v2?appkey=46832Af7f7cba8df8Fa2Bd5CE8B7D99E
-
-Content negotiation
-
-   Because RTM supports both JSON and CBOR, you need to specify the PDU
-   format you want to use. To do this, specify the
-   Sec-WebSocket-Protocol: subprotocol header field in your WebSocket
-   handshake request. The permissible values are json and cbor. For
-   backwards compatibility, RTM doesn't require the field, but if you omit
-   it RTM assumes that it's set to json. For this reason, you must always
-   specify Sec-WebSocket-Protocol: cbor to use CBOR PDUs.
-
-   The PDU format of messages you receive from a channel is independent of
-   the format that the publisher used. For example, if the publisher uses
-   JSON to publish messages, but you connect to RTM and request CBOR, you
-   receive CBOR messages.
+```
 
 ### PDU types
 
@@ -118,39 +109,14 @@ action field
    The following table explains the meaning of each component, as well as
    the rule for parsing it out from the full action string value:
 
-Action component
+Action component | Meaning | Parsing rules
+---------------- | ------- | -------------
 
-Meaning
+service | Name of the service responsible for handling incoming requests or sending responses and unsolicited PDUs. | The first part of the action string up to the first backslash character `/'.
+operation | Operation the client wants the service to perform. | After the first backslash character "/" up to the outcome or end of the string. Note that it may contain backslashes as part of the operation.
+outcome | Represents the result of the request or the type of information provided to the client. | Present only in responses and unsolicited PDUs. The part after the last backslash "/".
 
-Parsing rules
-
-   service
-
-   Name of the service responsible for handling incoming requests or
-   sending responses and unsolicited PDUs.
-
-   The first part of the action string up to the first backslash character
-   `/'.
-
-   operation
-
-   Operation the client wants the service to perform.
-
-   After the first backslash character "/" up to the outcome or end of the
-   string.
-
-   Note that it may contain backslashes as part of the operation.
-
-   outcome
-
-   Represents the result of the request or the type of information
-   provided to the client.
-
-   Present only in responses and unsolicited PDUs. The part after the last
-   backslash "/".
-
-   The following table summarizes possible values used in the action
-   field:
+The following table summarizes possible values used in the action field:
 
 Service
 
