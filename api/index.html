@@ -96,6 +96,7 @@
             <li><a href="#subscription_id">subscription_id</a></li>
             <li><a href="#subscribe-without-streamview-no-filter-field">Subscribe without streamview (no filter field)</a></li>
         <li class="main "><a href="#subscription-pdus-unsolicited">Subscription PDUs (unsolicited)</a></li>
+            <li><a href="#unsolicited-subscribe-info-messages">Unsolicited subscribe info messages</a></li>
         <li class="main "><a href="#unsubscribe-pdu">Unsubscribe PDU</a></li>
         <li class="main "><a href="#read-pdu">Read PDU</a></li>
         <li class="main "><a href="#write-pdu">Write PDU</a></li>
@@ -613,56 +614,94 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Field</p>
-<p>Type</p>
-<p>Description</p>
-<p>Position</p>
-<p>string</p>
-<p>See position in the [61]Channels section.
-   Provided to enable clients to resubscribe preserving stream continuity
-   (in the event of a disconnect).</p>
-<p>Message</p>
-<p>value</p>
-<p>A channel message (as it was published, or - when applicable - a
-   message result according to the subscription view)</p>
-<p>SubId</p>
-<p>string</p>
-<p>Id for the subscription for which the PDU was sent.</p>
-<p>InfoType</p>
-<p>string</p>
-<p>Information type. See Service-Specific Info Messages.</p>
-<p>InfoReason</p>
-<p>text</p>
-<p>In the sections following this table, see "Unsolicited subscribe info
-   messages".</p>
-<p>Count</p>
-<p>int</p>
-<p>Number of skipped messages in the channel.</p>
-<p>ErrorName</p>
-<p>string</p>
-<p>Possible errors are listed in the sections following this table.</p>
-<p>ErrorReason</p>
-<p>text</p>
-<p>Human readable error description. See [62]Error Reference.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Position</td>
+<td>string</td>
+<td>Provided to enable clients to resubscribe preserving stream continuity (in the event of a disconnect).</td>
+</tr>
+<tr>
+<td>Message</td>
+<td>value</td>
+<td>A channel message (as it was published, or - when applicable - a message result according to the subscription view)</td>
+</tr>
+<tr>
+<td>SubId</td>
+<td>string</td>
+<td>Id for the subscription for which the PDU was sent.</td>
+</tr>
+<tr>
+<td>InfoType</td>
+<td>string</td>
+<td>Information type. See Service-Specific Info Messages.</td>
+</tr>
+<tr>
+<td>InfoReason</td>
+<td>text</td>
+<td>In the sections following this table, see "Unsolicited subscribe info messages".</td>
+</tr>
+<tr>
+<td>Count</td>
+<td>int</td>
+<td>Number of skipped messages in the channel.</td>
+</tr>
+<tr>
+<td>ErrorName</td>
+<td>string</td>
+<td>Possible errors are listed in the sections following this table.</td>
+</tr>
+<tr>
+<td>ErrorReason</td>
+<td>text</td>
+<td>Human readable error description. See [62]Error Reference.</td>
+</tr>
+</tbody>
+</table>
 <p>Unsolicited subscribe errors</p>
 <p>RTM may return one of these errors for an active subscription:</p>
-<p>error value</p>
-<p>Meaning</p>
-<p>"out_of_sync" The message position for the subscription is pointing to
-   an expired message, and your subscribe PDU didn't specify
-   "fast_forward" : true. RTM unsubscribes you, and it may drop your
-   connection.
-   expired_position Your subscribe PDU specified the "position" field, but
-   its value points to an expired message.</p>
+<table>
+<thead>
+<tr>
+<th>error value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>out_of_sync</td>
+<td>The message position for the subscription is pointing to an expired message, and your subscribe PDU didn't specify "fast_forward" : true. RTM unsubscribes you, and it may drop your connection.</td>
+</tr>
+<tr>
+<td>expired_position</td>
+<td>Your subscribe PDU specified the "position" field, but its value points to an expired message.</td>
+</tr>
+</tbody>
+</table>
 <p>The "action" field is always "action":"rtm/subscription/error".</p>
-<p>Unsolicited subscribe info messages</p>
+<h4 id="unsolicited-subscribe-info-messages">Unsolicited subscribe info messages</h4>
 <p>RTM may return this info message for an active subscription:</p>
-<p>info value</p>
-<p>Meaning</p>
-<p>fast_forward Because your subscribe PDU specified "fast_forward" :
-   true, RTM performed a fast forward in response to an out of sync
-   condition. You receive this info PDU in addition to an error PDU with
-   error set to "expired_position".</p>
+<table>
+<thead>
+<tr>
+<th>info value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fast_forward</td>
+<td>Because your subscribe PDU specified "fast_forward" : true, RTM performed a fast forward in response to an out of sync condition. You receive this info PDU in addition to an error PDU with error set to "expired_position".</td>
+</tr>
+</tbody>
+</table>
 <p>The "action" field is always "action":"rtm/subscription/info".</p>
 <h2 id="unsubscribe-pdu">Unsubscribe PDU</h2>
 <p>A subscriber requests to terminate its subscription by sending an
