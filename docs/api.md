@@ -312,7 +312,7 @@ To learn more about any of these errors, see Unclassified Errors.
 
 ### Subscribe without streamview (no filter field)
 
-Request
+#### Request
 
 ```
 {
@@ -332,7 +332,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -345,7 +345,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -361,7 +361,7 @@ Response (error)
 
 Subscribe with streamview (filter field)
 
-Request
+#### Request
 
 ```
 {
@@ -382,7 +382,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -395,7 +395,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -409,138 +409,28 @@ Response (error)
 }
 ```
 
-Field
+Field       | Type    | Description
+-----       | ------- | -----------
+ChannelName | string  | The name of the channel to subscribe to.
+SubId       | string  | Either a channel name or a unique client-generated identifier for the subscription (when applicable)
+Position    | string  | Channel location to start the subscription at. Default is the next channel position.
+SQL         | string  | SQL statement to run on messages before sending them to the client. See Views.
+ErrorName   | string  | Possible errors are listed in the sections following this table.
+ErrorReason | text    | Human readable error description. See Error Reference.
+RequestId   | int     | See id field in PDU section.
 
-Type
+#### Unclassified errors
 
-Description
+RTM may return the following unclassified errors:
+ * "authorization_denied"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"
 
-   ChannelName
+To learn more about any of these errors, see Unclassified Errors.
 
-   string
-
-   The name of the channel to subscribe to.
-
-   SubId
-
-   string
-
-   Either a channel name or a unique client-generated identifier for the
-   subscription (when applicable)
-
-   Position
-
-   string
-
-   Channel location to start the subscription at. Default is the next
-   channel position.
-
-   See position in [52]Channels section.
-
-   SQL
-
-   string
-
-   SQL statement to run on messages before sending them to the client. The
-   size is limited to 64 kB. See [53]Views.
-
-   Period
-
-   int
-
-   Time partition on the channel messages, in seconds, for which RTM
-   aggregates the view result per partition. See [54]Views.
-
-   The default value is 1 second. The maximum value is 60 seconds.
-
-   Force
-
-   boolean
-
-   Directs RTM how to act if your client already has an existing
-   subscription with the same value of subscription_id.
-
-   If you provide a new value for subscription_id, RTM removes the
-   existing subscription and creates a new subscription with the fields
-   you specify in body.
-
-   If you provide a new value for channel, RTM removes the existing
-   subscription and creates a new subscription with the fields you specify
-   in body. If you specify a value for filter, the value of channel must
-   be the same as the channel name you specify in the streamSQL for the
-   filter field.
-
-   If you specify the filter property or period property or both, RTM
-   updates the values and ignores any other fields in body.
-
-   FastForward
-
-   boolean
-
-   Specifies preferred behavior if an out_of_sync error situation occurs.
-
-   true directs RTM to fast-forward the subscription to the oldest
-   available message
-
-   false directs RTM to force unsubscription
-
-   Default is false
-
-   history
-
-   object
-
-   Contains a non-negative integer in the age field or count field.
-
-   See history in [55]Channels section.
-
-   history:{} returns no history.
-
-   Age
-
-   int
-
-   RTM starts the subscription this many seconds earlier than the value in
-   the position field.
-
-   Count
-
-   int
-
-   RTM starts the subscription this many messages before the value in the
-   position field.
-
-   ErrorName
-
-   string
-
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-
-   Human readable error description. See [56]Error Reference.
-
-   RequestId
-
-   int | string
-
-   See id field in [57]PDU section.
-
-Unclassified errors
-
-   RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"
-
-   To learn more about any of these errors, see [58]Unclassified Errors.
-
-Subscribe-specific errors
+#### Subscribe-specific errors
 
 error value
 
