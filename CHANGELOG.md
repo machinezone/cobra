@@ -1,5 +1,9 @@
 # Changelog
-All notable changes to this project will be documented in this file.
+All changes to this project will be documented in this file.
+
+## [2.3.6] - 2019-11-12
+
+* (client) async method call needs to be awaited
 
 ## [2.3.5] - 2019-11-12
 

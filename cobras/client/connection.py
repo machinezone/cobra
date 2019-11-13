@@ -235,7 +235,7 @@ class Connection(object):
             ret = await messageHandler.handleMsg(message, position)
 
             if resumeFromLastPositionId and ret == ActionFlow.SAVE_POSITION:
-                self.write(resumeFromLastPositionId, position)
+                await self.write(resumeFromLastPositionId, position)
 
             if ret == ActionFlow.STOP:
                 break
