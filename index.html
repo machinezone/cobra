@@ -47,7 +47,7 @@
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
                             <li class="active">
-                                <a href=".">Home</a>
+                                <a href=".">General</a>
                             </li>
                             <li >
                                 <a href="api/">Api</a>
@@ -78,11 +78,126 @@
         <div class="container">
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#general">General</a></li>
+        <li class="main "><a href="#news">News</a></li>
+        <li class="main "><a href="#installation">Installation</a></li>
+            <li><a href="#with-pip">With pip</a></li>
+            <li><a href="#with-docker">With docker</a></li>
+            <li><a href="#for-development">For development</a></li>
+        <li class="main "><a href="#usage">Usage</a></li>
+            <li><a href="#cobra-server-and-test-clients">Cobra server and test clients</a></li>
+            <li><a href="#bavarde">bavarde</a></li>
+        <li class="main "><a href="#setup">Setup</a></li>
+        <li class="main "><a href="#thank-you">Thank you</a></li>
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<p>Placeholder</p></div>
+<h1 id="general">General</h1>
+<p><a href="https://badge.fury.io/py/cobras"><img alt="PyPI version" src="https://badge.fury.io/py/cobras.svg" /></a>
+<a href="https://travis-ci.org/machinezone/cobra"><img alt="Build Status" src="https://travis-ci.org/machinezone/cobra.svg?branch=master" /></a>
+<a href="https://img.shields.io/pypi/pyversions/cobras"><img alt="PyPI Python Versions" src="https://img.shields.io/pypi/pyversions/cobras.svg" /></a>
+<a href="https://img.shields.io/pypi/l/cobras"><img alt="License" src="https://img.shields.io/pypi/l/cobras.svg" /></a>
+<a href="https://img.shields.io/pypi/wheel/cobras"><img alt="Wheel" src="https://img.shields.io/pypi/wheel/cobras.svg" /></a>
+<a href="https://codecov.io/gh/machinezone/cobra"><img alt="codecov" src="https://codecov.io/gh/machinezone/cobra/branch/master/graph/badge.svg" /></a></p>
+<p>Cobra is a realtime messaging server using Python3, WebSockets and Redis Streams. It was presented in great details during <a href="https://events.redislabs.com/redis-conf/redis-conf-2019/">RedisConf 2019</a>. Since then we've added history support which let cobra retain messages published to a channel that no-one is subscribed to. This makes it easier to blow up your systems through <a href="https://en.wikipedia.org/wiki/Out_of_memory">OOMs</a> and fill your hard drives, but it makes cobra much more useful.</p>
+<ul>
+<li><a href="https://bsergean.github.io/redis_conf_2019/slides.html">slides</a></li>
+<li><a href="https://www.youtube.com/watch?v=o8CC8qYfRQE&amp;t=147s">youtube</a></li>
+</ul>
+<p><a href="https://www.youtube.com/watch?v=o8CC8qYfRQE"><img alt="Alt text" src="https://image.slidesharecdn.com/06benjaminsergeant-190507205253/95/real-time-health-analytics-with-websockets-python-3-and-redis-pubsub-benjamin-sergeant-1-638.jpg" /></a></p>
+<p>Cobra has been used in production receiving heavy traffic for about a year. Since it was written in Python it was named after a snake as an hommage to a great programming language.</p>
+<p>There are 4 operations that a client can execute against a cobra server: <em>publish</em>, <em>subscribe</em>, <em>read</em> and <em>write</em>. <em>publish</em> and <em>subscribe</em> are the 2 operations core to a group-chat. <em>read</em> and <em>write</em> are the typical operations that key value stores (such as memcached), or a python dictionnary provide.</p>
+<ul>
+<li><em>publish</em>: send data to a channel, which will be broadcasted to anyone subscribed to that channel</li>
+<li><em>subscribe</em>: receive events sent to a channel in real time.</li>
+<li><em>write</em>: record some data (addressed by a key)</li>
+<li><em>read</em>: retrieve data</li>
+</ul>
+<h1 id="news">News</h1>
+<p>Cobra is actively being developed, check out the <a href="CHANGELOG.md">changelog</a> to know what's cooking.</p>
+<h1 id="installation">Installation</h1>
+<h2 id="with-pip">With pip</h2>
+<pre><code>pip install cobras
+</code></pre>
+
+<h2 id="with-docker">With docker</h2>
+<pre><code>docker pull bsergean/cobra
+</code></pre>
+
+<h2 id="for-development">For development</h2>
+<pre><code>git clone &lt;url&gt;
+cd cobra
+python3 -m venv venv
+source venv/bin/activate
+make dev
+make test
+</code></pre>
+
+<h1 id="usage">Usage</h1>
+<h2 id="cobra-server-and-test-clients">Cobra server and test clients</h2>
+<pre><code>$ cobra
+Usage: cobra [OPTIONS] COMMAND [ARGS]...
+
+  Cobra is a realtime messaging server using Python3, WebSockets and Redis
+  PubSub.
+
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
+Commands:
+  admin            Run admin commands.
+  health           Health check
+  init             Setup cobra
+  monitor          Monitor cobra
+  publish          Publish to a channel
+  run              Run the cobra server
+  redis_subscribe  Subscribe to a channel (with redis)
+  subscribe        Subscribe to a channel
+  secret           Generate secrets used for authentication...
+</code></pre>
+
+<p>To run the server use <code>cobra run</code>. You can run a health-check against the server with <code>cobra health</code>.</p>
+<pre><code>cobra health --url 'ws://jeanserge.com/v2?appkey=_health' --secret A5a3BdEfbc6Df5AAFFcadE7F9Dd7F17E --role health
+</code></pre>
+
+<h2 id="bavarde">bavarde</h2>
+<p><em>bavarde</em> is a chat client that runs against the public cobra server. Bring up 2 terminals, runs the 2 commands below and start typing.</p>
+<pre><code>$ bavarde client
+...
+</code></pre>
+
+<pre><code>$ bavarde client --username bob
+...
+</code></pre>
+
+<h1 id="setup">Setup</h1>
+<p><code>cobras init</code> needs to be run once to generate an app configuration file, in <code>~/.cobra.yaml</code>. That file contains all the roles, secrets and apps configured. Clients will use this data to authenticate.</p>
+<p>To run in production you will need a redis (version &gt; 5) instance. Here are environment variables that you will likely want to tweak, to connect to 2 redis instances (for scalabity), and to bind on 0.0.0.0 so that the internet can see your instance.</p>
+<pre><code>- name: COBRA_HOST
+  value: 0.0.0.0
+- name: COBRA_REDIS_URLS
+  value: redis://redis1;redis://redis2
+
+# config can be a path to a file
+- name: COBRA_APPS_CONFIG_PATH
+  value: /path/to/your/cobra.yaml
+
+# config can be a blob of gziped + base64 data (if you do not want to mount volumes)
+# Generate it with:
+# `gzip -c ~/.cobra.yaml | base64`
+- name: COBRA_APPS_CONFIG_CONTENT
+  value: BIGBLOGOFDATA
+</code></pre>
+
+<h1 id="thank-you">Thank you</h1>
+<p>There would be no cobra without some other amazing open-source projects and tech. Here are 3 very remarkable ones.</p>
+<ul>
+<li><a href="https://www.python.org/">Python</a> (and <a href="https://realpython.com/async-io-python/">asyncio</a>, one of the killer python3 feature !)</li>
+<li><a href="https://redis.io/">Redis</a>, the swiss army knife of the internet which provide a very scalable publish/subscribe feature to dispatch messages while retaining them and allowing lookups of old messages (see [Redis Streams] (https://redis.io/topics/streams-intro).</li>
+<li>The python <a href="https://websockets.readthedocs.io/en/stable/intro.html">websockets</a> library, very elegantly implementing the <a href="https://tools.ietf.org/html/rfc6455">WebSockets</a> protocol using <strong>asyncio</strong>.</li>
+</ul></div>
         </div>
 
         <footer class="col-md-12">
@@ -165,5 +280,5 @@
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-11-13 22:08:31
+Build Date UTC : 2019-11-13 22:10:07
 -->
