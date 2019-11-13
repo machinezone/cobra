@@ -90,6 +90,9 @@
             <li><a href="#pdu-fields">PDU fields</a></li>
             <li><a href="#subscription">Subscription</a></li>
         <li class="main "><a href="#publish-pdu">Publish PDU</a></li>
+            <li><a href="#request">Request</a></li>
+            <li><a href="#response-ok">Response (OK)</a></li>
+            <li><a href="#response-error">Response (error)</a></li>
             <li><a href="#unclassified-errors">Unclassified errors</a></li>
         <li class="main "><a href="#subscribe-pdu">Subscribe PDU</a></li>
             <li><a href="#position_1">Position</a></li>
@@ -107,37 +110,42 @@
             <li><a href="#unsolicited-subscribe-errors">Unsolicited subscribe errors</a></li>
             <li><a href="#unsolicited-subscribe-info-messages">Unsolicited subscribe info messages</a></li>
         <li class="main "><a href="#unsubscribe-pdu">Unsubscribe PDU</a></li>
-            <li><a href="#request_2">Request</a></li>
-            <li><a href="#response-ok_2">Response (ok)</a></li>
-            <li><a href="#response-error_2">Response (error)</a></li>
-            <li><a href="#unclassified-errors_2">Unclassified errors</a></li>
-            <li><a href="#unsubscribe-specific-errors">Unsubscribe-specific errors</a></li>
-        <li class="main "><a href="#read-pdu">Read PDU</a></li>
             <li><a href="#request_3">Request</a></li>
             <li><a href="#response-ok_3">Response (ok)</a></li>
             <li><a href="#response-error_3">Response (error)</a></li>
+            <li><a href="#unclassified-errors_2">Unclassified errors</a></li>
+            <li><a href="#unsubscribe-specific-errors">Unsubscribe-specific errors</a></li>
+        <li class="main "><a href="#read-pdu">Read PDU</a></li>
+            <li><a href="#request_4">Request</a></li>
+            <li><a href="#response-ok_4">Response (ok)</a></li>
+            <li><a href="#response-error_4">Response (error)</a></li>
             <li><a href="#unclassified-errors_3">Unclassified errors</a></li>
             <li><a href="#read-specific-errors">Read-specific errors</a></li>
         <li class="main "><a href="#write-pdu">Write PDU</a></li>
         <li class="main "><a href="#delete-pdu">Delete PDU</a></li>
-            <li><a href="#request_4">Request</a></li>
-            <li><a href="#response-ok_4">Response (ok)</a></li>
-            <li><a href="#response-error_4">Response (error)</a></li>
+            <li><a href="#request_5">Request</a></li>
+            <li><a href="#response-ok_5">Response (ok)</a></li>
+            <li><a href="#response-error_5">Response (error)</a></li>
             <li><a href="#unclassified-errors_4">Unclassified errors</a></li>
             <li><a href="#delete-specific-errors">Delete-specific errors</a></li>
             <li><a href="#using-delete">Using delete</a></li>
         <li class="main "><a href="#handshake-authenticate-pdus">Handshake &amp; Authenticate PDUs</a></li>
         <li class="main "><a href="#handshake-pdu">Handshake PDU</a></li>
-            <li><a href="#request_5">Request</a></li>
-            <li><a href="#response-ok_5">Response (ok)</a></li>
-            <li><a href="#response-error_5">Response (error)</a></li>
-            <li><a href="#unclassified-errors_5">Unclassified errors</a></li>
-            <li><a href="#handshake-specific-errors">Handshake-specific errors</a></li>
-        <li class="main "><a href="#authenticate-pdu">Authenticate PDU</a></li>
             <li><a href="#request_6">Request</a></li>
             <li><a href="#response-ok_6">Response (ok)</a></li>
             <li><a href="#response-error_6">Response (error)</a></li>
+            <li><a href="#unclassified-errors_5">Unclassified errors</a></li>
+            <li><a href="#handshake-specific-errors">Handshake-specific errors</a></li>
+        <li class="main "><a href="#authenticate-pdu">Authenticate PDU</a></li>
+            <li><a href="#request_7">Request</a></li>
+            <li><a href="#response-ok_7">Response (ok)</a></li>
+            <li><a href="#response-error_7">Response (error)</a></li>
+            <li><a href="#unclassified-errors_6">Unclassified errors</a></li>
+            <li><a href="#authenticate-specific-errors">Authenticate-specific errors</a></li>
+            <li><a href="#hash-computation">Hash computation</a></li>
+            <li><a href="#hash-computation-example">Hash computation example</a></li>
         <li class="main "><a href="#error-reference">Error Reference</a></li>
+            <li><a href="#error-types">Error types</a></li>
         <li class="main "><a href="#mini-schema-reference">Mini-schema Reference</a></li>
     </ul>
 </div></div>
@@ -191,11 +199,11 @@ in the same order.</p>
 </code></pre>
 
 <ul>
-<li><endpoint>: Endpoint string from Dev Portal, for example
+<li><endpoint>: Endpoint string, for example
    wss://example.com</li>
 <li><rtm_version>: Current version of RTM, for example v2. The current
    version is listed at the beginning of the RTM API documentation</li>
-<li><appkey>: Appkey from Dev Portal</li>
+<li><appkey>: Appkey from ~/.cobra.yaml</li>
 </ul>
 <p>For example:</p>
 <pre><code>wss://example.com/v2?appkey=46832Af7f7cba8df8Fa2Bd5CE8B7D99E
@@ -326,7 +334,7 @@ in the same order.</p>
    to RTM.</p>
 <p>The following specification shows the publish request and response
    PDUs:</p>
-<p>Request</p>
+<h4 id="request">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/publish&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -337,7 +345,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (OK)</p>
+<h4 id="response-ok">Response (OK)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/publish/ok&quot;,
   &quot;id&quot;: RequestId,
@@ -347,7 +355,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<p>Response (error)</p>
+<h4 id="response-error">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/publish/error&quot;,
   &quot;id&quot;:RequestId,
@@ -421,7 +429,7 @@ in the same order.</p>
    and the channel field is optional (the channel name must match what is
    specified in the filter (view) field).</p>
 <h3 id="subscribe-without-streamview-no-filter-field">Subscribe without streamview (no filter field)</h3>
-<h4 id="request">Request</h4>
+<h4 id="request_1">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscribe&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -439,7 +447,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-ok">Response (ok)</h4>
+<h4 id="response-ok_1">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscribe/ok&quot;,
   &quot;id&quot;:RequestId
@@ -450,7 +458,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-error">Response (error)</h4>
+<h4 id="response-error_1">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscribe/error&quot;,
   &quot;id&quot;:RequestId,
@@ -463,7 +471,7 @@ in the same order.</p>
 </code></pre>
 
 <h3 id="subscribe-with-streamview-filter-field">Subscribe with streamview (filter field)</h3>
-<h4 id="request_1">Request</h4>
+<h4 id="request_2">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscribe&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -482,7 +490,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-ok_1">Response (ok)</h4>
+<h4 id="response-ok_2">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscribe/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -493,7 +501,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-error_1">Response (error)</h4>
+<h4 id="response-error_2">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/subscribe/error&quot;,
   &quot;id&quot;:RequestId,
@@ -757,7 +765,7 @@ in the same order.</p>
    Unsubscribe PDU request to RTM.</p>
 <p>In case a client endpoint has multiple subscriptions to the same
    channel, it must send a PDU for each subscription it wants to end.</p>
-<h4 id="request_2">Request</h4>
+<h4 id="request_3">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/unsubscribe&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -767,7 +775,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-ok_2">Response (ok)</h4>
+<h4 id="response-ok_3">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/unsubscribe/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -778,7 +786,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-error_2">Response (error)</h4>
+<h4 id="response-error_3">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/unsubscribe/error&quot;,
   &quot;id&quot;:RequestId,
@@ -853,7 +861,7 @@ in the same order.</p>
    there is no position specified, RTM defaults to the position of the
    latest message in the channel. A null message in the response PDU means
    that there were no messages at that position.</p>
-<h4 id="request_3">Request</h4>
+<h4 id="request_4">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/read&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -864,7 +872,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-ok_3">Response (ok)</h4>
+<h4 id="response-ok_4">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/read/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -875,7 +883,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-error_3">Response (error)</h4>
+<h4 id="response-error_4">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/read/error&quot;,
   &quot;id&quot;:RequestId,
@@ -968,7 +976,7 @@ in the same order.</p>
 <p>Sending a delete PDU request is the same as publishing or writing a
    null value to the channel.</p>
 <p>A delete operation requires publish permission.</p>
-<h4 id="request_4">Request</h4>
+<h4 id="request_5">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/delete&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -978,7 +986,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-ok_4">Response (ok)</h4>
+<h4 id="response-ok_5">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/delete/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -988,7 +996,7 @@ in the same order.</p>
 }
 </code></pre>
 
-<h4 id="response-error_4">Response (error)</h4>
+<h4 id="response-error_5">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;rtm/delete/error&quot;,
   &quot;id&quot;:RequestId,
@@ -1087,7 +1095,7 @@ identical result:</p>
 <p>If the request succeeds, RTM returns the nonce. In case of an error,
    RTM cancels the handshake request. For example, an error may occur if
    the role you specify doesn't exist in the Dev Portal.</p>
-<h4 id="request_5">Request</h4>
+<h4 id="request_6">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/handshake&quot;,
   &quot;id&quot;:RequestId OPTIONAL
@@ -1100,7 +1108,7 @@ identical result:</p>
 }
 </code></pre>
 
-<h4 id="response-ok_5">Response (ok)</h4>
+<h4 id="response-ok_6">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/handshake/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -1112,7 +1120,7 @@ identical result:</p>
 }
 </code></pre>
 
-<h4 id="response-error_5">Response (error)</h4>
+<h4 id="response-error_6">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/handshake/error&quot;,
   &quot;id&quot;:RequestId,
@@ -1193,7 +1201,7 @@ identical result:</p>
    This can occur, for example, if your calculated hash doesn't match the
    value calculated by RTM, or if the role you specify doesn't exist in
    the Dev Portal.</p>
-<h4 id="request_6">Request</h4>
+<h4 id="request_7">Request</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/authenticate&quot;,
   &quot;id&quot;:RequestId OPTIONAL,
@@ -1206,7 +1214,7 @@ identical result:</p>
 }
 </code></pre>
 
-<h4 id="response-ok_6">Response (ok)</h4>
+<h4 id="response-ok_7">Response (ok)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/authenticate/ok&quot;,
   &quot;id&quot;:RequestId,
@@ -1214,7 +1222,7 @@ identical result:</p>
 }
 </code></pre>
 
-<h4 id="response-error_6">Response (error)</h4>
+<h4 id="response-error_7">Response (error)</h4>
 <pre><code>{
   &quot;action&quot;:&quot;auth/authenticate/error&quot;,
   &quot;id&quot;:RequestId,
@@ -1225,60 +1233,88 @@ identical result:</p>
 }
 </code></pre>
 
-<p>Field</p>
-<p>Type</p>
-<p>Description</p>
-<p>AuthMethod</p>
-<p>text</p>
-<p>Method of authentication to perform. Only "role_secret" is currently
-   supported.</p>
-<p>Role</p>
-<p>text</p>
-<p>Role to authenticate as.</p>
-<p>Project roles and their permissions  are managed in Dev Portal.</p>
-<p>Hash</p>
-<p>string</p>
-<p>HMAC-MD5 hash value computed for the secret key and the nonce received
-   in rtm/handshake/ok.</p>
-<p>ErrorName</p>
-<p>string</p>
-<p>Possible errors are listed in the sections following this table.</p>
-<p>ErrorReason</p>
-<p>text</p>
-<p>Human readable error description. See [80]Error Reference.</p>
-<p>Unclassified errors</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AuthMethod</td>
+<td>text</td>
+<td>Method of authentication to perform. Only "role_secret" is currently supported.</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>text</td>
+<td>Role to authenticate as.  Project roles and their permissions are managed in ~/.cobra.yaml file</td>
+</tr>
+<tr>
+<td>Hash</td>
+<td>string</td>
+<td>HMAC-MD5 hash value computed for the secret key and the nonce received in rtm/handshake/ok.</td>
+</tr>
+<tr>
+<td>ErrorName</td>
+<td>string</td>
+<td>Possible errors are listed in the sections following this table.</td>
+</tr>
+<tr>
+<td>ErrorReason</td>
+<td>text</td>
+<td>Human readable error description. See Error Reference.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="unclassified-errors_6">Unclassified errors</h4>
 <p>RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"</p>
-<p>To learn more about any of these errors, see [81]Unclassified Errors.</p>
-<p>Authenticate-specific errors</p>
+ * "authorization_denied"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"</p>
+<p>To learn more about any of these errors, see Unclassified Errors.</p>
+<h4 id="authenticate-specific-errors">Authenticate-specific errors</h4>
 <p>RTM may return the following errors in response to a authentication
-   request:</p>
-<p>error value</p>
-<p>Meaning</p>
-<p>"authentication_failed" In your authentication PDU, the value of "hash"
-   is invalid.
-   "auth_method_not_allowed" In the authentication PDU, the value of
-   "method" is not set to "role_secret".</p>
+request:</p>
+<table>
+<thead>
+<tr>
+<th>error value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"authentication_failed"</td>
+<td>In your authentication PDU, the value of "hash" is invalid.</td>
+</tr>
+<tr>
+<td>"auth_method_not_allowed"</td>
+<td>In the authentication PDU, the value of "method" is not set to "role_secret".</td>
+</tr>
+</tbody>
+</table>
 <p>The "action" field is always "action":"auth/authenticate/error".</p>
-<p>Hash computation</p>
+<h4 id="hash-computation">Hash computation</h4>
 <p>The hash is calculated for a secret key (K) and a nonce (N).  The
-   secret key is obtained from the Dev Portal; the nonce is received in
+   secret key is obtained from the ~/.cobra.yaml file; the nonce is received in
    handshake response PDU.</p>
-<p>Hash = base64( HMAC-MD5( utf8(K), utf8(N) ) )</p>
+<pre><code>   Hash = base64( HMAC-MD5( utf8(K), utf8(N) ) )
+</code></pre>
+
 <p>Existing HMAC-MD5 implementations are commonly available for any
-   language. For completeness:</p>
-<p>HMAC-MD5 is the algorithm specified in [[82]RFC 2104] using MD5
-   [[83]RFC 1321] as the underlying hash function. base64 is a string
-   representation of a byte array described in [[84]RFC 3548]. Note that
-   the result of the base64 operation is the actual hash value and shall
-   be used as it is. utf8 is the binary representation of string described
-   in [[85]RFC 3629].</p>
-<p>Hash computation example</p>
+language. For completeness:</p>
+<p>HMAC-MD5 is the algorithm specified in [RFC 2104] using MD5
+[RFC 1321] as the underlying hash function. base64 is a string
+representation of a byte array described in [RFC 3548]. Note that
+the result of the base64 operation is the actual hash value and shall
+be used as it is. utf8 is the binary representation of string described
+in [RFC 3629].</p>
+<h4 id="hash-computation-example">Hash computation example</h4>
 <pre><code>Let secret key K = &quot;secret-key&quot; and nonce N = &quot;nonce&quot;
 
 utf8(K) = [73 65 63 72 65 74 2D 6B 65 79]
@@ -1289,31 +1325,53 @@ hash = 'G12A8Dt0RdjHNx8P0lci9w=='
 
 <h2 id="error-reference">Error Reference</h2>
 <p>Every error includes error and reason fields. Additional fields may be
-   present, specific to a PDU type.</p>
+present, specific to a PDU type.</p>
 <p>Error PDU body</p>
-<p>{
-  "error": string,
-  "reason": text,
+<pre><code>{
+  &quot;error&quot;: string,
+  &quot;reason&quot;: text,
   // other PDU-specific fields
-}</p>
-<p>error</p>
-<p>Name of the error. This string is intended for use in code.</p>
-<p>reason</p>
-<p>Describes the error. This text is intended for human use; the text may
-   change in the future and should not be used in code conditioning logic.</p>
-<p>Error types</p>
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>error</td>
+<td>Name of the error. This string is intended for use in code.</td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Describes the error. This text is intended for human use; the text may change in the future and should not be used in code conditioning logic.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="error-types">Error types</h4>
 <p>Errors are categorized into two types:</p>
-<p>Error Type</p>
-<p>Description</p>
-<p>Unclassified</p>
-<p>Errors not associated with a particular operation. It may be unknown
-   which operation is triggering it, or potentially affecting overall
-   communication consistency.</p>
-<p>For example, if RTM cannot parse a PDU or cannot parse an action, it
-   has no choice but to return a general system error.</p>
-<p>Operation-specific</p>
-<p>Errors returned in direct response to a request sent by a client, or
-   unsolicited errors associated with a particular operation.</p>
+<table>
+<thead>
+<tr>
+<th>Error Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unclassified</td>
+<td>Errors not associated with a particular operation. It may be unknown which operation is triggering it, or potentially affecting overall communication consistency. For example, if RTM cannot parse a PDU or cannot parse an action, it has no choice but to return a general system error.</td>
+</tr>
+<tr>
+<td>Operation-specific</td>
+<td>Errors returned in direct response to a request sent by a client, or unsolicited errors associated with a particular operation.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="mini-schema-reference">Mini-schema Reference</h2>
 <p>The format for a PDU is the concrete transfer syntax, and the PDU
    specifications used in this reference use a specific pattern based on
