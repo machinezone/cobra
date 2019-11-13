@@ -265,11 +265,15 @@ Response (error)
 }
 ```
 
-Field
-
-Type
-
-Description
+<table>
+<thead>
+    <tr>
+        <td>Field</td>
+        <td>Type</td>
+        <td>Description</td>
+    </tr>
+</thead>
+</tbody>
 
    ChannelName
 
