@@ -23,8 +23,6 @@ There are 4 operations that a client can execute against a cobra server: *publis
 * *write*: record some data (addressed by a key)
 * *read*: retrieve data
 
-Interested ? Go read the [docs](https://machinezone.github.io/cobra/) ! If things don't work as expected, please create an issue in github, or even better a pull request if you know how to fix your problem.
-
 # News
 
 Cobra is actively being developed, check out the [changelog](CHANGELOG.md) to know what's cooking.
@@ -125,6 +123,10 @@ To run in production you will need a redis (version > 5) instance. Here are envi
   value: BIGBLOGOFDATA
 ```
 
+# Contributing
+
+Cobra is developed on [github](https://github.com/machinezone/cobra). We'd love to hear about how you use it ; opening up an issue in github is ok for that. If things don't work as expected, please create an issue in github, or even better a pull request if you know how to fix your problem.
+
 # Thank you
 
 There would be no cobra without some other amazing open-source projects and tech. Here are 3 very remarkable ones.
@@ -132,4 +134,3 @@ There would be no cobra without some other amazing open-source projects and tech
 - [Python](https://www.python.org/) (and [asyncio](https://realpython.com/async-io-python/), one of the killer python3 feature !)
 - [Redis](https://redis.io/), the swiss army knife of the internet which provide a very scalable publish/subscribe feature to dispatch messages while retaining them and allowing lookups of old messages (see [Redis Streams] (https://redis.io/topics/streams-intro).
 - The python [websockets](https://websockets.readthedocs.io/en/stable/intro.html) library, very elegantly implementing the [WebSockets](https://tools.ietf.org/html/rfc6455) protocol using **asyncio**.
-- The python [aioredis](https://aioredis.readthedocs.io/en/v1.2.0/) library used to talk to Redis. This [redis labs](https://redislabs.com/blog/async-await-programming-basics-python-examples/) article explains some pitfalls with asyncio and how to get the best performance out of it.

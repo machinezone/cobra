@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.3.7] - 2019-11-13
+
+* (deps) bump websockets lib dependency to 8.1
+
 ## [2.3.6] - 2019-11-12
 
 * (client) async method call needs to be awaited

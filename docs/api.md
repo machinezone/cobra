@@ -64,11 +64,11 @@ Endpoint
 <endpoint>/<rtm_version>?appkey=<appkey>
 ```
 
- * <endpoint>: Endpoint string from Dev Portal, for example
+ * <endpoint>: Endpoint string, for example
    wss://example.com
  * <rtm_version>: Current version of RTM, for example v2. The current
    version is listed at the beginning of the RTM API documentation
- * <appkey>: Appkey from Dev Portal
+ * <appkey>: Appkey from ~/.cobra.yaml
 
    For example:
 
@@ -91,7 +91,7 @@ wss://example.com/v2?appkey=46832Af7f7cba8df8Fa2Bd5CE8B7D99E
 
 ### PDU size
 
-   User generated "payload" is unlimited.
+User generated "payload" size is unlimited.
 
 ### PDU fields
 
@@ -227,7 +227,7 @@ Description
    The following specification shows the publish request and response
    PDUs:
 
-Request
+#### Request
 
 ```
 {
@@ -240,7 +240,7 @@ Request
 }
 ```
 
-Response (OK)
+#### Response (OK)
 
 ```
 {
@@ -252,7 +252,7 @@ Response (OK)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -276,11 +276,12 @@ ErrorReason | text   | Human readable error description.
 ### Unclassified errors
 
 RTM may return the following unclassified errors:
- * "authorization_denied"
- * "invalid_format"
- * "invalid_operation"
- * "invalid_service"
- * "json_parse_error"
+
+* "authorization_denied"
+* "invalid_format"
+* "invalid_operation"
+* "invalid_service"
+* "json_parse_error"
 
 To learn more about any of these errors, see Unclassified Errors.
 
@@ -312,7 +313,7 @@ To learn more about any of these errors, see Unclassified Errors.
 
 ### Subscribe without streamview (no filter field)
 
-Request
+#### Request
 
 ```
 {
@@ -332,7 +333,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -345,7 +346,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -359,9 +360,9 @@ Response (error)
 }
 ```
 
-Subscribe with streamview (filter field)
+### Subscribe with streamview (filter field)
 
-Request
+#### Request
 
 ```
 {
@@ -382,7 +383,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -395,7 +396,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -409,157 +410,40 @@ Response (error)
 }
 ```
 
-Field
+Field       | Type    | Description
+-----       | ------- | -----------
+ChannelName | string  | The name of the channel to subscribe to.
+SubId       | string  | Either a channel name or a unique client-generated identifier for the subscription (when applicable)
+Position    | string  | Channel location to start the subscription at. Default is the next channel position.
+SQL         | string  | SQL statement to run on messages before sending them to the client. See Views.
+ErrorName   | string  | Possible errors are listed in the sections following this table.
+ErrorReason | text    | Human readable error description. See Error Reference.
+RequestId   | int or string | See id field in PDU section.
 
-Type
+### Unclassified errors
 
-Description
+RTM may return the following unclassified errors:
 
-   ChannelName
+* "authorization_denied"
+* "invalid_format"
+* "invalid_operation"
+* "invalid_service"
+* "json_parse_error"
 
-   string
+To learn more about any of these errors, see Unclassified Errors.
 
-   The name of the channel to subscribe to.
+### Subscribe-specific errors
 
-   SubId
+error value                 | Meaning
+-----------                 | -------
+already_subscribed          | You requested a new subscription with subscription_id set to an active subscription id, and you didn't specify "force" : true.
+expired_position            | RTM expired the message at the position you specified in position. The message is no longer available.
+invalid_filter              | (for a streamview subscription only): The stream SQL you specified in filter is invalid.
+subscription_quota_exceeded | You tried to add a subscription or streamview, but you exceeded the quota for the number of subscriptions or streamviews per project.
 
-   string
+The "action" field is always "action":"rtm/subscribe/error".
 
-   Either a channel name or a unique client-generated identifier for the
-   subscription (when applicable)
-
-   Position
-
-   string
-
-   Channel location to start the subscription at. Default is the next
-   channel position.
-
-   See position in [52]Channels section.
-
-   SQL
-
-   string
-
-   SQL statement to run on messages before sending them to the client. The
-   size is limited to 64 kB. See [53]Views.
-
-   Period
-
-   int
-
-   Time partition on the channel messages, in seconds, for which RTM
-   aggregates the view result per partition. See [54]Views.
-
-   The default value is 1 second. The maximum value is 60 seconds.
-
-   Force
-
-   boolean
-
-   Directs RTM how to act if your client already has an existing
-   subscription with the same value of subscription_id.
-
-   If you provide a new value for subscription_id, RTM removes the
-   existing subscription and creates a new subscription with the fields
-   you specify in body.
-
-   If you provide a new value for channel, RTM removes the existing
-   subscription and creates a new subscription with the fields you specify
-   in body. If you specify a value for filter, the value of channel must
-   be the same as the channel name you specify in the streamSQL for the
-   filter field.
-
-   If you specify the filter property or period property or both, RTM
-   updates the values and ignores any other fields in body.
-
-   FastForward
-
-   boolean
-
-   Specifies preferred behavior if an out_of_sync error situation occurs.
-
-   true directs RTM to fast-forward the subscription to the oldest
-   available message
-
-   false directs RTM to force unsubscription
-
-   Default is false
-
-   history
-
-   object
-
-   Contains a non-negative integer in the age field or count field.
-
-   See history in [55]Channels section.
-
-   history:{} returns no history.
-
-   Age
-
-   int
-
-   RTM starts the subscription this many seconds earlier than the value in
-   the position field.
-
-   Count
-
-   int
-
-   RTM starts the subscription this many messages before the value in the
-   position field.
-
-   ErrorName
-
-   string
-
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-
-   Human readable error description. See [56]Error Reference.
-
-   RequestId
-
-   int | string
-
-   See id field in [57]PDU section.
-
-Unclassified errors
-
-   RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"
-
-   To learn more about any of these errors, see [58]Unclassified Errors.
-
-Subscribe-specific errors
-
-error value
-
-Meaning
-
-   "already_subscribed" You requested a new subscription with
-   subscription_id set to an active subscription id, and you didn't
-   specify "force" : true.
-   "expired_position" RTM expired the message at the position you
-   specified in position. The message is no longer available.
-   "invalid_filter" (for a streamview subscription only): The stream SQL
-   you specified in filter is invalid.
-   "subscription_quota_exceeded" You tried to add a subscription or
-   streamview, but you exceeded the quota for the number of subscriptions
-   or streamviews per project.
-
-   The "action" field is always "action":"rtm/subscribe/error".
-
-out_of_sync and fast_forward
+### out_of_sync and fast_forward
 
    RTM sends subscription messages to the client as fast as the physical
    network link to the client allows it. If the rate of incoming
@@ -577,7 +461,7 @@ out_of_sync and fast_forward
    the client to the oldest not yet deleted message, instead of forcing
    unsubscription, and sends an info Subscription PDU.
 
-Updating a subscription
+### Updating a subscription
 
    filter and period fields can be changed on-the-fly for a pre-existing
    active subscription: by sending a Subscribe PDU with the force field
@@ -606,7 +490,7 @@ Updating a subscription
        and unsubscribes the client (see out_of_sync in [60]Subscribe PDU
        section).
 
-Subscription data
+#### Subscription data
 
 ```
 {
@@ -619,7 +503,7 @@ Subscription data
 }
 ```
 
-Subscription info
+#### Subscription info
 
 ```
 {
@@ -634,7 +518,7 @@ Subscription info
 }
 ```
 
-Subscription error
+#### Subscription error
 
 ```
 {
@@ -649,95 +533,37 @@ Subscription error
 }
 ```
 
-Field
+Field       | Type   | Description
+-----       | ----   | -----------
+Position    | string | Provided to enable clients to resubscribe preserving stream continuity (in the event of a disconnect).
+Message     | value  | A channel message (as it was published, or - when applicable - a message result according to the subscription view)
+SubId       | string | Id for the subscription for which the PDU was sent.
+InfoType    | string | Information type. See Service-Specific Info Messages.
+InfoReason  | text   | In the sections following this table, see "Unsolicited subscribe info messages".
+Count       | int    | Number of skipped messages in the channel.
+ErrorName   | string | Possible errors are listed in the sections following this table.
+ErrorReason | text   | Human readable error description. See [62]Error Reference.
 
-Type
-
-Description
-
-   Position
-
-   string
-
-   See position in the [61]Channels section.
-   Provided to enable clients to resubscribe preserving stream continuity
-   (in the event of a disconnect).
-
-   Message
-
-   value
-
-   A channel message (as it was published, or - when applicable - a
-   message result according to the subscription view)
-
-   SubId
-
-   string
-
-   Id for the subscription for which the PDU was sent.
-
-   InfoType
-
-   string
-
-   Information type. See Service-Specific Info Messages.
-
-   InfoReason
-
-   text
-
-   In the sections following this table, see "Unsolicited subscribe info
-   messages".
-
-   Count
-
-   int
-
-   Number of skipped messages in the channel.
-
-   ErrorName
-
-   string
-
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-
-   Human readable error description. See [62]Error Reference.
-
-Unsolicited subscribe errors
+#### Unsolicited subscribe errors
 
    RTM may return one of these errors for an active subscription:
 
-error value
+error value      | Meaning
+-----------      | -------
+out_of_sync      | The message position for the subscription is pointing to an expired message, and your subscribe PDU didn't specify "fast_forward" : true. RTM unsubscribes you, and it may drop your connection.
+expired_position | Your subscribe PDU specified the "position" field, but its value points to an expired message.
 
-Meaning
+The "action" field is always "action":"rtm/subscription/error".
 
-   "out_of_sync" The message position for the subscription is pointing to
-   an expired message, and your subscribe PDU didn't specify
-   "fast_forward" : true. RTM unsubscribes you, and it may drop your
-   connection.
-   expired_position Your subscribe PDU specified the "position" field, but
-   its value points to an expired message.
-
-   The "action" field is always "action":"rtm/subscription/error".
-
-Unsolicited subscribe info messages
+#### Unsolicited subscribe info messages
 
    RTM may return this info message for an active subscription:
 
-info value
+info value   | Meaning
+----------   | --------
+fast_forward | Because your subscribe PDU specified "fast_forward" : true, RTM performed a fast forward in response to an out of sync condition. You receive this info PDU in addition to an error PDU with error set to "expired_position".
 
-Meaning
-
-   fast_forward Because your subscribe PDU specified "fast_forward" :
-   true, RTM performed a fast forward in response to an out of sync
-   condition. You receive this info PDU in addition to an error PDU with
-   error set to "expired_position".
-
-   The "action" field is always "action":"rtm/subscription/info".
+The "action" field is always "action":"rtm/subscription/info".
 
 ## Unsubscribe PDU
 
@@ -747,7 +573,7 @@ Meaning
    In case a client endpoint has multiple subscriptions to the same
    channel, it must send a PDU for each subscription it wants to end.
 
-Request
+#### Request
 
 ```
 {
@@ -759,7 +585,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -772,7 +598,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -786,63 +612,34 @@ Response (error)
 }
 ```
 
-Field
+Field       | Type   | Description
+-----       | ----   | -----------
+SubId       | string | Id of the subscription that you want to cancel.
+Position    | string | RTM response includes current location in the channel message stream at the time unsubscribe operation has completed. Enables a client to resubscribe to the channel from the position where it unsubscribed
+ErrorName   | string | Possible errors are listed in the sections following this table.
+ErrorReason | text   | Human readable error description. See [64]Error Reference.
 
-Type
+#### Unclassified errors
 
-Description
+RTM may return the following unclassified errors:
 
-   SubId
+* "authorization_denied"
+* "invalid_format"
+* "invalid_operation"
+* "invalid_service"
+* "json_parse_error"
 
-   string
+To learn more about any of these errors, see Unclassified Errors.
 
-   Id of the subscription that you want to cancel.
+#### Unsubscribe-specific errors
 
-   Position
+The following errors are specific to an unsubscribe operation:
 
-   string
+error value      | Meaning
+-----------      | -------
+not_subscribed   | You tried to unsubscribe from a subscription that doesn't exist.
 
-   RTM response includes current location in the channel message stream at
-   the time unsubscribe operation has completed.
-   Enables a client to resubscribe to the channel from the position where
-   it unsubscribed
-
-   ErrorName
-
-   string
-
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-
-   Human readable error description. See [64]Error Reference.
-
-Unclassified errors
-
-   RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"
-
-   To learn more about any of these errors, see [65]Unclassified Errors.
-
-Unsubscribe-specific errors
-
-   The following errors are specific to an unsubscribe operation:
-
-error value
-
-Meaning
-
-   "not_subscribed" You tried to unsubscribe from a subscription that
-   doesn't exist.
-
-   The "action" field is always "action":"rtm/unsubscribe/error".
+The "action" field is always "action":"rtm/unsubscribe/error".
 
 ## Read PDU
 
@@ -854,7 +651,7 @@ Meaning
    latest message in the channel. A null message in the response PDU means
    that there were no messages at that position.
 
-Request
+#### Request
 
 ```
 {
@@ -867,7 +664,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -880,7 +677,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -893,74 +690,36 @@ Response (error)
 }
 ```
 
-Field
+Field       | Type   | Description
+-----       | ----   | -----------
+ChannelName | string | The name of the channel to read from.
+Position    | string | The channel location to retrieve a message at. See position in the Channels section.
+Message     | value  | Message returned by RTM.
+ErrorName   | string | Possible errors are listed in the sections following this table.
+ErrorReason | text   | Human readable error description. See Error Reference.
+RequestId   | int or string | See id Field in the Channels section.
 
-Type
+#### Unclassified errors
 
-Description
+RTM may return the following unclassified errors:
 
-   ChannelName
+* "authorization_denied"
+* "invalid_format"
+* "invalid_operation"
+* "invalid_service"
+* "json_parse_error"
 
-   string
+To learn more about any of these errors, see Unclassified Errors.
 
-   The name of the channel to read from.
+#### Read-specific errors
 
-   Position
+The following errors are specific to a read operation:
 
-   string
+error value      | Meaning
+-----------      | -------
+expired_position | The message at the position you tried to read from no longer exists, because RTM expired it.
 
-   The channel location to retrieve a message at.
-
-   See position in the Channels section.
-
-   Message
-
-   value
-
-   Message returned by RTM.
-
-   ErrorName
-
-   string
-
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-
-   Human readable error description. See [67]Error Reference.
-
-   RequestId
-
-   int | string
-
-   See id Field in the [68]Channels section.
-
-Unclassified errors
-
-   RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"
-
-   To learn more about any of these errors, see [69]Unclassified Errors.
-
-Read-specific errors
-
-   The following errors are specific to a read operation:
-
-error value
-
-Meaning
-
-   "expired_position" The message at the position you tried to read from
-   no longer exists, because RTM expired it.
-
-   The "action" field is always "action":"rtm/read/error".
+The "action" field is always "action":"rtm/read/error".
 
 ## Write PDU
 
@@ -985,7 +744,7 @@ Meaning
 
    A delete operation requires publish permission.
 
-Request
+#### Request
 
 ```
 {
@@ -997,7 +756,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -1009,7 +768,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -1022,85 +781,54 @@ Response (error)
 }
 ```
 
-Field
+Field       | Type   | Description
+-----       | ----   | -----------
+ChannelName | string | The name of the channel.
+Position    | string | Present only in a response. Channel location at which the message has been deleted, when purge is false. When purge is true, position is not returned. See position in the Channels section.
+ErrorName   | string | Possible errors are listed in the sections following this table.
+ErrorReason | text   | Human readable error description. See Error Reference.
+RequestId   | int or string | See id field in the PDU section.
 
-Type
+#### Unclassified errors
 
-Description
+RTM may return the following unclassified errors:
 
-   ChannelName
+ * "authorization_denied"
+ * "cbor_parse_error"
+ * "invalid_format"
+ * "invalid_operation"
+ * "invalid_service"
+ * "json_parse_error"
 
-   string
+To learn more about any of these errors, see Unclassified Errors.
 
-   The name of the channel.
-
-   Position
-
-   string
-
-   Present only in a response.
-
-   Channel location at which the message has been deleted, when purge is
-   false.
-
-   When purge is true, position is not returned.
-
-   See position in the [72]Channels section.
-
-   ErrorName
-
-   string
-
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-
-   Human readable error description. See [73]Error Reference.
-
-   RequestId
-
-   int | string
-
-   See id field in the [74]PDU section.
-
-Unclassified errors
-
-   RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"
-
-   To learn more about any of these errors, see [75]Unclassified Errors.
-
-Delete-specific errors
+#### Delete-specific errors
 
    The following errors are specific to a delete operation:
 
-error value
+error value      | Meaning
+-----------      | -------
+expired_position | The message at the position you tried to read from no longer exists, because RTM expired it.
 
-Meaning
+The "action" field is always "action":"rtm/delete/error".
 
-   "expired_position" The message you tried to delete no longer exists,
-   because RTM expired it.
+### Using delete
 
-   The "action" field is always "action":"rtm/delete/error".
+Deleting a channel message is the same as publishing or writing null to
+the channel. For example, these three requests to RTM accomplish
+identical result:
 
-Using delete
-
-   Deleting a channel message is the same as publishing or writing null to
-   the channel. For example, these three requests to RTM accomplish
-   identical result:
-
+```
    {"action":"rtm/publish","body":{"channel":"x","message":null}}
+```
 
+```
    {"action":"rtm/write","body":{"channel":"x","message":null}}
+```
 
+```
    {"action":"rtm/delete","body":{"channel":"x"}}
+```
 
 ## Handshake & Authenticate PDUs
 
@@ -1112,7 +840,7 @@ Using delete
    authenticating for a different role. You do this in a two-step process
    using the handshake and then the authenticate PDU.
 
-Handshake PDU
+## Handshake PDU
 
    To start the authentication process, you send a handshake PDU to obtain
    a nonce that you use to construct an authentication hash.
@@ -1121,7 +849,7 @@ Handshake PDU
    RTM cancels the handshake request. For example, an error may occur if
    the role you specify doesn't exist in the Dev Portal.
 
-Request
+#### Request
 
 ```
 {
@@ -1136,7 +864,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -1150,7 +878,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -1164,70 +892,37 @@ Response (error)
 }
 ```
 
-Field
+Field       | Type   | Description
+-----       | ----   | -----------
+AuthMethod  | string | Method of authentication to perform. Only "role_secret" is currently supported.
+Role        | string | Role to authenticate as.
+Nonce       | string | Cryptographic random value to be combined with the secret by the client to produce the hash. Hash is sent in rtm/authenticate request.
+ErrorName   | string | Possible errors are listed in the sections following this table.
+ErrorReason | text   | Human readable error description. See Error Reference.
 
-Type
+#### Unclassified errors
 
-Description
+RTM may return the following unclassified errors:
 
-   AuthMethod
+* "authorization_denied"
+* "invalid_format"
+* "invalid_operation"
+* "invalid_service"
+* "json_parse_error"
 
-   string
+To learn more about any of these errors, see Unclassified Errors.
 
-   Method of authentication to perform. Only "role_secret" is currently
-   supported.
-
-   Role
-
-   string
-
-   Role to authenticate as.
-
-   Nonce
-
-   string
-
-   Cryptographic random value to be combined with the secret by the client
-   to produce the hash. Hash is sent in rtm/authenticate request.
-
-   ErrorName
-
-   string
-
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-
-   Human readable error description. See [78]Error Reference.
-
-Unclassified errors
-
-   RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"
-
-   To learn more about any of these errors, see [79]Unclassified Errors.
-
-Handshake-specific errors
+#### Handshake-specific errors
 
    RTM may return the following errors in response to a handshake request:
 
-error value
+error value             | Meaning
+-----------             | -------
+auth_method_not_allowed | In the handshake PDU, method is not set to "role_secret".
 
-Meaning
+The "action" field is always "action":"auth/handshake/error".
 
-   "auth_method_not_allowed" In the handshake PDU, method is not set to
-   "role_secret".
-
-   The "action" field is always "action":"auth/handshake/error".
-
-Authenticate PDU
+## Authenticate PDU
 
    You send the authenticate PDU to complete the authentication process.
    After authentication is complete, your client has the permissions
@@ -1238,7 +933,7 @@ Authenticate PDU
    value calculated by RTM, or if the role you specify doesn't exist in
    the Dev Portal.
 
-Request
+#### Request
 
 ```
 {
@@ -1253,7 +948,7 @@ Request
 }
 ```
 
-Response (ok)
+#### Response (ok)
 
 ```
 {
@@ -1263,7 +958,7 @@ Response (ok)
 }
 ```
 
-Response (error)
+#### Response (error)
 
 ```
 {
@@ -1276,93 +971,60 @@ Response (error)
 }
 ```
 
-Field
+Field       | Type   | Description
+-----       | ----   | -----------
+AuthMethod  | text   | Method of authentication to perform. Only "role_secret" is currently supported.
+Role        | text   | Role to authenticate as.  Project roles and their permissions are managed in ~/.cobra.yaml file
+Hash        | string | HMAC-MD5 hash value computed for the secret key and the nonce received in rtm/handshake/ok.
+ErrorName   | string | Possible errors are listed in the sections following this table.
+ErrorReason | text   | Human readable error description. See Error Reference.
 
-Type
+#### Unclassified errors
 
-Description
+RTM may return the following unclassified errors:
 
-   AuthMethod
+* "authorization_denied"
+* "invalid_format"
+* "invalid_operation"
+* "invalid_service"
+* "json_parse_error"
 
-   text
+To learn more about any of these errors, see Unclassified Errors.
 
-   Method of authentication to perform. Only "role_secret" is currently
-   supported.
+#### Authenticate-specific errors
 
-   Role
+RTM may return the following errors in response to a authentication
+request:
 
-   text
+error value               | Meaning
+-----------               | -------
+"authentication_failed"   | In your authentication PDU, the value of "hash" is invalid.
+"auth_method_not_allowed" | In the authentication PDU, the value of "method" is not set to "role_secret".
 
-   Role to authenticate as.
+The "action" field is always "action":"auth/authenticate/error".
 
-   Project roles and their permissions  are managed in Dev Portal.
-
-   Hash
-
-   string
-
-   HMAC-MD5 hash value computed for the secret key and the nonce received
-   in rtm/handshake/ok.
-
-   ErrorName
-
-   string
-
-   Possible errors are listed in the sections following this table.
-
-   ErrorReason
-
-   text
-
-   Human readable error description. See [80]Error Reference.
-
-Unclassified errors
-
-   RTM may return the following unclassified errors:
-     * "authorization_denied"
-     * "cbor_parse_error"
-     * "invalid_format"
-     * "invalid_operation"
-     * "invalid_service"
-     * "json_parse_error"
-
-   To learn more about any of these errors, see [81]Unclassified Errors.
-
-Authenticate-specific errors
-
-   RTM may return the following errors in response to a authentication
-   request:
-
-error value
-
-Meaning
-
-   "authentication_failed" In your authentication PDU, the value of "hash"
-   is invalid.
-   "auth_method_not_allowed" In the authentication PDU, the value of
-   "method" is not set to "role_secret".
-
-   The "action" field is always "action":"auth/authenticate/error".
-
-Hash computation
+#### Hash computation
 
    The hash is calculated for a secret key (K) and a nonce (N).  The
-   secret key is obtained from the Dev Portal; the nonce is received in
+   secret key is obtained from the ~/.cobra.yaml file; the nonce is received in
    handshake response PDU.
 
+```
    Hash = base64( HMAC-MD5( utf8(K), utf8(N) ) )
+```
 
-   Existing HMAC-MD5 implementations are commonly available for any
-   language. For completeness:
+Existing HMAC-MD5 implementations are commonly available for any
+language. For completeness:
 
-   HMAC-MD5 is the algorithm specified in [[82]RFC 2104] using MD5
-   [[83]RFC 1321] as the underlying hash function. base64 is a string
-   representation of a byte array described in [[84]RFC 3548]. Note that
-   the result of the base64 operation is the actual hash value and shall
-   be used as it is. utf8 is the binary representation of string described
-   in [[85]RFC 3629].
+HMAC-MD5 is the algorithm specified in [RFC 2104] using MD5
+[RFC 1321] as the underlying hash function. base64 is a string
+representation of a byte array described in [RFC 3548]. Note that
+the result of the base64 operation is the actual hash value and shall
+be used as it is. utf8 is the binary representation of string described
+in [RFC 3629].
 
-   Hash computation example
+#### Hash computation example
+
 ```
 Let secret key K = "secret-key" and nonce N = "nonce"
 
@@ -1374,120 +1036,29 @@ hash = 'G12A8Dt0RdjHNx8P0lci9w=='
 
 ## Error Reference
 
-   Every error includes error and reason fields. Additional fields may be
-   present, specific to a PDU type.
+Every error includes error and reason fields. Additional fields may be
+present, specific to a PDU type.
 
 Error PDU body
 
+```
 {
   "error": string,
   "reason": text,
   // other PDU-specific fields
 }
+```
 
-error
+Field  | Description
+-----  | -----------
+error  | Name of the error. This string is intended for use in code.
+reason | Describes the error. This text is intended for human use; the text may change in the future and should not be used in code conditioning logic.
 
-   Name of the error. This string is intended for use in code.
-
-reason
-
-   Describes the error. This text is intended for human use; the text may
-   change in the future and should not be used in code conditioning logic.
-
-Error types
+#### Error types
 
    Errors are categorized into two types:
 
-Error Type
-
-Description
-
-   Unclassified
-
-   Errors not associated with a particular operation. It may be unknown
-   which operation is triggering it, or potentially affecting overall
-   communication consistency.
-
-   For example, if RTM cannot parse a PDU or cannot parse an action, it
-   has no choice but to return a general system error.
-
-   Operation-specific
-
-   Errors returned in direct response to a request sent by a client, or
-   unsolicited errors associated with a particular operation.
-
-## Mini-schema Reference
-
-   The format for a PDU is the concrete transfer syntax, and the PDU
-   specifications used in this reference use a specific pattern based on
-   JSON. The specifications may include different keywords as placeholders
-   for the types of variable data.
-
-Datatype
-
-Examples
-
-Description
-
-   string
-
-   "abc", "json-data", ""
-
-   Any string that conforms to the JSON or CBOR string data structure,
-   depending on the protocol in use.
-
-   text
-
-   "Hello, world"
-
-   Similar to string, but contains text designed for users to read.
-
-   int
-
-   42, 3
-
-   Any non-negative  signed integer value that conforms to the JSON number
-   data structure, without fractions or exponents.
-
-   CBOR has separate types for unsigned integer, negative integer, and
-   float.
-
-   boolean
-   true, false
-
-   For JSON, a boolean value.
-
-   CBOR uses major type 7 additional type 20 for boolean false, and major
-   type 7 additional type 21 for boolean true.
-
-   value
-
-   null, true, false, 42, "Hello, world", [3.14, 2.71], {"key":"value"}
-
-   Any value of any valid JSON or CBOR type
-
-   object
-
-   {"key":"value"}
-
-   Any JSON object or CBOR map
-
-Structure
-
-xxx =
-type or placeholder
-
-Examples
-
-Description
-
-   []* []
-   [1, 2, 3]
-   [int]*
-   An array of zero or more xxx structures
-   [xxx]+ [1]
-   ["abc", "def"] An array of one or more values of the specified type or
-   placeholders. For example, [string()]+ indicates non-empty array of
-   strings.
-   xxx1 | xxx2 true | false Value can be either of the two listed values
-   or placeholders.
+Error Type         | Description
+-----------        | -------
+Unclassified       | Errors not associated with a particular operation. It may be unknown which operation is triggering it, or potentially affecting overall communication consistency. For example, if RTM cannot parse a PDU or cannot parse an action, it has no choice but to return a general system error.
+Operation-specific | Errors returned in direct response to a request sent by a client, or unsolicited errors associated with a particular operation.
