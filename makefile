@@ -86,6 +86,18 @@ docker:
 	docker tag ${IMG} ${BUILD}
 	docker tag ${IMG} ${PROD}
 
+docker_bavarde:
+	git clean -dfx -e venv -e cobras.egg-info/
+	docker build -f cobras/bavarde/Dockerfile -t ${IMG} .
+	docker tag ${IMG} ${BUILD}
+	docker tag ${IMG} ${PROD}
+
+docker_bavarde_push:
+	docker tag ${IMG} ${PROD}
+	docker push ${PROD}
+	docker push ${IMG}
+	oc import-image cobra:production
+
 docker_push: docker_tag
 
 deploy: docker docker_push
