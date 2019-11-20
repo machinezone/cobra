@@ -1,6 +1,18 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.4.2] - 2019-11-19
+
+* (server) HTTP GET / display some informations about cobra
+
+## [2.4.1] - 2019-11-19
+
+* make the server more resilient when dealing with stale redis connections
+
+## [2.4.0] - 2019-11-18
+
+* add per channel statistics for publish and subscribe
+
 ## [2.3.7] - 2019-11-13
 
 * (deps) bump websockets lib dependency to 8.1

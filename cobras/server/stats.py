@@ -42,6 +42,11 @@ class ServerStats:
         self.writesCount = collections.defaultdict(int)
         self.writesBytes = collections.defaultdict(int)
 
+        self.publishedCountByChannel = collections.defaultdict(int)
+        self.publishedBytesByChannel = collections.defaultdict(int)
+        self.subscribedCountByChannel = collections.defaultdict(int)
+        self.subscribedBytesByChannel = collections.defaultdict(int)
+
         self.resetCounterByPeriod()
         self.start = time.time()
 
@@ -73,6 +78,11 @@ class ServerStats:
         self.writesCountByPeriod = collections.defaultdict(int)
         self.writesBytesByPeriod = collections.defaultdict(int)
 
+        self.publishedCountByChannelByPeriod = collections.defaultdict(int)
+        self.publishedBytesByChannelByPeriod = collections.defaultdict(int)
+        self.subscribedCountByChannelByPeriod = collections.defaultdict(int)
+        self.subscribedBytesByChannelByPeriod = collections.defaultdict(int)
+
     def updatePublished(self, role, val):
         self.publishedCount[role] += 1
         self.publishedBytes[role] += val
@@ -80,12 +90,26 @@ class ServerStats:
         self.publishedCountByPeriod[role] += 1
         self.publishedBytesByPeriod[role] += val
 
+    def updateChannelPublished(self, channel, val):
+        self.publishedCountByChannel[channel] += 1
+        self.publishedBytesByChannel[channel] += val
+
+        self.publishedCountByChannelByPeriod[channel] += 1
+        self.publishedBytesByChannelByPeriod[channel] += val
+
     def updateSubscribed(self, role, val):
         self.subscribedCount[role] += 1
         self.subscribedBytes[role] += val
 
         self.subscribedCountByPeriod[role] += 1
         self.subscribedBytesByPeriod[role] += val
+
+    def updateChannelSubscribed(self, channel, val):
+        self.subscribedCountByChannel[channel] += 1
+        self.subscribedBytesByChannel[channel] += val
+
+        self.subscribedCountByChannelByPeriod[channel] += 1
+        self.subscribedBytesByChannelByPeriod[channel] += val
 
     def updateReads(self, role, val):
         self.readsCount[role] += 1
@@ -143,6 +167,27 @@ class ServerStats:
                 }
             )
 
+            # Channel data
+            channelData = {}
+
+            channelData.update(
+                {
+                    'published_count': self.publishedCountByChannel,
+                    'published_bytes': self.publishedBytesByChannel,
+                    'published_count_per_second': self.publishedCountByChannelByPeriod,
+                    'published_bytes_per_second': self.publishedBytesByChannelByPeriod,
+                }
+            )
+
+            channelData.update(
+                {
+                    'subscribed_count': self.subscribedCountByChannel,
+                    'subscribed_bytes': self.subscribedBytesByChannel,
+                    'subscribed_count_per_second': self.subscribedCountByChannelByPeriod,  # noqa
+                    'subscribed_bytes_per_second': self.subscribedBytesByChannelByPeriod,  # noqa
+                }
+            )
+
             uptime = time.time() - self.start
             uptimeMinutes = uptime // 60
             uptime = str(datetime.timedelta(seconds=uptime))
@@ -153,6 +198,7 @@ class ServerStats:
                 'prod': os.getenv('COBRA_PROD') is not None,
                 'data': {
                     'cobra': cobraData,
+                    'channel_data': channelData,
                     'system': {
                         'connections': self.connectionCount,
                         'mem_bytes': getProcessUsedMemory(),
@@ -169,12 +215,15 @@ class ServerStats:
 
             chan = self.statsChannel
             appkey = self.internalAppKey
+            pipelinedPublishers = self.pipelinedPublishers
 
             try:
-                pipelinedPublisher = await self.pipelinedPublishers.get(appkey, chan)
+                pipelinedPublisher = await pipelinedPublishers.get(appkey, chan)
                 await pipelinedPublisher.publishNow((appkey, chan, data))
             except Exception as e:
-                logging.error(f"stats: cannot connect to redis {e}")
+                await pipelinedPublishers.erasePublisher(appkey, chan)
+
+                logging.error(f'stats: cannot connect to redis {e}')
                 pass
 
             self.resetCounterByPeriod()

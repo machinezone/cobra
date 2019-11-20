@@ -43,8 +43,10 @@ class MessageHandlerClass:
 
         self.raw = args['raw']
         self.roleFilter = args['role_filter']
+        self.channelFilter = args['channel_filter']
         self.showNodes = args['show_nodes']
         self.showRoles = args['show_roles']
+        self.showChannels = args['show_channels']
         self.subscribers = args['subscribers']
         self.system = args['system']
         self.once = args['once']
@@ -60,6 +62,9 @@ class MessageHandlerClass:
 
         self.allRoleMetrics = {}
         self.roles = set()
+
+        self.allChannelMetrics = {}
+        self.channels = set()
 
     async def on_init(self):
         pass
@@ -100,6 +105,10 @@ class MessageHandlerClass:
                 nodeEntryHeaders.append(key)
 
             self.updateRoleMetrics(cobraData)
+
+            channelData = data['data'].get('channel_data')
+            if channelData is not None:
+                self.updateChannelMetrics(channelData)
 
             # System stats
             for metric in data['data']['system'].keys():
@@ -148,6 +157,9 @@ class MessageHandlerClass:
 
         if self.showRoles:
             self.displayRoleMetrics()
+
+        if self.showChannels:
+            self.displayChannelMetrics()
 
         self.resetMetrics()
         return ActionFlow.STOP if self.once else ActionFlow.CONTINUE
@@ -198,14 +210,61 @@ class MessageHandlerClass:
         print()
         print(tabulate.tabulate(rows, tablefmt="simple", headers="firstrow"))
 
+    def updateChannelMetrics(self, cobraData):
+        '''Collect data per channel'''
+        for metric, metricData in cobraData.items():
+
+            metricByChannel = self.allChannelMetrics.get(metric)
+            if metricByChannel is None:
+                metricByChannel = collections.defaultdict(int)
+
+            for channel, val in metricData.items():
+                metricByChannel[channel] += val
+
+                if self.channelFilter is not None:
+                    if self.channelFilter in channel:
+                        self.channels.add(channel)
+                else:
+                    self.channels.add(channel)
+
+            self.allChannelMetrics[metric] = metricByChannel
+
+        if self.raw:
+            print(cobraData)
+
+    def displayChannelMetrics(self):
+        rows = [['Channels'] + list(sorted(self.channels))]
+
+        for metric in sorted(self.allChannelMetrics):
+            metricByChannel = self.allChannelMetrics[metric]
+            # print(metric, metricByRole)
+
+            row = [metric]
+
+            for channel in sorted(self.channels):
+                val = metricByChannel.get(channel, 0)
+
+                val = self.humanReadableSize(metric, val)
+
+                row.append(val)
+
+            rows.append(row)
+
+        rows = transpose(rows)
+
+        print()
+        print(tabulate.tabulate(rows, tablefmt="simple", headers="firstrow"))
+
 
 def runMonitor(
     url,
     credentials,
     raw,
     roleFilter,
+    channelFilter,
     showNodes,
     showRoles,
+    showChannels,
     subscribers,
     system,
     once,
@@ -228,8 +287,10 @@ def runMonitor(
             {
                 'raw': raw,
                 'role_filter': roleFilter,
+                'channel_filter': channelFilter,
                 'show_nodes': showNodes,
                 'show_roles': showRoles,
+                'show_channels': showChannels,
                 'subscribers': subscribers,
                 'system': system,
                 'once': once,

@@ -19,8 +19,10 @@ from cobras.client.monitor import getDefaultMonitorUrl, runMonitor
 @click.option('--raw', is_flag=True)
 @click.option('--hide_nodes', is_flag=True)
 @click.option('--hide_roles', is_flag=True)
+@click.option('--hide_channels', is_flag=True)
 @click.option('--subscribers', is_flag=True)
 @click.option('--role_filter')
+@click.option('--channel_filter')
 @click.option('--system', is_flag=True)
 @click.option('--once', is_flag=True)
 def monitor(
@@ -29,8 +31,10 @@ def monitor(
     secret,
     raw,
     role_filter,
+    channel_filter,
     hide_nodes,
     hide_roles,
+    hide_channels,
     subscribers,
     system,
     once,
@@ -44,8 +48,10 @@ def monitor(
         credentials,
         raw,
         role_filter,
+        channel_filter,
         not hide_nodes,
         not hide_roles,
+        not hide_channels,
         subscribers,
         system,
         once,

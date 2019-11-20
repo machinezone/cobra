@@ -19,6 +19,7 @@ from cobras.common.apps_config import STATS_APPKEY, AppsConfig
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.version import getVersion
+from cobras.common.banner import getBanner
 from cobras.server.connection_state import ConnectionState
 from cobras.server.pipelined_publishers import PipelinedPublishers
 from cobras.server.protocol import processCobraMessage
@@ -114,6 +115,9 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
 
         if path == '/version/':
             return http.HTTPStatus.OK, [], bytes(getVersion(), 'utf8') + b'\n'
+
+        if path == '/':
+            return http.HTTPStatus.OK, [], bytes(getBanner(), 'utf8') + b'\n'
 
         appkey = parseAppKey(path)
         if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(appkey):

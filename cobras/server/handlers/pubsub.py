@@ -67,12 +67,15 @@ async def handlePublish(
     # We could have metrics per channel
     for chan in channels:
         appkey = state.appkey
+        pipelinedPublishers = app['pipelined_publishers']
 
         try:
-            pipelinedPublisher = await app['pipelined_publishers'].get(appkey, chan)
+            pipelinedPublisher = await pipelinedPublishers.get(appkey, chan)
 
             await pipelinedPublisher.push((appkey, chan, serializedPdu), batchPublish)
         except Exception as e:
+            await pipelinedPublishers.erasePublisher(appkey, chan)
+
             errMsg = f'publish: cannot connect to redis {e}'
             logging.warning(errMsg)
             response = {
@@ -82,6 +85,8 @@ async def handlePublish(
             }
             await state.respond(ws, response)
             return
+
+        app['stats'].updateChannelPublished(chan, len(serializedPdu))
 
     response = {
         "action": "rtm/publish/ok",
@@ -193,6 +198,7 @@ async def handleSubscribe(
             self.state = args['state']
             self.subscribeResponse = args['subscribe_response']
             self.app = args['app']
+            self.channel = args['channel']
             self.idIterator = itertools.count()
 
         def log(self, msg):
@@ -228,6 +234,7 @@ async def handleSubscribe(
             msg = msg.get('body', {}).get('message')
 
             self.serverStats.updateSubscribed(self.state.role, payloadSize)
+            self.serverStats.updateChannelSubscribed(self.channel, payloadSize)
 
             if self.hasFilter:
                 filterOutput = self.streamSQLFilter.match(
@@ -282,6 +289,7 @@ async def handleSubscribe(
                 'state': state,
                 'subscribe_response': response,
                 'app': app,
+                'channel': channel,
             },
         )
     )

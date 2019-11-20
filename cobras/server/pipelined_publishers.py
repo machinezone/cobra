@@ -26,7 +26,7 @@ class PipelinedPublishers:
         for pipelinedPublisher in self.pipelinedPublishers.values():
             pipelinedPublisher.close()
 
-    async def get(self, appkey, channel):
+    def getAppChannelAndKey(self, appkey, channel):
         '''
         Constraints:
         * (A) For a given app, subscriptions and publish should go to the
@@ -42,6 +42,11 @@ class PipelinedPublishers:
         # Constraint B
         key = '{}::{}'.format(appkey, self.redisConnections.hashChannel(appChannel))
 
+        return appChannel, key
+
+    async def get(self, appkey, channel):
+        appChannel, key = self.getAppChannelAndKey(appkey, channel)
+
         async with self.lock:
             pipelinedPublisher = self.pipelinedPublishers.get(key)
             if pipelinedPublisher is not None:
@@ -53,3 +58,12 @@ class PipelinedPublishers:
             )
             self.pipelinedPublishers[key] = pipelinedPublisher
             return pipelinedPublisher
+
+    async def erasePublisher(self, appkey, channel):
+        appChannel, key = self.getAppChannelAndKey(appkey, channel)
+
+        async with self.lock:
+            pipelinedPublisher = self.pipelinedPublishers.get(key)
+            if pipelinedPublisher is not None:
+                pipelinedPublisher.close()
+                del self.pipelinedPublishers[key]
