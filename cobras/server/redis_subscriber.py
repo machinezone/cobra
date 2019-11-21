@@ -42,7 +42,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
 
 async def redisSubscriber(
     redisConnections: RedisConnections,
-    pattern: str,
+    stream: str,
     position: Optional[str],
     messageHandlerClass: RedisSubscriberMessageHandlerClass,  # noqa
     obj,
@@ -51,7 +51,7 @@ async def redisSubscriber(
 
     try:
         # Create connection
-        connection = await redisConnections.create(pattern)
+        connection = await redisConnections.create(stream)
     except Exception as e:
         logging.error(f"subcriber: cannot connect to redis {e}")
         connection = None
@@ -69,9 +69,9 @@ async def redisSubscriber(
     if connection:
         # query the stream size
         try:
-            streamExists = await connection.exists(pattern) == 1
+            streamExists = await connection.exists(stream) == 1
             if streamExists:
-                results = await connection.xinfo(pattern)
+                results = await connection.xinfo(stream)
                 streamLength = results[b'length']
         except Exception as e:
             logging.error(f"subcriber: cannot retreive stream metadata: {e}")
@@ -92,7 +92,7 @@ async def redisSubscriber(
     try:
         # wait for incoming events.
         while True:
-            results = await connection.xread([pattern], timeout=0, latest_ids=[lastId])
+            results = await connection.xread([stream], timeout=0, latest_ids=[lastId])
 
             for result in results:
                 lastId = result[1]
