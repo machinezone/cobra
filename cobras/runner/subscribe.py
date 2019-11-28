@@ -55,19 +55,19 @@ class MessageHandlerClass:
 
 @click.command()
 @click.option('--url', default=DEFAULT_URL)
-@click.option('--role', default=getDefaultRoleForApp('pubsub'))
-@click.option('--secret', default=getDefaultSecretForApp('pubsub'))
+@click.option('--rolename', default=getDefaultRoleForApp('pubsub'))
+@click.option('--rolesecret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--channel', default='sms_republished_v1_neo')
 @click.option('--position')
 @click.option('--stream_sql')
 @click.option('--resume_from_last_position', is_flag=True)
 def subscribe(
-    url, role, secret, channel, position, stream_sql, resume_from_last_position
+    url, rolename, rolesecret, channel, position, stream_sql, resume_from_last_position
 ):
     '''Subscribe to a channel
     '''
 
-    credentials = createCredentials(role, secret)
+    credentials = createCredentials(rolename, rolesecret)
 
     resumeFromLastPositionId = ''
     if resume_from_last_position:

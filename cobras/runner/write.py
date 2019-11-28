@@ -8,7 +8,6 @@ import logging
 
 import click
 
-# from cobras.client.kv_store import readClient
 from cobras.client.connection import ActionException, Connection
 from cobras.client.credentials import (
     createCredentials,
@@ -22,15 +21,15 @@ DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={PUBSUB_APPKEY}'
 
 @click.command()
 @click.option('--url', default=DEFAULT_URL)
-@click.option('--role', default=getDefaultRoleForApp('pubsub'))
-@click.option('--secret', default=getDefaultSecretForApp('pubsub'))
+@click.option('--rolename', default=getDefaultRoleForApp('pubsub'))
+@click.option('--rolesecret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--channel', default='sms_republished_v1_neo_kv_store')
 @click.option('--data', default='{"foo": "bar"}')
 @click.option('--repeat', is_flag=True)
-def write(url, role, secret, channel, data, repeat):
+def write(url, rolename, rolesecret, channel, data, repeat):
     '''Write to the cobra key value store
     '''
-    credentials = createCredentials(role, secret)
+    credentials = createCredentials(rolename, rolesecret)
 
     async def handler(url, credentials, channel, data, repeat):
         connection = Connection(url, credentials)

@@ -153,8 +153,8 @@ def run(url, channel, path, credentials, repeat, delay, limit, summary):
 @click.option('--url', default=DEFAULT_URL)
 @click.option('--channel', default=DEFAULT_CHANNEL)
 @click.option('--path', default=DEFAULT_PATH)
-@click.option('--role', default=getDefaultRoleForApp('pubsub'))
-@click.option('--secret', default=getDefaultSecretForApp('pubsub'))
+@click.option('--rolename', default=getDefaultRoleForApp('pubsub'))
+@click.option('--rolesecret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--repeat', is_flag=True)
 @click.option('--batch', is_flag=True)
 @click.option('--summary', is_flag=True)
@@ -169,8 +169,8 @@ def publish(
     url,
     channel,
     path,
-    role,
-    secret,
+    rolename,
+    rolesecret,
     batch,
     batch_events_path,
     limit,
@@ -183,6 +183,6 @@ def publish(
     if batch:
         path = batch_events_path
 
-    credentials = createCredentials(role, secret)
+    credentials = createCredentials(rolename, rolesecret)
 
     run(url, channel, path, credentials, repeat, delay, limit, summary)
