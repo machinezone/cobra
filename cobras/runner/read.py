@@ -15,21 +15,20 @@ from cobras.client.credentials import (
     getDefaultRoleForApp,
     getDefaultSecretForApp,
 )
-from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
-
-DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={PUBSUB_APPKEY}'
+from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultUrl, makeUrl
 
 
 @click.command()
-@click.option('--url', default=DEFAULT_URL)
+@click.option('--endpoint', default=getDefaultUrl())
+@click.option('--appkey', default=PUBSUB_APPKEY)
 @click.option('--rolename', default=getDefaultRoleForApp('pubsub'))
 @click.option('--rolesecret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--channel', default='sms_republished_v1_neo_kv_store')
 @click.option('--position')
-def read(url, rolename, rolesecret, channel, position):
+def read(endpoint, appkey, rolename, rolesecret, channel, position):
     '''Read to the cobra key value store
     '''
-
+    url = makeUrl(endpoint, appkey)
     credentials = createCredentials(rolename, rolesecret)
 
     async def handler(url, credentials, channel, position):
