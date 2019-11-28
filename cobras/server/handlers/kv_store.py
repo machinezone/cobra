@@ -16,12 +16,7 @@ from cobras.server.connection_state import ConnectionState
 from cobras.server.redis_connections import RedisConnections
 
 
-async def kvStoreRead(
-    redisConnections: RedisConnections, pattern: str, position: Optional[str], logger
-):
-    # Create connection
-    connection = await redisConnections.create(pattern)
-
+async def kvStoreRead(connection, stream: str, position: Optional[str], logger):
     if position is None:
         # Get the last entry written to a stream
         end = '-'
@@ -31,7 +26,7 @@ async def kvStoreRead(
         end = start
 
     try:
-        results = await connection.xrevrange(pattern, start, end, 1)
+        results = await connection.xrevrange(stream, start, end, 1)
         if not results:
             return None
 
@@ -47,16 +42,13 @@ async def kvStoreRead(
         logger('Cancelling redis subscription')
         raise
 
-    finally:
-        # When finished, close the connection.
-        connection.close()
-
 
 # FIXME error handling
 async def handleRead(
     state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
 ):
 
+    connection = None
     body = pdu.get('body', {})
     position = body.get('position')
     channel = body.get('channel')
@@ -66,7 +58,10 @@ async def handleRead(
     redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
 
     try:
-        message = await kvStoreRead(redisConnections, appChannel, position, state.log)
+        # Create connection
+        connection = await redisConnections.create(appChannel)
+
+        message = await kvStoreRead(connection, appChannel, position, state.log)
     except Exception as e:
         errMsg = f'write: cannot connect to redis {e}'
         logging.warning(errMsg)
@@ -77,6 +72,10 @@ async def handleRead(
         }
         await state.respond(ws, response)
         return
+    finally:
+        # When finished, close the connection.
+        if connection is not None:
+            connection.close()
 
     # Correct path
     response = {
