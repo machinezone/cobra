@@ -191,6 +191,14 @@ def getDefaultPort():
     return os.getenv('COBRA_PORT', 8765)
 
 
+def getDefaultUrl():
+    return f'ws://127.0.0.1:{getDefaultPort()}'
+
+
+def makeUrl(endpoint, appkey):
+    return f'{endpoint}/v2?appkey={appkey}'
+
+
 def generateNonce():
     bits = getrandbits(64)
     return base64.b64encode(bytearray(str(bits), 'utf8')).decode('ascii')

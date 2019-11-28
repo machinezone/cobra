@@ -17,10 +17,8 @@ from cobras.client.credentials import (
     getDefaultRoleForApp,
     getDefaultSecretForApp,
 )
-from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultPort
+from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultUrl, makeUrl
 from cobras.common.throttle import Throttle
-
-DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={PUBSUB_APPKEY}'
 
 
 class MessageHandlerClass:
@@ -54,7 +52,8 @@ class MessageHandlerClass:
 
 
 @click.command()
-@click.option('--url', default=DEFAULT_URL)
+@click.option('--endpoint', default=getDefaultUrl())
+@click.option('--appkey', default=PUBSUB_APPKEY)
 @click.option('--rolename', default=getDefaultRoleForApp('pubsub'))
 @click.option('--rolesecret', default=getDefaultSecretForApp('pubsub'))
 @click.option('--channel', default='sms_republished_v1_neo')
@@ -62,11 +61,18 @@ class MessageHandlerClass:
 @click.option('--stream_sql')
 @click.option('--resume_from_last_position', is_flag=True)
 def subscribe(
-    url, rolename, rolesecret, channel, position, stream_sql, resume_from_last_position
+    endpoint,
+    appkey,
+    rolename,
+    rolesecret,
+    channel,
+    position,
+    stream_sql,
+    resume_from_last_position,
 ):
     '''Subscribe to a channel
     '''
-
+    url = makeUrl(endpoint, appkey)
     credentials = createCredentials(rolename, rolesecret)
 
     resumeFromLastPositionId = ''
