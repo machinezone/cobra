@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "argparse": "^1.0.10",
+    "detect-node": "^2.0.4",
+    "ws": "^7.2.0"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.1",
+    "utf-8-validate": "^5.0.2"
+  }
+}
