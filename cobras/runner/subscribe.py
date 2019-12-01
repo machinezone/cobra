@@ -27,22 +27,33 @@ class MessageHandlerClass:
         self.cntPerSec = 0
         self.throttle = Throttle(seconds=1)
         self.args = args
+        self.position = None
 
     async def on_init(self):
         memoryDebugger = MemoryDebugger(noTraceMalloc=True)
         self.memoryDebuggerTask = asyncio.create_task(memoryDebugger.run())
         addTaskCleanup(self.memoryDebuggerTask)
 
+        self.statsTask = asyncio.create_task(self.printStats())
+        addTaskCleanup(self.statsTask)
+
+    async def printStats(self):
+        while True:
+            print(
+                f"position {self.position} #messages {self.cnt} msg/s {self.cntPerSec}"
+            )
+            await asyncio.sleep(1)
+
     async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
         self.cnt += 1
         self.cntPerSec += 1
+        self.position = position
 
         logging.info(f'{message} at position {position}')
 
         if self.throttle.exceedRate():
             return ActionFlow.CONTINUE
 
-        print(f"position {position} #messages {self.cnt} msg/s {self.cntPerSec}")
         self.cntPerSec = 0
 
         if self.args['resume_from_last_position']:
