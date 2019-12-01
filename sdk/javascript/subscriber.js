@@ -1,6 +1,5 @@
 
 var RTMManager = require('./rtm_manager_cobra')
-var Throttler = require('./throttle')
 var ArgumentParser = require('argparse').ArgumentParser
 
 
@@ -8,22 +7,30 @@ class Subscriber {
   constructor(conf) {
     this.conf = conf
 
-    this.throttler = new Throttler(1000)
     this.cnt = 0
+    this.cntPerSecond = 0
+
+    this.resetTimer()
+  }
+
+  resetTimer() {
+    setTimeout(this.printStats.bind(this), 1000)
   }
 
   run(channel, filter) {
     this.rtmManager = new RTMManager(this.conf, channel, (msg) => { this.handleMsg(msg) }, filter)
   }
 
+  printStats() {
+    console.log(`#messages ${this.cnt} msg/s ${this.cntPerSecond}`)
+    this.cntPerSecond = 0
+
+    resetTimer()
+  }
+
   handleMsg(msg) {
     this.cnt += 1
-    if (this.throttler.exceedRate()) return
-
-    console.log(`${this.cnt} messages`)
-    // console.log(msg)
-
-    this.cnt = 0
+    this.cntPerSecond += 1
   }
 }
 
