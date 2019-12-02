@@ -201,6 +201,9 @@ async def handleSubscribe(
             self.channel = args['channel']
             self.idIterator = itertools.count()
 
+            self.batchSize = 1
+            self.messages = []
+
         def log(self, msg):
             self.state.log(msg)
 
@@ -245,18 +248,24 @@ async def handleSubscribe(
                 else:
                     msg = filterOutput
 
+            self.messages.append(msg)
+            if len(self.messages) < self.batchSize:
+                return True
+
             pdu = {
                 "action": "rtm/subscription/data",
                 "id": next(self.idIterator),
                 "body": {
                     "subscription_id": self.subscriptionId,
-                    "messages": [msg],
+                    "messages": self.messages,
                     "position": position,
                 },
             }
             self.state.log(f"> {json.dumps(pdu)} at position {position}")
 
             await self.ws.send(json.dumps(pdu))
+
+            self.messages = []
 
             self.cnt += 1
             self.cntPerSec += 1
