@@ -27,7 +27,7 @@ Interested ? Go read the [docs](https://machinezone.github.io/cobra/) ! If thing
 
 # News
 
-Cobra is actively being developed, check out the [changelog](CHANGELOG.md) to know what's cooking.
+Cobra is actively being developed, check out the [changelog](docs/CHANGELOG.md) to know what's cooking.
 
 # Installation
 
