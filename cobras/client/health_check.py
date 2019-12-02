@@ -8,7 +8,7 @@ import os
 import random
 import urllib
 import uuid
-from typing import Dict
+from typing import Dict, List
 
 from cobras.client.client import subscribeClient, unsafeSubcribeClient
 from cobras.client.connection import ActionFlow, Connection
@@ -79,7 +79,8 @@ def healthCheckPubSub(url, credentials, channel, retry):
         async def on_init(self):
             await self.connection.publish(self.channel, self.content)
 
-        async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
+        async def handleMsg(self, messages: List[Dict], position: str) -> ActionFlow:
+            message = messages[0]
             if message.get('device.android_id') != self.refAndroidId:
                 self.reason = f'incorrect android_id: {message}'
                 return ActionFlow.STOP

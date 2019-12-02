@@ -25,7 +25,7 @@ class Subscriber {
     console.log(`#messages ${this.cnt} msg/s ${this.cntPerSecond}`)
     this.cntPerSecond = 0
 
-    resetTimer()
+    this.resetTimer()
   }
 
   handleMsg(msg) {

@@ -4,7 +4,7 @@ import asyncio
 import logging
 import os
 import uuid
-from typing import Dict
+from typing import Dict, List
 
 import pytest
 from cobras.client.client import subscribeClient
@@ -40,12 +40,14 @@ class MessageHandlerClass:
     async def on_init(self):
         pass
 
-    async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
+    async def handleMsg(self, messages: List[Dict], position: str) -> ActionFlow:
         '''We can receive the same position twice,
         if it was processed but wasn't saved yet.
         '''
         self.cnt += 1
         self.cntPerSec += 1
+
+        message = messages[0]
 
         self.args['ids'].add(message['iteration'])
 

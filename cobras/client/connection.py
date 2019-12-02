@@ -229,10 +229,10 @@ class Connection(object):
         while True:
             data = await self.getActionResponse(actionId, retainQueue=True)
 
-            message = data['body']['messages'][0]
+            messages = data['body']['messages']
             position = data['body']['position']
 
-            ret = await messageHandler.handleMsg(message, position)
+            ret = await messageHandler.handleMsg(messages, position)
 
             if resumeFromLastPositionId and ret == ActionFlow.SAVE_POSITION:
                 await self.write(resumeFromLastPositionId, position)

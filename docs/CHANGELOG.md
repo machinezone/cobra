@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.5.0] - 2019-12-01
+
+* (client) subscribe interface changed to receive multiple messages (only one at a time supported so far)
+
 ## [2.4.2] - 2019-11-19
 
 * (server) HTTP GET / display some informations about cobra

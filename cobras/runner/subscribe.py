@@ -5,7 +5,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 import logging
-from typing import Dict
+from typing import Dict, List
 
 import click
 from cobras.common.task_cleanup import addTaskCleanup
@@ -44,12 +44,13 @@ class MessageHandlerClass:
             )
             await asyncio.sleep(1)
 
-    async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
+    async def handleMsg(self, messages: List[Dict], position: str) -> ActionFlow:
         self.cnt += 1
         self.cntPerSec += 1
         self.position = position
 
-        logging.info(f'{message} at position {position}')
+        for message in messages:
+            logging.info(f'{message} at position {position}')
 
         if self.throttle.exceedRate():
             return ActionFlow.CONTINUE

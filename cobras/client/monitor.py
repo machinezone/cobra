@@ -7,7 +7,7 @@ import asyncio
 import collections
 import rapidjson as json
 import os
-from typing import Dict
+from typing import Dict, List
 
 import click
 import humanfriendly
@@ -75,8 +75,9 @@ class MessageHandlerClass:
     def shouldProcessNode(self, node):
         return 'subscriber' in node if self.subscribers else True
 
-    async def handleMsg(self, message: Dict, position: str) -> ActionFlow:
+    async def handleMsg(self, messages: List[Dict], position: str) -> ActionFlow:
 
+        message = messages[0]
         data = message
         node = data['node']
 
