@@ -1,6 +1,27 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.5.1] - 2019-12-02
+
+* (server + client) subscribe interface changed to receive multiple messages
+
+The --batch_size option can be specified to the `subscribe` sub-command to request messages to be delivered in batch. This is convenient when a subscriber expects lots of messages to be received, as it saves the various overhead of sending smaller individual messages. Notice how all msg count received are a multiple of 50 in the example below, where we request a batch size of 50 messages.
+
+```
+~ $ cobra subscribe --endpoint wss://example.com --appkey XXXX --rolename _sub --rolesecret YYYYYYY --channel channel_name \
+    --disable_debug_memory \
+    --batch_size 50
+position None #messages 0 msg/s 0
+position 1575316403409-2 #messages 2350 msg/s 2350
+position 1575316404404-4 #messages 4550 msg/s 2200
+position 1575316405414-10 #messages 6800 msg/s 2250
+position 1575316406418-0 #messages 9250 msg/s 2450
+position 1575316407403-8 #messages 11600 msg/s 2350
+position 1575316408419-5 #messages 13900 msg/s 2300
+position 1575316409394-10 #messages 16250 msg/s 2350
+position 1575316410416-7 #messages 18650 msg/s 2400
+ ```
+
 ## [2.5.0] - 2019-12-01
 
 * (client) subscribe interface changed to receive multiple messages (only one at a time supported so far)

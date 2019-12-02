@@ -84,6 +84,7 @@ async def subscribeHandler(connection, **args):
     messageHandlerArgs['subscription_id'] = subscriptionId
     resumeFromLastPosition = args['resumeFromLastPosition']
     resumeFromLastPositionId = args['resumeFromLastPositionId']
+    batchSize = args['batchSize']
 
     return await connection.subscribe(
         channel,
@@ -94,6 +95,7 @@ async def subscribeHandler(connection, **args):
         subscriptionId,
         resumeFromLastPosition,
         resumeFromLastPositionId,
+        batchSize,
     )
 
 
@@ -108,6 +110,7 @@ async def subscribeClient(
     waitTime=None,
     resumeFromLastPosition=False,
     resumeFromLastPositionId=None,
+    batchSize=1,
 ):
     subscribeHandlerPartial = functools.partial(
         subscribeHandler,
@@ -118,6 +121,7 @@ async def subscribeClient(
         messageHandlerArgs=messageHandlerArgs,
         resumeFromLastPosition=resumeFromLastPosition,
         resumeFromLastPositionId=resumeFromLastPositionId,
+        batchSize=batchSize,
     )
 
     ret = await client(url, credentials, subscribeHandlerPartial, waitTime)
@@ -134,6 +138,7 @@ async def unsafeSubcribeClient(
     messageHandlerArgs,
     resumeFromLastPosition=False,
     resumeFromLastPositionId=None,
+    batchSize=1,
 ):
     '''
     No retry or exception handling
@@ -150,6 +155,7 @@ async def unsafeSubcribeClient(
         subscriptionId=channel,
         resumeFromLastPosition=resumeFromLastPosition,
         resumeFromLastPositionId=resumeFromLastPositionId,
+        batchSize=batchSize,
     )
     return message
 

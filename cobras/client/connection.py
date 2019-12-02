@@ -192,6 +192,7 @@ class Connection(object):
         subscriptionId,
         resumeFromLastPosition=False,
         resumeFromLastPositionId=None,
+        batchSize=1,
     ):
 
         if resumeFromLastPosition:
@@ -211,6 +212,7 @@ class Connection(object):
                 "channel": channel,
                 "fast_forward": True,
                 "filter": fsqlFilter,
+                "batch_size": batchSize,
             },
         }
 

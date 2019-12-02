@@ -30,9 +30,10 @@ class MessageHandlerClass:
         self.position = None
 
     async def on_init(self):
-        memoryDebugger = MemoryDebugger(noTraceMalloc=True)
-        self.memoryDebuggerTask = asyncio.create_task(memoryDebugger.run())
-        addTaskCleanup(self.memoryDebuggerTask)
+        if not self.args['disable_debug_memory']:
+            memoryDebugger = MemoryDebugger(noTraceMalloc=True)
+            self.memoryDebuggerTask = asyncio.create_task(memoryDebugger.run())
+            addTaskCleanup(self.memoryDebuggerTask)
 
         self.statsTask = asyncio.create_task(self.printStats())
         addTaskCleanup(self.statsTask)
@@ -42,11 +43,12 @@ class MessageHandlerClass:
             print(
                 f"position {self.position} #messages {self.cnt} msg/s {self.cntPerSec}"
             )
+            self.cntPerSec = 0
             await asyncio.sleep(1)
 
     async def handleMsg(self, messages: List[Dict], position: str) -> ActionFlow:
-        self.cnt += 1
-        self.cntPerSec += 1
+        self.cnt += len(messages)
+        self.cntPerSec += len(messages)
         self.position = position
 
         for message in messages:
@@ -54,8 +56,6 @@ class MessageHandlerClass:
 
         if self.throttle.exceedRate():
             return ActionFlow.CONTINUE
-
-        self.cntPerSec = 0
 
         if self.args['resume_from_last_position']:
             return ActionFlow.SAVE_POSITION
@@ -72,6 +72,8 @@ class MessageHandlerClass:
 @click.option('--position')
 @click.option('--stream_sql')
 @click.option('--resume_from_last_position', is_flag=True)
+@click.option('--batch_size', default=1)
+@click.option('--disable_debug_memory', is_flag=True)
 def subscribe(
     endpoint,
     appkey,
@@ -81,6 +83,8 @@ def subscribe(
     position,
     stream_sql,
     resume_from_last_position,
+    batch_size,
+    disable_debug_memory,
 ):
     '''Subscribe to a channel
     '''
@@ -99,8 +103,12 @@ def subscribe(
             position,
             stream_sql,
             MessageHandlerClass,
-            {'resume_from_last_position': resume_from_last_position},
+            {
+                'resume_from_last_position': resume_from_last_position,
+                'disable_debug_memory': disable_debug_memory,
+            },
             resumeFromLastPosition=resume_from_last_position,
             resumeFromLastPositionId=resumeFromLastPositionId,
+            batchSize=batch_size,
         )
     )

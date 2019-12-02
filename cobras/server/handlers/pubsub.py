@@ -175,6 +175,22 @@ async def handleSubscribe(
         await state.respond(ws, response)
         return
 
+    batchSize = body.get('batch_size', 1)
+    try:
+        batchSize = int(batchSize)
+    except ValueError:
+        errMsg = f'Invalid batch size: {batchSize}'
+        logging.warning(errMsg)
+        response = {
+            "action": "rtm/subscribe/error",
+            "id": pdu.get('id', 1),
+            "body": {"error": errMsg},
+        }
+        state.ok = False
+        state.error = response
+        await state.respond(ws, response)
+        return
+
     response = {
         "action": "rtm/subscribe/ok",
         "id": pdu.get('id', 1),
@@ -199,9 +215,9 @@ async def handleSubscribe(
             self.subscribeResponse = args['subscribe_response']
             self.app = args['app']
             self.channel = args['channel']
+            self.batchSize = args['batch_size']
             self.idIterator = itertools.count()
 
-            self.batchSize = 1
             self.messages = []
 
         def log(self, msg):
@@ -265,10 +281,10 @@ async def handleSubscribe(
 
             await self.ws.send(json.dumps(pdu))
 
-            self.messages = []
+            self.cnt += len(self.messages)
+            self.cntPerSec += len(self.messages)
 
-            self.cnt += 1
-            self.cntPerSec += 1
+            self.messages = []
 
             if self.throttle.exceedRate():
                 return True
@@ -299,6 +315,7 @@ async def handleSubscribe(
                 'subscribe_response': response,
                 'app': app,
                 'channel': channel,
+                'batch_size': batchSize,
             },
         )
     )
