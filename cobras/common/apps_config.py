@@ -191,7 +191,7 @@ def getDefaultPort():
     return os.getenv('COBRA_PORT', 8765)
 
 
-def getDefaultUrl():
+def getDefaultEndpoint():
     return f'ws://127.0.0.1:{getDefaultPort()}'
 
 

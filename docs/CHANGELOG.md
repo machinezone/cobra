@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.5.2] - 2019-12-02
+
+* (server) improve redis subscription logging
+
 ## [2.5.1] - 2019-12-02
 
 * (server + client) subscribe interface changed to receive multiple messages

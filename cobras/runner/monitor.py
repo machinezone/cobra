@@ -9,11 +9,13 @@ from cobras.client.credentials import (
     getDefaultRoleForApp,
     getDefaultSecretForApp,
 )
-from cobras.client.monitor import getDefaultMonitorUrl, runMonitor
+from cobras.client.monitor import runMonitor
+from cobras.common.apps_config import STATS_APPKEY, getDefaultEndpoint, makeUrl
 
 
 @click.command()
-@click.option('--url', default=getDefaultMonitorUrl())
+@click.option('--endpoint', default=getDefaultEndpoint())
+@click.option('--appkey', default=STATS_APPKEY)
 @click.option('--role', default=getDefaultRoleForApp('stats'))
 @click.option('--secret', default=getDefaultSecretForApp('stats'))
 @click.option('--raw', is_flag=True)
@@ -26,7 +28,8 @@ from cobras.client.monitor import getDefaultMonitorUrl, runMonitor
 @click.option('--system', is_flag=True)
 @click.option('--once', is_flag=True)
 def monitor(
-    url,
+    endpoint,
+    appkey,
     role,
     secret,
     raw,
@@ -42,7 +45,9 @@ def monitor(
     '''Monitor cobra
     '''
 
+    url = makeUrl(endpoint, appkey)
     credentials = createCredentials(role, secret)
+
     runMonitor(
         url,
         credentials,

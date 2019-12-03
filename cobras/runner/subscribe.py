@@ -17,7 +17,7 @@ from cobras.client.credentials import (
     getDefaultRoleForApp,
     getDefaultSecretForApp,
 )
-from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultUrl, makeUrl
+from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultEndpoint, makeUrl
 from cobras.common.throttle import Throttle
 
 
@@ -64,7 +64,7 @@ class MessageHandlerClass:
 
 
 @click.command()
-@click.option('--endpoint', default=getDefaultUrl())
+@click.option('--endpoint', default=getDefaultEndpoint())
 @click.option('--appkey', default=PUBSUB_APPKEY)
 @click.option('--rolename', default=getDefaultRoleForApp('pubsub'))
 @click.option('--rolesecret', default=getDefaultSecretForApp('pubsub'))

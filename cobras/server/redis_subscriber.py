@@ -49,18 +49,21 @@ async def redisSubscriber(
 ):
     messageHandler = messageHandlerClass(obj)
 
+    redisHost = redisConnections.hashChannel(stream)
+    logPrefix = f'subscriber[{redisHost} / {stream}]:'
+
     try:
         # Create connection
         connection = await redisConnections.create(stream)
     except Exception as e:
-        logging.error(f"subcriber: cannot connect to redis {e}")
+        logging.error(f"{logPrefix} cannot connect to redis {e}")
         connection = None
 
     # Ping the connection first
     try:
         await connection.ping()
     except Exception as e:
-        logging.error(f"subcriber: cannot ping redis {e}")
+        logging.error(f"{logPrefix} cannot ping redis {e}")
         connection = None
 
     streamExists = False
@@ -74,13 +77,13 @@ async def redisSubscriber(
                 results = await connection.xinfo(stream)
                 streamLength = results[b'length']
         except Exception as e:
-            logging.error(f"subcriber: cannot retreive stream metadata: {e}")
+            logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
             pass
 
     try:
         await messageHandler.on_init(connection, streamExists, streamLength)
     except Exception as e:
-        logging.error(f'subcriber: cannot initialize message handler: {e}')
+        logging.error(f'{logPrefix} cannot initialize message handler: {e}')
         connection = None
 
     if connection is None:
@@ -112,7 +115,7 @@ async def redisSubscriber(
     except Exception as e:
         messageHandler.log(e)
         messageHandler.log(
-            'Generic Exception caught in {}'.format(traceback.format_exc())
+            '{logPrefix} Generic Exception caught in {}'.format(traceback.format_exc())
         )
 
     finally:

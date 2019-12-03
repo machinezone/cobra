@@ -21,7 +21,7 @@ from cobras.client.credentials import (
     getDefaultSecretForApp,
 )
 from cobras.client.publish import computeEventTimeDeltas
-from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultUrl, makeUrl
+from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultEndpoint, makeUrl
 from cobras.common.throttle import Throttle
 
 root = os.path.dirname(os.path.realpath(__file__))
@@ -148,7 +148,7 @@ def run(url, channel, path, credentials, repeat, delay, limit, summary):
 
 
 @click.command()
-@click.option('--endpoint', default=getDefaultUrl())
+@click.option('--endpoint', default=getDefaultEndpoint())
 @click.option('--appkey', default=PUBSUB_APPKEY)
 @click.option('--channel', default=DEFAULT_CHANNEL)
 @click.option('--path', default=DEFAULT_PATH)
