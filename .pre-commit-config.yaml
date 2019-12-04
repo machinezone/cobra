@@ -4,6 +4,7 @@ repos:
     hooks:
     -   id: check-yaml
     -   id: check-json
+        args: [--no-sort-keys]
     -   id: pretty-format-json
     -   id: end-of-file-fixer
     -   id: trailing-whitespace

@@ -1,11 +1,22 @@
 {
-  "dependencies": {
-    "argparse": "^1.0.10",
-    "detect-node": "^2.0.4",
-    "ws": "^7.2.0"
-  },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.1",
-    "utf-8-validate": "^5.0.2"
-  }
+    "name": "cobras",
+    "version": "0.0.1",
+    "description": "JavaScript SDK for the cobra realtime messaging server",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/machinezone/cobra"
+    },
+    "dependencies": {
+        "detect-node": "^2.0.4",
+        "ws": "^7.2.0"
+    },
+    "files": [
+        "src"
+    ],
+    "main": "src/rtm_manager_cobra.js",
+    "optionalDependencies": {
+        "bufferutil": "^4.0.1",
+        "utf-8-validate": "^5.0.2",
+        "argparse": "^1.0.10"
+    }
 }

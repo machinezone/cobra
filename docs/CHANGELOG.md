@@ -1,6 +1,11 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.5.3] - 2019-12-04
+
+* (client) cobra health command parameters consistent with other commands
+* (sdk) publish cobras package to npm
+
 ## [2.5.2] - 2019-12-02
 
 * (server) improve redis subscription logging

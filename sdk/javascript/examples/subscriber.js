@@ -1,5 +1,5 @@
 
-var RTMManager = require('./rtm_manager_cobra')
+var RTMManager = require('cobras')
 var ArgumentParser = require('argparse').ArgumentParser
 
 
