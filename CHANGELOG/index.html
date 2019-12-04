@@ -85,6 +85,8 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="main active"><a href="#changelog">Changelog</a></li>
+            <li><a href="#253-2019-12-04">[2.5.3] - 2019-12-04</a></li>
+            <li><a href="#252-2019-12-02">[2.5.2] - 2019-12-02</a></li>
             <li><a href="#251-2019-12-02">[2.5.1] - 2019-12-02</a></li>
             <li><a href="#name-stmts-miss-cover">Name                                    Stmts   Miss  Cover</a></li>
             <li><a href="#122-2019-08-09">[1.2.2] - 2019-08-09</a></li>
@@ -99,9 +101,18 @@
 
 <h1 id="changelog">Changelog</h1>
 <p>All changes to this project will be documented in this file.</p>
+<h2 id="253-2019-12-04">[2.5.3] - 2019-12-04</h2>
+<ul>
+<li>(client) cobra health command parameters consistent with other commands</li>
+<li>(sdk) publish cobras package to npm</li>
+</ul>
+<h2 id="252-2019-12-02">[2.5.2] - 2019-12-02</h2>
+<ul>
+<li>(server) improve redis subscription logging</li>
+</ul>
 <h2 id="251-2019-12-02">[2.5.1] - 2019-12-02</h2>
 <ul>
-<li>(server + client) subscribe interface changed to receive multiple messages </li>
+<li>(server + client) subscribe interface changed to receive multiple messages</li>
 </ul>
 <p>The --batch_size option can be specified to the <code>subscribe</code> sub-command to request messages to be delivered in batch. This is convenient when a subscriber expects lots of messages to be received, as it saves the various overhead of sending smaller individual messages. Notice how all msg count received are a multiple of 50 in the example below, where we request a batch size of 50 messages.</p>
 <pre><code>~ $ cobra subscribe --endpoint wss://example.com --appkey XXXX --rolename _sub --rolesecret YYYYYYY --channel channel_name \
