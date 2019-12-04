@@ -64,8 +64,12 @@ async def handlePublish(
 
     batchPublish = app['apps_config'].isBatchPublishEnabled(state.appkey)
 
-    # We could have metrics per channel
     for chan in channels:
+
+        # sanity check to skip empty channels
+        if chan is None:
+            continue
+
         appkey = state.appkey
         pipelinedPublishers = app['pipelined_publishers']
 

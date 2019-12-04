@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.5.4] - 2019-12-04
+
+* (server) rtm/publish handler: ignore empty channels (which gets serialized as "None")
+
 ## [2.5.3] - 2019-12-04
 
 * (client) cobra health command parameters consistent with other commands
