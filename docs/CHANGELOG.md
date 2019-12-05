@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.5.5] - 2019-12-05
+
+* (client) add --tidy to the monitor subcommand to only print generic info
+
 ## [2.5.4] - 2019-12-04
 
 * (server) rtm/publish handler: ignore empty channels (which gets serialized as "None")

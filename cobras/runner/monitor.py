@@ -27,6 +27,7 @@ from cobras.common.apps_config import STATS_APPKEY, getDefaultEndpoint, makeUrl
 @click.option('--channel_filter')
 @click.option('--system', is_flag=True)
 @click.option('--once', is_flag=True)
+@click.option('--tidy', is_flag=True)
 def monitor(
     endpoint,
     appkey,
@@ -41,12 +42,18 @@ def monitor(
     subscribers,
     system,
     once,
+    tidy,
 ):
     '''Monitor cobra
     '''
 
     url = makeUrl(endpoint, appkey)
     credentials = createCredentials(role, secret)
+
+    if tidy:
+        hide_nodes = True
+        hide_roles = True
+        hide_channels = True
 
     runMonitor(
         url,
