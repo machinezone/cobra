@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.1] - 2019-12-05
+
+* (server) bump sentry_sdk dependency to 0.13.5 + set release and environment while initializing the sentry sdk
+
 ## [2.6.0] - 2019-12-05
 
 * (server) check that redis nodes are reachable on startup, with a timeout.

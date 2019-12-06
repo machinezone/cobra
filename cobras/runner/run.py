@@ -10,6 +10,7 @@ import sys
 import click
 import sentry_sdk
 from cobras.common.apps_config import generateAppsConfig, getDefaultAppsConfigPath
+from cobras.common.version import getVersion
 from cobras.server.app import AppRunner
 
 
@@ -59,6 +60,7 @@ from cobras.server.app import AppRunner
     envvar='COBRA_REDIS_STARTUP_PROBING_TIMEOUT',
     default=30,
 )
+@click.option('--environment', envvar='COBRA_ENVIRONMENT', default='dev')
 def run(
     host,
     port,
@@ -77,6 +79,7 @@ def run(
     idle_timeout,
     disable_redis_startup_probing,
     redis_startup_probing_timeout,
+    environment,
 ):
     '''Run the cobra server
 
@@ -89,7 +92,7 @@ def run(
         os.environ['COBRA_PROD'] = '1'
 
     if sentry and sentry_url:
-        sentry_sdk.init(sentry_url)
+        sentry_sdk.init(sentry_url, release=getVersion(), environment=environment)
 
     if apps_config_path_content:
         apps_config_path = generateAppsConfig(apps_config_path_content)
