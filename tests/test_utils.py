@@ -17,7 +17,9 @@ def getFreePort():
     return random.randint(9000, 16000)
 
 
-def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
+def makeRunner(
+    debugMemory=False, enableStats=False, redisUrls=None, probeRedisOnStartup=True
+):
     host = 'localhost'
     port = getFreePort()
     redisPassword = None
@@ -49,6 +51,8 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
         enableStats,
         maxSubscriptions,
         idleTimeout,
+        probeRedisOnStartup,
+        redisStartupProbingTimeout=5,
     )
     asyncio.get_event_loop().run_until_complete(runner.setup())
     return runner, appsConfigPath

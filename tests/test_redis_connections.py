@@ -1,6 +1,7 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
 
 import asyncio
+import pytest
 
 from cobras.server.redis_connections import RedisConnections
 
@@ -9,11 +10,11 @@ async def passwordTestCoroutine():
     redisUrls = 'redis://localhost'
     redisPassword = None
     redisConnections = RedisConnections(redisUrls, redisPassword)
-    assert redisConnections.password == None
+    assert redisConnections.password is None
 
     redisPassword = ''
     redisConnections = RedisConnections(redisUrls, redisPassword)
-    assert redisConnections.password == None
+    assert redisConnections.password is None
 
 
 def test_password_default():
@@ -84,4 +85,30 @@ def test_validate_hashing_consistency():
     redisUrls = 'redis://A;redis://B;redis://C'
     asyncio.get_event_loop().run_until_complete(
         hashingConsistencyTestCoroutine(redisUrls)
+    )
+
+
+async def startAndProbRedisExpectError(redisUrls):
+    redisPassword = None
+    redisConnections = RedisConnections(redisUrls, redisPassword)
+
+    with pytest.raises(Exception):
+        await redisConnections.waitForAllConnectionsToBeReady(1)
+
+
+def test_redis_startup_probing_error():
+    redisUrls = 'redis://A;redis://B;redis://C'
+    asyncio.get_event_loop().run_until_complete(startAndProbRedisExpectError(redisUrls))
+
+
+async def startAndProbRedisExpectSuccess(redisUrls):
+    redisPassword = None
+    redisConnections = RedisConnections(redisUrls, redisPassword)
+    await redisConnections.waitForAllConnectionsToBeReady(1)
+
+
+def test_redis_startup_probing_success():
+    redisUrls = 'redis://localhost'
+    asyncio.get_event_loop().run_until_complete(
+        startAndProbRedisExpectSuccess(redisUrls)
     )

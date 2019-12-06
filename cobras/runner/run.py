@@ -49,6 +49,16 @@ from cobras.server.app import AppRunner
     default=5 * 60,
     help='idle connections kicked out after X seconds',
 )
+@click.option(
+    '--disable_redis_startup_probing',
+    envvar='COBRA_DISABLE_REDIS_STARTUP_PROBING',
+    is_flag=True,
+)
+@click.option(
+    '--redis_startup_probing_timeout',
+    envvar='COBRA_REDIS_STARTUP_PROBING_TIMEOUT',
+    default=30,
+)
 def run(
     host,
     port,
@@ -65,6 +75,8 @@ def run(
     no_stats,
     max_subscriptions,
     idle_timeout,
+    disable_redis_startup_probing,
+    redis_startup_probing_timeout,
 ):
     '''Run the cobra server
 
@@ -105,9 +117,11 @@ def run(
         not no_stats,
         max_subscriptions,
         idle_timeout,
+        probeRedisOnStartup=not disable_redis_startup_probing,
+        redisStartupProbingTimeout=redis_startup_probing_timeout,
     )
     try:
         runner.run()
-    except OSError as e:
+    except Exception as e:
         logging.fatal(f'Cannot start cobra server: {e}')
         sys.exit(1)

@@ -35,7 +35,10 @@ def test_health_check(runner):
 def redisDownRunner():
     redisUrls = 'redis://localhost:9999'
     runner, appsConfigPath = makeRunner(
-        debugMemory=False, enableStats=False, redisUrls=redisUrls
+        debugMemory=False,
+        enableStats=False,
+        redisUrls=redisUrls,
+        probeRedisOnStartup=False,
     )
     yield runner
 

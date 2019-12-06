@@ -1,6 +1,20 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.0] - 2019-12-05
+
+* (server) check that redis nodes are reachable on startup, with a timeout.
+
+```
+$ brew services stop redis
+Stopping `redis`... (might take a while)
+==> Successfully stopped `redis` (label: homebrew.mxcl.redis)
+$ cobra run
+runServer {'host': '127.0.0.1', 'port': '8765', 'redis_urls': 'redis://localhost;redis://localhost', 'redis_password': None, 'apps_config_path': '/Users/bsergeant/.cobra.yaml', 'apps_config_path_content': None, 'debug_memory': False, 'debug_memory_no_tracemalloc': False, 'plugins': None, 'sentry': False, 'sentry_url': None, 'prod': False, 'no_stats': False, 'max_subscriptions': -1, 'idle_timeout': 300, 'disable_redis_startup_probing': False, 'redis_startup_probing_timeout': 30}
+Checking redis://localhost ....................................................................................................................................................
+2019-12-05 22:17:23 CRITICAL Cannot start cobra server: Multiple exceptions: [Errno 61] Connect call failed ('::1', 6379, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6379)
+```
+
 ## [2.5.5] - 2019-12-05
 
 * (client) add --tidy to the monitor subcommand to only print generic info

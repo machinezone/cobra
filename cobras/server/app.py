@@ -161,6 +161,8 @@ class AppRunner:
         enableStats,
         maxSubscriptions,
         idleTimeout,
+        probeRedisOnStartup,
+        redisStartupProbingTimeout,
     ):
         self.app = {}
         self.app['connections'] = {}
@@ -179,6 +181,8 @@ class AppRunner:
         self.redisPassword = redisPassword
         self.plugins = plugins
         self.enableStats = enableStats
+        self.probeRedisOnStartup = probeRedisOnStartup
+        self.redisStartupProbingTimeout = redisStartupProbingTimeout
 
         appsConfig = AppsConfig(appsConfigPath)
         self.app['apps_config'] = appsConfig
@@ -210,7 +214,14 @@ class AppRunner:
         redisPassword = self.app['redis_password']
         batchPublishSize = self.app['batch_publish_size']
         channelMaxLength = self.app['channel_max_length']
+
+        # Create redis connection handler, and
+        # wait until all the redis nodes are reachable
         redisConnections = RedisConnections(redisUrls, redisPassword)
+        if self.probeRedisOnStartup:
+            await redisConnections.waitForAllConnectionsToBeReady(
+                timeout=self.redisStartupProbingTimeout
+            )
 
         pipelinedPublishers = PipelinedPublishers(
             redisConnections, batchPublishSize, channelMaxLength

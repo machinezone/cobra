@@ -3,7 +3,10 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import asyncio
 import logging
+import time
+import sys
 from urllib.parse import urlparse
 
 import aioredis
@@ -25,6 +28,10 @@ class RedisConnections:
         url = self.hashChannel(appChannel)
         logging.info(f'Hashing {appChannel} to url -> {url}')
 
+        redis = await self.createFromUrl(url)
+        return redis
+
+    async def createFromUrl(self, url: str):
         netloc = urlparse(url).netloc
         host, _, port = netloc.partition(':')
         if port:
@@ -38,3 +45,29 @@ class RedisConnections:
 
     def hashChannel(self, appChannel: str):
         return self.hr.get_node(appChannel)
+
+    async def waitForAllConnectionsToBeReady(self, timeout: int):
+        start = time.time()
+
+        for url in self.urls:
+            sys.stderr.write(f'Checking {url} ')
+
+            while True:
+                sys.stderr.write('.')
+                sys.stderr.flush()
+
+                try:
+                    redis = await self.createFromUrl(url)
+                    await redis.ping()
+                    redis.close()
+                    break
+                except Exception:
+                    if time.time() - start > timeout:
+                        sys.stderr.write('\n')
+                        raise
+
+                    waitTime = 0.1
+                    await asyncio.sleep(waitTime)
+                    timeout -= waitTime
+
+            sys.stderr.write('\n')
