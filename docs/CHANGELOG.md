@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.2] - 2019-12-08
+
+* (server) handle termination with SIGTERM properly, as when a service is restarted by kubernete or docker. All connections will be closed with error 1001 when this happen.
+
 ## [2.6.1] - 2019-12-05
 
 * (server) bump sentry_sdk dependency to 0.13.5 + set release and environment while initializing the sentry sdk

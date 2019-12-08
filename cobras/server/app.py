@@ -107,12 +107,8 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
     '''Used to validate appkey'''
 
     appsConfig = None
-    acceptConnections = True
 
     async def process_request(self, path, request_headers):
-
-        if not self.acceptConnections:
-            return http.HTTPStatus.SERVICE_UNAVAILABLE, [], b'Server shutting down\n'
 
         if path == '/health/':
             return http.HTTPStatus.OK, [], b'OK\n'
@@ -249,9 +245,6 @@ class AppRunner:
             addTaskCleanup(self.memoryDebuggerTask)
 
     async def cleanup(self):
-        # We need to start by stopping to accept connections
-        ServerProtocol.acceptConnections = False
-
         # FIXME: we could speed this up
         if self.enableStats:
             self.app['stats'].terminate()
@@ -261,7 +254,10 @@ class AppRunner:
             self.app['memory_debugger'].terminate()
             await self.memoryDebuggerTask
 
-    async def setup(self, stop):
+    async def setup(self, stop=None, block=False):
+        '''It would be good to unify better unittest mode versus command mode,
+           and get rid of block
+        '''
         await self.init_app()
 
         handler = functools.partial(
@@ -270,40 +266,45 @@ class AppRunner:
 
         ServerProtocol.appsConfig = self.app['apps_config']
 
-        async with websockets.serve(
-            handler,
-            self.host,
-            self.port,
-            create_protocol=ServerProtocol,
-            subprotocols=['json'],
-            ping_timeout=None,
-            ping_interval=None,
-        ) as self.server:
-            await stop
-            self.closeRedis()
-            await self.cleanup()
+        if block:
+            async with websockets.serve(
+                handler,
+                self.host,
+                self.port,
+                create_protocol=ServerProtocol,
+                subprotocols=['json'],
+                ping_timeout=None,
+                ping_interval=None,
+            ) as self.server:
+                await stop
+                self.closeRedis()
+                await self.cleanup()
+        else:
+            self.server = await websockets.serve(
+                handler,
+                self.host,
+                self.port,
+                create_protocol=ServerProtocol,
+                subprotocols=['json'],
+                ping_timeout=None,
+                ping_interval=None,
+            )
 
     def run(self, stop):
-        asyncio.get_event_loop().run_until_complete(self.setup(stop))
-        # asyncio.get_event_loop().run_forever()
-
-        # Is that ever reached ?
-        # When I close the server with Ctrl-C click
-        # might terminate the process right away.
-        # Regardless self.terminate is needed for unittesting.
-        # We could call it in client code only ?
-        # self.terminate()
+        asyncio.get_event_loop().run_until_complete(self.setup(stop, block=True))
 
     def closeRedis(self):
         db = self.app['pipelined_publishers']
         db.close()
 
     async def closeServer(self):
+        '''Used by the unittest'''
         # Now close websocket server
         self.server.close()
         await self.server.wait_closed()
 
     def terminate(self):
+        '''Used by the unittest'''
         self.closeRedis()
         asyncio.get_event_loop().run_until_complete(self.cleanup())
         asyncio.get_event_loop().run_until_complete(self.closeServer())
