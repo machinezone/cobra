@@ -107,8 +107,12 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
     '''Used to validate appkey'''
 
     appsConfig = None
+    acceptConnections = True
 
     async def process_request(self, path, request_headers):
+
+        if not self.acceptConnections:
+            return http.HTTPStatus.SERVICE_UNAVAILABLE, [], b'Server shutting down\n'
 
         if path == '/health/':
             return http.HTTPStatus.OK, [], b'OK\n'
@@ -245,6 +249,9 @@ class AppRunner:
             addTaskCleanup(self.memoryDebuggerTask)
 
     async def cleanup(self):
+        # We need to start by stopping to accept connections
+        ServerProtocol.acceptConnections = False
+
         # FIXME: we could speed this up
         if self.enableStats:
             self.app['stats'].terminate()
@@ -254,7 +261,7 @@ class AppRunner:
             self.app['memory_debugger'].terminate()
             await self.memoryDebuggerTask
 
-    async def setup(self):
+    async def setup(self, stop):
         await self.init_app()
 
         handler = functools.partial(
@@ -263,7 +270,7 @@ class AppRunner:
 
         ServerProtocol.appsConfig = self.app['apps_config']
 
-        self.server = await websockets.serve(
+        async with websockets.serve(
             handler,
             self.host,
             self.port,
@@ -271,18 +278,21 @@ class AppRunner:
             subprotocols=['json'],
             ping_timeout=None,
             ping_interval=None,
-        )
+        ) as self.server:
+            await stop
+            self.closeRedis()
+            await self.cleanup()
 
-    def run(self):
-        asyncio.get_event_loop().run_until_complete(self.setup())
-        asyncio.get_event_loop().run_forever()
+    def run(self, stop):
+        asyncio.get_event_loop().run_until_complete(self.setup(stop))
+        # asyncio.get_event_loop().run_forever()
 
         # Is that ever reached ?
         # When I close the server with Ctrl-C click
         # might terminate the process right away.
         # Regardless self.terminate is needed for unittesting.
         # We could call it in client code only ?
-        self.terminate()
+        # self.terminate()
 
     def closeRedis(self):
         db = self.app['pipelined_publishers']

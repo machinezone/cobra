@@ -3,8 +3,10 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import asyncio
 import logging
 import os
+import signal
 import sys
 
 import click
@@ -94,6 +96,17 @@ def run(
     if sentry and sentry_url:
         sentry_sdk.init(sentry_url, release=getVersion(), environment=environment)
 
+    # stop = loop.create_future()
+    # loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
+
+    def exit_gracefully(signum, frame):
+        print('Shutting down...')
+        runner.terminate()
+        sys.exit(128 + signum)
+
+    # import signal
+    # signal.signal(signal.SIGTERM, exit_gracefully)
+
     if apps_config_path_content:
         apps_config_path = generateAppsConfig(apps_config_path_content)
         if not apps_config_path:
@@ -123,8 +136,14 @@ def run(
         probeRedisOnStartup=not disable_redis_startup_probing,
         redisStartupProbingTimeout=redis_startup_probing_timeout,
     )
+
+    loop = asyncio.get_event_loop()
+    stop = loop.create_future()
+
+    asyncio.get_event_loop().add_signal_handler(signal.SIGTERM, stop.set_result, None)
+
     try:
-        runner.run()
+        runner.run(stop)
     except Exception as e:
         logging.fatal(f'Cannot start cobra server: {e}')
         sys.exit(1)
