@@ -107,12 +107,8 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
     '''Used to validate appkey'''
 
     appsConfig = None
-    acceptConnections = True
 
     async def process_request(self, path, request_headers):
-
-        if not self.acceptConnections:
-            return http.HTTPStatus.SERVICE_UNAVAILABLE, [], b'Server shutting down\n'
 
         if path == '/health/':
             return http.HTTPStatus.OK, [], b'OK\n'
@@ -249,9 +245,6 @@ class AppRunner:
             addTaskCleanup(self.memoryDebuggerTask)
 
     async def cleanup(self):
-        # We need to start by stopping to accept connections
-        ServerProtocol.acceptConnections = False
-
         # FIXME: we could speed this up
         if self.enableStats:
             self.app['stats'].terminate()
