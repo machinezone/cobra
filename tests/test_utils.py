@@ -31,9 +31,6 @@ def makeRunner(
     if redisUrls is None:
         redisUrls = 'redis://localhost'
 
-    if redisUrls is None:
-        redisUrls = 'redis://localhost'
-
     appsConfigPath = tempfile.mktemp()
     appsConfig = AppsConfig(appsConfigPath)
     appsConfig.generateDefaultConfig()

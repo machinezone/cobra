@@ -3,8 +3,10 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
+import asyncio
 import logging
 import os
+import signal
 import sys
 
 import click
@@ -123,8 +125,14 @@ def run(
         probeRedisOnStartup=not disable_redis_startup_probing,
         redisStartupProbingTimeout=redis_startup_probing_timeout,
     )
+
+    loop = asyncio.get_event_loop()
+    stop = loop.create_future()
+
+    asyncio.get_event_loop().add_signal_handler(signal.SIGTERM, stop.set_result, None)
+
     try:
-        runner.run()
+        runner.run(stop)
     except Exception as e:
         logging.fatal(f'Cannot start cobra server: {e}')
         sys.exit(1)
