@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.3] - 2019-12-16
+
+* (server) sentry_sdk: always attach a stack trace to sentry error events
+
 ## [2.6.2] - 2019-12-08
 
 * (server) handle termination with SIGTERM properly, as when a service is restarted by kubernete or docker. All connections will be closed with error 1001 when this happen.

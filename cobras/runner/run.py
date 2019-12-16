@@ -94,7 +94,12 @@ def run(
         os.environ['COBRA_PROD'] = '1'
 
     if sentry and sentry_url:
-        sentry_sdk.init(sentry_url, release=getVersion(), environment=environment)
+        sentry_sdk.init(
+            sentry_url,
+            release=getVersion(),
+            environment=environment,
+            attach_stacktrace=True,
+        )
 
     if apps_config_path_content:
         apps_config_path = generateAppsConfig(apps_config_path_content)
