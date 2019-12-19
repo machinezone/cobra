@@ -63,10 +63,11 @@ ACTION_HANDLERS_LUT = {
 
 
 async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes):
+
     try:
         pdu: JsonDict = json.loads(msg)
-    except ValueError:
-        msgEncoded = base64.b64encode(msg)
+    except json.JSONDecodeError:
+        msgEncoded = base64.b64encode(msg.encode())
         errMsg = f'malformed json pdu: base64: {msgEncoded} raw: {msg}'
         await badFormat(state, ws, app, errMsg)
         return
