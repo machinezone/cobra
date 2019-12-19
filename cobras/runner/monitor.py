@@ -16,8 +16,8 @@ from cobras.common.apps_config import STATS_APPKEY, getDefaultEndpoint, makeUrl
 @click.command()
 @click.option('--endpoint', default=getDefaultEndpoint())
 @click.option('--appkey', default=STATS_APPKEY)
-@click.option('--role', default=getDefaultRoleForApp('stats'))
-@click.option('--secret', default=getDefaultSecretForApp('stats'))
+@click.option('--rolename', default=getDefaultRoleForApp('stats'))
+@click.option('--rolesecret', default=getDefaultSecretForApp('stats'))
 @click.option('--raw', is_flag=True)
 @click.option('--hide_nodes', is_flag=True)
 @click.option('--hide_roles', is_flag=True)
@@ -31,8 +31,8 @@ from cobras.common.apps_config import STATS_APPKEY, getDefaultEndpoint, makeUrl
 def monitor(
     endpoint,
     appkey,
-    role,
-    secret,
+    rolename,
+    rolesecret,
     raw,
     role_filter,
     channel_filter,
@@ -48,7 +48,7 @@ def monitor(
     '''
 
     url = makeUrl(endpoint, appkey)
-    credentials = createCredentials(role, secret)
+    credentials = createCredentials(rolename, rolesecret)
 
     if tidy:
         hide_nodes = True
