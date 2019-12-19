@@ -1,6 +1,11 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.4] - 2019-12-18
+
+* (client) monitor command uses rolename and rolesecret argument names like other commands
+* (server) invalid json received message needs to be converted to bytes before it can encoded to base64 for error reporting
+
 ## [2.6.3] - 2019-12-16
 
 * (server) sentry_sdk: always attach a stack trace to sentry error events
