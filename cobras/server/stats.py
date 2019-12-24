@@ -223,7 +223,7 @@ class ServerStats:
             except Exception as e:
                 await pipelinedPublishers.erasePublisher(appkey, chan)
 
-                logging.error(f'stats: cannot connect to redis {e}')
+                logging.warning(f'stats: cannot connect to redis {e}')
                 pass
 
             self.resetCounterByPeriod()
