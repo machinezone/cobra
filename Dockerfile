@@ -1,5 +1,5 @@
 # Build stage
-FROM python:3.8.0-alpine3.10 as build
+FROM python:3.8.1-alpine3.11 as build
 env PIP_DOWNLOAD_CACHE=/opt/pip_cache
 
 # Install build dependencies
@@ -10,7 +10,7 @@ COPY requirements.txt /tmp
 RUN pip install --cache-dir=/opt/pip_cache --user --requirement /tmp/requirements.txt
 
 # Runtime stage
-FROM python:3.8.0-alpine3.10 as runtime
+FROM python:3.8.1-alpine3.11 as runtime
 RUN addgroup -S app && adduser -S -G app app
 
 RUN apk add --no-cache libstdc++
