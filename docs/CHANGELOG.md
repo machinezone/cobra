@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.6] - 2019-12-31
+
+* (server) bump aioredis, hiredis, rapidjson and pyyaml dependency
+
 ## [2.6.5] - 2019-12-24
 
 * (server) in the stats collecting code, downgrade an error to a warning when failing to reach redis
