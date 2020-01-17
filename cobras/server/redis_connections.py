@@ -15,11 +15,13 @@ from uhashring import HashRing
 
 
 class RedisConnections:
-    def __init__(self, urls: str, password) -> None:
+    def __init__(self, urls: str, password, cluster) -> None:
         self.urls = urls.split(';')
         self.password = password
         if password == '':
             self.password = None
+
+        self.cluster = cluster
 
         # create a consistent hash ring
         # https://www.paperplanes.de/2011/12/9/the-magic-of-consistent-hashing.html
@@ -50,7 +52,13 @@ class RedisConnections:
         else:
             port = 6379
 
-        redis = aredis.StrictRedis(host=host, port=port, password=self.password)
+        if self.cluster:
+            cls = aredis.StrictRedisCluster
+        else:
+            cls = aredis.StrictRedis
+
+        redis = cls(host=host, port=port, password=self.password)
+
         redis.host = host
         return redis
 

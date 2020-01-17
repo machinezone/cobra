@@ -32,6 +32,7 @@ from cobras.server.app import AppRunner
     '--redis_urls', '-r', envvar='COBRA_REDIS_URLS', default='redis://localhost'
 )
 @click.option('--redis_password', envvar='COBRA_REDIS_PASSWORD')
+@click.option('--redis_cluster', is_flag=True, envvar='COBRA_REDIS_CLUSTER')
 @click.option(
     '--apps_config_path', envvar='COBRA_APPS_CONFIG', default=getDefaultAppsConfigPath()
 )
@@ -80,6 +81,7 @@ def run(
     port,
     redis_urls,
     redis_password,
+    redis_cluster,
     apps_config_path,
     apps_config_path_content,
     debug_memory,
@@ -129,11 +131,18 @@ def run(
         os.environ['COBRA_APPS_CONFIG'] = apps_config_path
 
     print('runServer', locals())
+
+    if redis_cluster and ';' in redis_urls:
+        logging.warning('Redis cluster enabled.')
+        logging.warning('Multiple urls provided while there should only be one.')
+        logging.warning(f'redis_urls: {redis_urls}')
+
     runner = AppRunner(
         host,
         port,
         redis_urls,
         redis_password,
+        redis_cluster,
         apps_config_path,
         debug_memory,
         debug_memory_no_tracemalloc,
