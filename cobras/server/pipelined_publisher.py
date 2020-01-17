@@ -8,7 +8,6 @@ Weird leaks https://bugs.python.org/issue31620
 '''
 
 import asyncio
-import logging
 from typing import Optional
 
 
@@ -19,14 +18,6 @@ class PipelinedPublisher:
         self.batchSize = batchSize or 100
         self.xaddMaxLength = channelMaxLength or 1000
         self.lock = asyncio.Lock()
-
-    def close(self):
-        pass
-        # try:
-        #     self.redis.close()
-        # except Exception as e:
-        #     logging.error('Error while closing redis %s', e)
-        #     raise
 
     async def publishAll(self):
         async with await self.redis.pipeline() as pipe:
