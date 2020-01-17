@@ -21,11 +21,12 @@ class PipelinedPublisher:
         self.lock = asyncio.Lock()
 
     def close(self):
-        try:
-            self.redis.close()
-        except Exception as e:
-            logging.error('Error while closing redis %s', e)
-            raise
+        pass
+        # try:
+        #     self.redis.close()
+        # except Exception as e:
+        #     logging.error('Error while closing redis %s', e)
+        #     raise
 
     async def publishAll(self):
         async with await self.redis.pipeline() as pipe:
