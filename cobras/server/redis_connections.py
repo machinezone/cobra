@@ -9,8 +9,8 @@ import time
 import sys
 from urllib.parse import urlparse
 
-import aioredis
 import tabulate
+import aredis
 from uhashring import HashRing
 
 
@@ -50,8 +50,9 @@ class RedisConnections:
         else:
             port = 6379
 
-        redis = await aioredis.create_redis(url, password=self.password)
-        redis.host = host
+        redis = aredis.StrictRedis(host=host, port=port, db=0)
+        # redis = await aioredis.create_redis(url, password=self.password)
+        # redis.host = host
         return redis
 
     def hashChannel(self, appChannel: str):
@@ -69,7 +70,6 @@ class RedisConnections:
 
                 try:
                     redis = await self.createFromUrl(url)
-                    redis.close()
                     break
                 except Exception:
                     if time.time() - start > timeout:
