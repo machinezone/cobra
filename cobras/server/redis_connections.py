@@ -50,7 +50,7 @@ class RedisConnections:
         else:
             port = 6379
 
-        redis = aredis.StrictRedis(host=host, port=port, db=0)
+        redis = aredis.StrictRedis(host=host, port=port, password=self.password)
         redis.host = host
         return redis
 

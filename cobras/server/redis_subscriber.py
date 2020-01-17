@@ -71,7 +71,10 @@ async def redisSubscriber(
                 results = await connection.execute_command('XINFO', *pieces)
                 if results is not None:
                     try:
-                        streamLength = results[b'length']
+                        if isinstance([], list):
+                            streamLength = results[1]  # weird
+                        elif isinstance([], dict):
+                            streamLength = results[b'length']
                     except Exception as e:
                         logging.error(f"{logPrefix} {results} of unexpected type {e}")
                         pass

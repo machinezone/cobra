@@ -50,7 +50,8 @@ class ServerStats:
         self.resetCounterByPeriod()
         self.start = time.time()
 
-        print('node ' + self.node)
+        pid = os.getpid()
+        logging.info(f'node {self.node} pid {pid}')
 
     def incrConnections(self, role):
         self.connectionCount += 1
