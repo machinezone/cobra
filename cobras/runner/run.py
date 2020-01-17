@@ -27,7 +27,7 @@ from cobras.server.app import AppRunner
 @click.option(
     '--redis_urls',
     envvar='COBRA_REDIS_URLS',
-    default='redis://localhost;redis://localhost',
+    default='redis://localhost',
 )
 @click.option('--redis_password', envvar='COBRA_REDIS_PASSWORD')
 @click.option(
