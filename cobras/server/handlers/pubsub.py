@@ -300,7 +300,9 @@ async def handleSubscribe(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
+    redisConnections = RedisConnections(
+        app['redis_urls'], app['redis_password'], app['redis_cluster']
+    )
 
     task = asyncio.create_task(
         redisSubscriber(
