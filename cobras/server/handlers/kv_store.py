@@ -63,7 +63,7 @@ async def handleRead(
 
         message = await kvStoreRead(connection, appChannel, position, state.log)
     except Exception as e:
-        errMsg = f'write: cannot connect to redis {e}'
+        errMsg = f'read: cannot connect to redis {e}'
         logging.warning(errMsg)
         response = {
             "action": "rtm/read/error",
@@ -72,11 +72,6 @@ async def handleRead(
         }
         await state.respond(ws, response)
         return
-    finally:
-        # When finished, close the connection.
-        if connection is not None:
-            pass
-            # connection.close() # FIXME
 
     app['stats'].updateReads(state.role, len(serializedPdu))
 
@@ -172,7 +167,6 @@ async def handleDelete(
         redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
         redisConnection = await redisConnections.create(appChannel)
         await redisConnection.delete(appChannel)
-        # redisConnection.close() # FIXME(close)
     except Exception as e:
         errMsg = f'delete: cannot connect to redis {e}'
         logging.warning(errMsg)
