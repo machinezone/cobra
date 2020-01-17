@@ -67,7 +67,8 @@ async def redisSubscriber(
         try:
             streamExists = await connection.exists(stream)
             if streamExists:
-                results = await connection.xinfo_stream(stream)
+                pieces = ['STREAM', stream]
+                results = await connection.execute_command('XINFO', *pieces)
                 streamLength = results[b'length']
         except Exception as e:
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
