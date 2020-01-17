@@ -43,6 +43,7 @@ class Connection(object):
         self.creds = creds
         self.idIterator = itertools.count()
         self.connectionId = None
+        self.serverVersion = 'na'
 
         # different queues per action kind or instances
         self.queues = collections.defaultdict(asyncio.Queue)
@@ -72,6 +73,7 @@ class Connection(object):
 
         response = await self.send(handshake)
 
+        self.serverVersion = response['body']['data']['version']
         self.connectionId = response['body']['data']['connection_id']
 
         nonce = bytearray(response['body']['data']['nonce'], 'utf8')

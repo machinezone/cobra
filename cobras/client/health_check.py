@@ -10,10 +10,13 @@ import urllib
 import uuid
 from typing import Dict, List
 
+import click
+
 from cobras.client.client import subscribeClient, unsafeSubcribeClient
 from cobras.client.connection import ActionFlow, Connection
 from cobras.client.credentials import createCredentials
 from cobras.common.apps_config import HEALTH_APPKEY
+from cobras.common.version import getVersion
 
 
 def getDefaultHealthCheckChannel():
@@ -75,6 +78,7 @@ def healthCheckPubSub(url, credentials, channel, retry):
             self.subscriptionId = self.channel
             self.reason = ''
             self.success = False
+            self.serverVersion = connection.serverVersion
 
         async def on_init(self):
             await self.connection.publish(self.channel, self.content)
@@ -139,6 +143,9 @@ def healthCheckPubSub(url, credentials, channel, retry):
             messageHandlerArgs,
         )
     )
+
+    click.secho(f'Client version: {getVersion()}', fg='cyan')
+    click.secho(f'Client version: {messageHandler.serverVersion}', fg='cyan')
 
     if not messageHandler.success:
         raise ValueError(messageHandler.reason)
