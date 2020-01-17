@@ -88,11 +88,16 @@ async def redisSubscriber(
     try:
         # wait for incoming events.
         while True:
-            results = await connection.xread([stream], timeout=0, latest_ids=[lastId])
+            # results = await connection.xread([stream], timeout=0, latest_ids=[lastId])
+
+            pieces = ['BLOCK', '0', 'STREAMS', stream, lastId]
+            results = await connection.execute_command('XREAD', *pieces)
+
+            results = results[stream.encode()]
 
             for result in results:
-                lastId = result[1]
-                msg = result[2]
+                lastId = result[0]
+                msg = result[1]
                 data = msg[b'json']
 
                 payloadSize = len(data)
@@ -115,7 +120,8 @@ async def redisSubscriber(
         messageHandler.log('Closing redis subscription')
 
         # When finished, close the connection.
-        connection.close()
+        # breakpoint()
+        # connection.close() # FIXME(close)
 
         return messageHandler
 

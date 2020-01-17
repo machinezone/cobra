@@ -305,7 +305,7 @@ class AppRunner:
 
     def closeRedis(self):
         db = self.app['pipelined_publishers']
-        db.close()
+        # db.close()
 
     async def closeServer(self):
         '''Used by the unittest'''
