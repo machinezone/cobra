@@ -159,6 +159,7 @@ class AppRunner:
         port,
         redisUrls,
         redisPassword,
+        redisCluster,
         appsConfigPath,
         debugMemory,
         debugMemoryNoTracemalloc,
@@ -182,6 +183,7 @@ class AppRunner:
         self.app['memory_debugger_print_all_tasks'] = debugMemoryPrintAllTasks
         self.app['redis_urls'] = redisUrls
         self.app['redis_password'] = redisPassword
+        self.app['redis_cluster'] = redisCluster
 
         self.host = host
         self.port = port
@@ -221,13 +223,15 @@ class AppRunner:
         '''
         redisUrls = self.app['redis_urls']
         redisPassword = self.app['redis_password']
+        redisCluster = self.app['redis_cluster']
         batchPublishSize = self.app['batch_publish_size']
         channelMaxLength = self.app['channel_max_length']
 
         # Create redis connection handler, and
         # wait until all the redis nodes are reachable
-        redisConnections = RedisConnections(redisUrls, redisPassword)
+        redisConnections = RedisConnections(redisUrls, redisPassword, redisCluster)
         self.app['redis_connections'] = redisConnections
+
         if self.probeRedisOnStartup:
             await redisConnections.waitForAllConnectionsToBeReady(
                 timeout=self.redisStartupProbingTimeout
