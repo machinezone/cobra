@@ -3,7 +3,7 @@
 
 bind to 0.0.0.0
 
-easier to send 
+easier to send
 
 * cluster meet
 * cluster replica

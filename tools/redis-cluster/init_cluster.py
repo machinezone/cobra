@@ -1,8 +1,7 @@
-import os
 import time
 import random
 import collections
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE
 
 
 ClusterNode = collections.namedtuple(
@@ -12,7 +11,9 @@ ClusterNode = collections.namedtuple(
 
 def execCommand(cmd, host, port):
     # output = os.popen(f'redis-cli -h {host} -p {port} ' + cmd).read()
-    p = Popen(['redis-cli', '-h', host, '-p', str(port)], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+    p = Popen(
+        ['redis-cli', '-h', host, '-p', str(port)], stdout=PIPE, stdin=PIPE, stderr=PIPE
+    )
     output = p.communicate(input=cmd.encode())[0]
     print(output)
     return output.decode()
@@ -28,6 +29,7 @@ def getIp(host):
     ('localhost', [], ['127.0.0.1'])
     '''
     import socket
+
     return socket.gethostbyname_ex(host)[2][0]
 
 
@@ -37,7 +39,7 @@ def meet(nodes):
         host1, port1 = nodes[i]
         ip1 = getIp(host1)
 
-        host2, port2 = nodes[i+1]
+        host2, port2 = nodes[i + 1]
         ip2 = getIp(host2)
 
         execCommand(f'cluster meet {ip2} {port2}', ip1, port1)
@@ -46,7 +48,6 @@ def meet(nodes):
 
 
 def get_nodes(node, port):
-    ip = getIp(node)
     # it would be best not to parse stdout to capture this
     return execCommand(f'cluster nodes', node, port)
 
@@ -80,7 +81,7 @@ def set_replicas(nodesInfo):
         ip1 = nodesInfo[i].ip
         port1 = nodesInfo[i].port
 
-        nodeid = nodesInfo[i+N].node_id
+        nodeid = nodesInfo[i + N].node_id
 
         execCommand(f'cluster flushslots', ip1, port1)
         execCommand(f'cluster replicate {nodeid}', ip1, port1)
@@ -141,9 +142,9 @@ set_replicas(nodesInfo)
 # #nodesInfo = get_nodes_as_list(nodes[0][0], nodes[0][1])
 # #nodeIds = [node.node_id for node in nodesInfo]
 # #set_replicas(nodes, nodeIds)
-# 
+#
 # nodesInfo = get_nodes_as_list(nodes[0][0], nodes[0][1])
 # for node in nodesInfo:
 #     print(node)
-# 
+#
 # set_slots(nodes, nodesInfo)
