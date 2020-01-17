@@ -28,37 +28,34 @@ class PipelinedPublisher:
             raise
 
     async def publishAll(self):
-        pipe = self.redis.pipeline()
-        async with self.lock:
-            while True:
-                try:
-                    job = self.queue.get_nowait()
-                except asyncio.QueueEmpty:
-                    break
-                else:
-                    self.publish(pipe, job)
-                    self.queue.task_done()
+        async with await self.redis.pipeline() as pipe:
+            async with self.lock:
+                while True:
+                    try:
+                        job = self.queue.get_nowait()
+                    except asyncio.QueueEmpty:
+                        break
+                    else:
+                        await self.publish(pipe, job)
+                        self.queue.task_done()
 
-        await pipe.execute()
+            await pipe.execute()
 
     def enqueue(self, job):
         self.queue.put_nowait(job)
 
-    def publish(self, pipe, job, maxLen: Optional[int] = None):
+    async def publish(self, pipe, job, maxLen: Optional[int] = None):
         if maxLen is None:
             maxLen = self.xaddMaxLength
 
         appkey, channel, data = job
         appChannel = '{}::{}'.format(appkey, channel)
-
-        redis = pipe if pipe is not None else self.redis
-        redis.xadd(
-            appChannel, {'json': data}, max_len=self.xaddMaxLength, exact_len=False
+        await self.redis.xadd(
+            appChannel, {'json': data}, max_len=self.xaddMaxLength, approximate=True
         )
 
     async def publishNow(self, job, maxLen: Optional[int] = None):
-        async with self.lock:
-            self.publish(None, job, maxLen)
+        self.publish(None, job, maxLen)
 
     async def push(self, job, batchPublish=False):
         if not batchPublish:
