@@ -65,9 +65,9 @@ async def redisSubscriber(
     if connection:
         # query the stream size
         try:
-            streamExists = await connection.exists(stream) == 1
+            streamExists = await connection.exists(stream)
             if streamExists:
-                results = await connection.xinfo(stream)
+                results = await connection.xinfo_stream(stream)
                 streamLength = results[b'length']
         except Exception as e:
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
@@ -92,6 +92,10 @@ async def redisSubscriber(
 
             pieces = ['BLOCK', '0', 'STREAMS', stream, lastId]
             results = await connection.execute_command('XREAD', *pieces)
+
+            if results is None:
+                # We've been cancelled
+                return messageHandler
 
             results = results[stream.encode()]
 
