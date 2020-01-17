@@ -290,7 +290,6 @@ class AppRunner:
                 max_size=self.messageMaxSize,
             ) as self.server:
                 await stop
-                self.closeRedis()
                 await self.cleanup()
         else:
             self.server = await websockets.serve(
@@ -307,10 +306,6 @@ class AppRunner:
     def run(self, stop):
         asyncio.get_event_loop().run_until_complete(self.setup(stop, block=True))
 
-    def closeRedis(self):
-        db = self.app['pipelined_publishers']
-        # db.close()
-
     async def closeServer(self):
         '''Used by the unittest'''
         # Now close websocket server
@@ -319,6 +314,5 @@ class AppRunner:
 
     def terminate(self):
         '''Used by the unittest'''
-        self.closeRedis()
         asyncio.get_event_loop().run_until_complete(self.cleanup())
         asyncio.get_event_loop().run_until_complete(self.closeServer())

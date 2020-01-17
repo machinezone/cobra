@@ -22,10 +22,6 @@ class PipelinedPublishers:
         self.channelMaxLength: int = channelMaxLength
         self.lock = asyncio.Lock()
 
-    def close(self):
-        for pipelinedPublisher in self.pipelinedPublishers.values():
-            pipelinedPublisher.close()
-
     def getAppChannelAndKey(self, appkey, channel):
         '''
         Constraints:
@@ -65,5 +61,4 @@ class PipelinedPublishers:
         async with self.lock:
             pipelinedPublisher = self.pipelinedPublishers.get(key)
             if pipelinedPublisher is not None:
-                pipelinedPublisher.close()
                 del self.pipelinedPublishers[key]
