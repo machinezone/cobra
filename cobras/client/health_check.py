@@ -145,7 +145,7 @@ def healthCheckPubSub(url, credentials, channel, retry):
     )
 
     click.secho(f'Client version: {getVersion()}', fg='cyan')
-    click.secho(f'Client version: {messageHandler.serverVersion}', fg='cyan')
+    click.secho(f'Server version: {messageHandler.serverVersion}', fg='cyan')
 
     if not messageHandler.success:
         raise ValueError(messageHandler.reason)
