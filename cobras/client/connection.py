@@ -207,6 +207,9 @@ class Connection(object):
                 )
                 pass
 
+        messageHandler = messageHandlerClass(self, messageHandlerArgs)
+        await messageHandler.on_init()
+
         pdu = {
             "action": "rtm/subscribe",
             "body": {
@@ -222,9 +225,6 @@ class Connection(object):
             pdu['body']['position'] = position
 
         await self.send(pdu)
-
-        messageHandler = messageHandlerClass(self, messageHandlerArgs)
-        await messageHandler.on_init()
 
         self.subscriptions.add(subscriptionId)
 

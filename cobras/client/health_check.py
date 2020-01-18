@@ -106,7 +106,7 @@ def healthCheckPubSub(url, credentials, channel, retry):
                 cleanupHandler(self.connection, self.channel)
             )
 
-    position = None
+    position = '0-0'
     magicNumber = random.randint(0, 1000)
     refAndroidId = uuid.uuid4().hex
     content = {
