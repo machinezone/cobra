@@ -113,6 +113,8 @@ async def redisSubscriber(
                 msg = result[1]
                 data = msg[b'json']
 
+                assert lastId is not None
+
                 payloadSize = len(data)
                 msg = json.loads(data)
                 ret = await messageHandler.handleMsg(msg, lastId.decode(), payloadSize)
