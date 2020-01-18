@@ -236,6 +236,8 @@ class Connection(object):
             messages = data['body']['messages']
             position = data['body']['position']
 
+            assert position is not None
+
             ret = await messageHandler.handleMsg(messages, position)
 
             if resumeFromLastPositionId and ret == ActionFlow.SAVE_POSITION:

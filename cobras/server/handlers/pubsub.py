@@ -272,6 +272,8 @@ async def handleSubscribe(
             if len(self.messages) < self.batchSize:
                 return True
 
+            assert position is not None
+
             pdu = {
                 "action": "rtm/subscription/data",
                 "id": next(self.idIterator),
