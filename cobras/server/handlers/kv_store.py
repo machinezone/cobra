@@ -55,7 +55,9 @@ async def handleRead(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
+    redisConnections = RedisConnections(
+        app['redis_urls'], app['redis_password'], app['redis_cluster']
+    )
 
     try:
         # Create connection
@@ -164,7 +166,9 @@ async def handleDelete(
     appChannel = '{}::{}'.format(state.appkey, channel)
 
     try:
-        redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
+        redisConnections = RedisConnections(
+            app['redis_urls'], app['redis_password'], app['redis_cluster']
+        )
         redisConnection = await redisConnections.create(appChannel)
         await redisConnection.delete(appChannel)
     except Exception as e:
