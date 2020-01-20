@@ -9,11 +9,11 @@ from cobras.server.redis_connections import RedisConnections
 async def passwordTestCoroutine():
     redisUrls = 'redis://localhost'
     redisPassword = None
-    redisConnections = RedisConnections(redisUrls, redisPassword)
+    redisConnections = RedisConnections(redisUrls, redisPassword, False)
     assert redisConnections.password is None
 
     redisPassword = ''
-    redisConnections = RedisConnections(redisUrls, redisPassword)
+    redisConnections = RedisConnections(redisUrls, redisPassword, False)
     assert redisConnections.password is None
 
 
@@ -23,7 +23,7 @@ def test_password_default():
 
 async def hashingDistributionCoroutine(redisUrls):
     redisPassword = None
-    redisConnections = RedisConnections(redisUrls, redisPassword)
+    redisConnections = RedisConnections(redisUrls, redisPassword, False)
 
     urls = []
 
@@ -48,7 +48,7 @@ def test_hashing_distribution():
 
 async def hashingConsistencyTestCoroutine(redisUrls):
     redisPassword = None
-    redisConnections = RedisConnections(redisUrls, redisPassword)
+    redisConnections = RedisConnections(redisUrls, redisPassword, False)
 
     game = 'ody'
     i = 0
@@ -90,7 +90,7 @@ def test_validate_hashing_consistency():
 
 async def startAndProbRedisExpectError(redisUrls):
     redisPassword = None
-    redisConnections = RedisConnections(redisUrls, redisPassword)
+    redisConnections = RedisConnections(redisUrls, redisPassword, False)
 
     with pytest.raises(Exception):
         await redisConnections.waitForAllConnectionsToBeReady(1)
@@ -103,7 +103,7 @@ def test_redis_startup_probing_error():
 
 async def startAndProbRedisExpectSuccess(redisUrls):
     redisPassword = None
-    redisConnections = RedisConnections(redisUrls, redisPassword)
+    redisConnections = RedisConnections(redisUrls, redisPassword, False)
     await redisConnections.waitForAllConnectionsToBeReady(1)
 
 
