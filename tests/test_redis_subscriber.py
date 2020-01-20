@@ -7,7 +7,6 @@ import json
 import uuid
 
 from cobras.common.task_cleanup import addTaskCleanup
-from cobras.server.pipelined_publisher import PipelinedPublisher
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.redis_subscriber import (
     RedisSubscriberMessageHandlerClass,
@@ -20,7 +19,8 @@ async def subscribeCoroutine():
 
     redisUrls = 'redis://localhost'
     redisPassword = None
-    redisConnections = RedisConnections(redisUrls, redisPassword)
+    redisCluster = False
+    redisConnections = RedisConnections(redisUrls, redisPassword, redisCluster)
 
     db = await redisConnections.create('default_channel')
 
