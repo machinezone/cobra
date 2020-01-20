@@ -176,4 +176,4 @@ def healthCheck(url, role, secret, channel, retry=False, httpCheck=False):
     if httpCheck:
         healthCheckHttp(url)
     healthCheckPubSub(url, credentials, channel, retry)
-    healthCheckKVStore(url, credentials)
+    # healthCheckKVStore(url, credentials)
