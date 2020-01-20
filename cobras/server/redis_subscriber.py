@@ -89,6 +89,8 @@ async def redisSubscriber(
 
             if results is None:
                 # We've been cancelled
+                messageHandler.log('Cancelling redis subscription / empty result')
+                print('DONE')
                 return messageHandler
 
             results = results[stream.encode()]
@@ -108,6 +110,7 @@ async def redisSubscriber(
 
     except asyncio.CancelledError:
         messageHandler.log('Cancelling redis subscription')
+        print('YOUPI cancel')
         raise
 
     except Exception as e:
@@ -118,6 +121,8 @@ async def redisSubscriber(
 
     finally:
         messageHandler.log('Closing redis subscription')
+
+        print('DONE')
 
         # When finished, close the connection.
         # breakpoint()
