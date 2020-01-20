@@ -32,7 +32,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def on_init(self, streamExists: bool, streamLength: int):
+    async def on_init(self, streamExists: bool):
         pass  # pragma: no cover
 
     @abstractmethod
@@ -60,30 +60,17 @@ async def redisSubscriber(
         connection = None
 
     streamExists = False
-    streamLength = 0
 
     if connection:
         # query the stream size
         try:
             streamExists = await connection.exists(stream)
-            if streamExists:
-                pieces = ['STREAM', stream]
-                results = await connection.execute_command('XINFO', *pieces)
-                if results is not None:
-                    try:
-                        if isinstance([], list):
-                            streamLength = results[1]  # weird
-                        elif isinstance([], dict):
-                            streamLength = results[b'length']
-                    except Exception as e:
-                        logging.error(f"{logPrefix} {results} of unexpected type {e}")
-                        pass
         except Exception as e:
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
             pass
 
     try:
-        await messageHandler.on_init(connection, streamExists, streamLength)
+        await messageHandler.on_init(connection, streamExists)
     except Exception as e:
         logging.error(f'{logPrefix} cannot initialize message handler: {e}')
         connection = None
@@ -97,8 +84,6 @@ async def redisSubscriber(
     try:
         # wait for incoming events.
         while True:
-            # results = await connection.xread([stream], timeout=0, latest_ids=[lastId])
-
             pieces = ['BLOCK', '0', 'STREAMS', stream, lastId]
             results = await connection.execute_command('XREAD', *pieces)
 
