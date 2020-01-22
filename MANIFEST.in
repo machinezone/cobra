@@ -1,2 +1,2 @@
 include setup.py README.md MANIFEST.in requirements.txt
-recursive-include src/cobras/data *
+recursive-include cobras/data *
