@@ -54,10 +54,12 @@ class RedisConnections:
 
         if self.cluster:
             cls = aredis.StrictRedisCluster
+            redis = cls(max_connections=1024, startup_nodes=self.startup_nodes)
         else:
             cls = aredis.StrictRedis
-
-        redis = cls(host=host, port=port, password=self.password)
+            redis = aredis.StrictRedis(
+                host=host, port=port, password=self.password, max_connections=1024
+            )
 
         redis.host = host
         return redis

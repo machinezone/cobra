@@ -132,11 +132,6 @@ def run(
 
     print('runServer', locals())
 
-    if redis_cluster and ';' in redis_urls:
-        logging.warning('Redis cluster enabled.')
-        logging.warning('Multiple urls provided while there should only be one.')
-        logging.warning(f'redis_urls: {redis_urls}')
-
     runner = AppRunner(
         host,
         port,
