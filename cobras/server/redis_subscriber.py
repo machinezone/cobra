@@ -84,19 +84,13 @@ async def redisSubscriber(
     try:
         # wait for incoming events.
         while True:
-            pieces = ['BLOCK', '0', 'STREAMS', stream, lastId]
-            results = await connection.execute_command('XREAD', *pieces)
-
-            if results is None:
-                # We've been cancelled
-                messageHandler.log('Cancelling redis subscription / empty result')
-                print('DONE')
-                return messageHandler
+            streams = {stream: lastId}
+            results = await connection.xread(count=None, block=0, **streams)
 
             results = results[stream.encode()]
 
             for result in results:
-                lastId = result[0]
+                lastId = result[0].decode()
                 msg = result[1]
                 data = msg[b'json']
 
@@ -104,14 +98,9 @@ async def redisSubscriber(
 
                 payloadSize = len(data)
                 msg = json.loads(data)
-                ret = await messageHandler.handleMsg(msg, lastId.decode(), payloadSize)
+                ret = await messageHandler.handleMsg(msg, lastId, payloadSize)
                 if not ret:
                     break
-
-    except asyncio.CancelledError:
-        messageHandler.log('Cancelling redis subscription')
-        print('YOUPI cancel')
-        raise
 
     except Exception as e:
         messageHandler.log(e)
@@ -121,12 +110,6 @@ async def redisSubscriber(
 
     finally:
         messageHandler.log('Closing redis subscription')
-
-        print('DONE')
-
-        # When finished, close the connection.
-        # breakpoint()
-        # connection.close() # FIXME(close)
 
         return messageHandler
 
