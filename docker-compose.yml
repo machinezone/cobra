@@ -12,7 +12,9 @@ services:
     ports:
       - "8765:8765"
     environment:
-      - COBRA_REDIS_URLS=redis://redis1;redis://redis2
+      - COBRA_REDIS_STARTUP_PROBING_TIMEOUT=10000
+      - COBRA_REDIS_URLS=redis://redis1
+      - COBRA_REDIS_CLUSTER=1
       - COBRA_HOST=0.0.0.0
       - COBRA_PORT=8765
       - COBRA_VERBOSE=1
@@ -41,12 +43,8 @@ services:
       - /tmp/volume_cobra:/etc/secret-volume
     depends_on:
       - redis1
-      - redis2
 
   redis1:
     ports:
       - "10000:6379"
-    image: redis:alpine
-
-  redis2:
     image: redis:alpine
