@@ -56,7 +56,7 @@ async def redisSubscriber(
         # Create connection
         connection = await redisConnections.create(stream)
     except Exception as e:
-        logging.error(f"{logPrefix} cannot connect to redis {e}")
+        logging.error(f"{logPrefix} cannot connect to redis: {e}")
         connection = None
 
     streamExists = False
