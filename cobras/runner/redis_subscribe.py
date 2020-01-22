@@ -21,11 +21,11 @@ class MessageHandlerClass(RedisSubscriberMessageHandlerClass):
     def log(self, msg):
         print(msg)
 
-    async def on_init(self, redisConnection, streamExists, streamLength):
+    async def on_init(self, redisConnection, streamExists):
         if redisConnection is None:
             print('Failure connecting to redis')
         else:
-            print(f'stream exists: {streamExists} stream length: {streamLength}')
+            print(f'stream exists: {streamExists}')
 
     async def handleMsg(self, msg: str, position: str, payloadSize: int) -> bool:
         self.cnt += 1
@@ -43,10 +43,13 @@ class MessageHandlerClass(RedisSubscriberMessageHandlerClass):
 @click.command()
 @click.option('--redis_urls', default='redis://localhost')
 @click.option('--redis_password')
+@click.option('--redis_cluster', is_flag=True)
 @click.option('--channel')
 @click.option('--appkey')
 @click.option('--position')
-def redis_subscribe(redis_urls, redis_password, channel, position, appkey):
+def redis_subscribe(
+    redis_urls, redis_password, redis_cluster, channel, position, appkey
+):
     '''Subscribe to a channel
 
     \b
@@ -61,5 +64,5 @@ def redis_subscribe(redis_urls, redis_password, channel, position, appkey):
     '''
 
     appChannel = '{}::{}'.format(appkey, channel)
-    redisConnections = RedisConnections(redis_urls, redis_password)
+    redisConnections = RedisConnections(redis_urls, redis_password, redis_cluster)
     runSubscriber(redisConnections, appChannel, position, MessageHandlerClass)
