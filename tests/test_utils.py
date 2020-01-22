@@ -23,7 +23,7 @@ def makeRunner(
     host = 'localhost'
     port = getFreePort()
     redisPassword = None
-    redisCluster = False
+    redisCluster = True
     plugins = 'republish'
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause / FIXME(unused)
@@ -31,7 +31,7 @@ def makeRunner(
     debugMemoryPrintAllTasks = False
 
     if redisUrls is None:
-        redisUrls = 'redis://localhost'
+        redisUrls = 'redis://localhost:10000'
 
     appsConfigPath = tempfile.mktemp()
     appsConfig = AppsConfig(appsConfigPath)
