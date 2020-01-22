@@ -7,6 +7,7 @@ RUN apk add --no-cache gcc g++ musl-dev linux-headers make
 
 # Install dependant packages
 COPY requirements.txt /tmp
+RUN pip install --cache-dir=/opt/pip_cache --user git+https://github.com/bsergean/aredis.git@release/cobra#egg=aredis
 RUN pip install --cache-dir=/opt/pip_cache --user --requirement /tmp/requirements.txt
 
 # Runtime stage
