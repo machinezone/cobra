@@ -9,6 +9,7 @@ dev: update_version
 	@echo "--> Installing Python dependencies"
 	# order matters here, base package must install first
 	pip install -U pip
+	pip install git+https://github.com/bsergean/aredis.git@release/cobra#egg=aredis
 	pip install --requirement requirements.txt
 	pip install --requirement tests/requirements.txt
 	pip install -e .
