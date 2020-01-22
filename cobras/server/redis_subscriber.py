@@ -102,6 +102,9 @@ async def redisSubscriber(
                 if not ret:
                     break
 
+    except asyncio.CancelledError:
+        messageHandler.log('Subscriber cancelled')
+
     except Exception as e:
         messageHandler.log(e)
         messageHandler.log(
@@ -109,7 +112,7 @@ async def redisSubscriber(
         )
 
     finally:
-        messageHandler.log('Closing redis subscription')
+        messageHandler.log('redis subscription stopped')
 
         return messageHandler
 
