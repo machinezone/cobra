@@ -1,5 +1,20 @@
 #!/bin/sh
 
+# Adding host
+# redis-cli -p 10000 --cluster add-node 127.0.0.1:10006 127.0.0.1:10000
+
+# Adding a host as a replica
+# redis-cli -p 10000 --cluster add-node --cluster-slave 127.0.0.1:10007 127.0.0.1:10000
+
+# Reshard
+# redis-cli -p 10000 --cluster reshard 127.0.0.1:10006
+
+# Rebalance slots accross nodes
+# redis-cli -p 10000 --cluster rebalance 127.0.0.1:10007
+
+# Delete node
+# redis-cli -p 10000 --cluster del-node 127.0.0.1:10007 964755107923d607b544db0b5cde96fd8d210294
+
 nodes="www.google.com"
 nodes="localhost localhost"
 nodes="redis11 redis12 redis13 redis14 redis15 redis16 redis17 redis18"
@@ -30,21 +45,3 @@ do
     redis-cli -h $host -p $port FLUSHDB
     redis-cli -h $host -p $port CLUSTER RESET
 done
-
-echo yes | redis-cli -h $host -p $port --cluster create $ips --cluster-replicas 1
-# echo yes | redis-cli -h $host -p $port --cluster check
-
-# Adding host
-# redis-cli -p 10000 --cluster add-node 127.0.0.1:10006 127.0.0.1:10000
-
-# Adding a host as a replica
-# redis-cli -p 10000 --cluster add-node --cluster-slave 127.0.0.1:10007 127.0.0.1:10000
-
-# Reshard
-# redis-cli -p 10000 --cluster reshard 127.0.0.1:10006
-
-# Rebalance slots accross nodes
-# redis-cli -p 10000 --cluster rebalance 127.0.0.1:10007
-
-# Delete node
-# redis-cli -p 10000 --cluster del-node 127.0.0.1:10007 964755107923d607b544db0b5cde96fd8d210294
