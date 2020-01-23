@@ -24,6 +24,16 @@ class RedisConnections:
         # https://www.paperplanes.de/2011/12/9/the-magic-of-consistent-hashing.html
         self.hr = HashRing(nodes=self.urls)
 
+        self.startup_nodes = []
+        for url in self.urls:
+            netloc = urlparse(url).netloc
+            host, _, port = netloc.partition(':')
+            if port:
+                port = int(port)
+            else:
+                port = 6379
+            self.startup_nodes.append({'host': host, 'port': port})
+
     async def create(self, appChannel=None):
         url = self.hashChannel(appChannel)
         logging.info(f'Hashing {appChannel} to url -> {url}')
