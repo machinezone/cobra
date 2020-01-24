@@ -90,10 +90,25 @@ class RedisConnections:
                 j = i + n
                 yield lst[i:j]
 
-        text = ''
-        for urls in chunks(self.urls, 3):
+        urls = self.urls
+        if self.cluster:
+            redis = await self.createFromUrl(self.urls[0])
+            nodes = await redis.cluster_nodes()
 
-            s = await self.getRedisInfoForUrls(urls)
+            urls = []
+            for node in nodes:
+                host = node['host']
+                port = node['port']
+                url = f'redis://{host}:{port}'
+                urls.append(url)
+
+        urls.sort()
+
+        text = ''
+        chunkSize = 2 if self.cluster else 3
+        for urlsChunk in chunks(urls, chunkSize):
+
+            s = await self.getRedisInfoForUrls(urlsChunk)
             text += '\n\n' + s
 
         return text
@@ -107,21 +122,35 @@ class RedisConnections:
         infos = {}
         metrics = []
 
-        for url in urls:
-            try:
-                redis = await self.createFromUrl(url)
-                await redis.ping()
+        if self.cluster:
+            # INFO returns info for all nodes in the clusters with our client
+            redis = await self.createFromUrl(urls[0])
+            await redis.ping()
 
-                info = await redis.info()
-                infos[url] = info
+            infos = await redis.info()
+            for key, value in infos.items():
+                metrics = value.keys()
+                break
+        else:
+            for url in urls:
+                try:
+                    redis = await self.createFromUrl(url)
+                    await redis.ping()
 
-                metrics = info.keys()
-            except Exception:
-                pass
+                    info = await redis.info()
+                    infos[url] = info
+                    metrics = info.keys()
+
+                except Exception:
+                    pass
 
         for metric in metrics:
             data = [metric]
             for url in urls:
+                if self.cluster:
+                    prefixLen = len('redis://')
+                    url = url[prefixLen:]
+
                 val = infos.get(url, {}).get(metric, 'na')
                 data.append(val)
 
