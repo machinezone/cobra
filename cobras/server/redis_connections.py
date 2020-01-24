@@ -99,7 +99,6 @@ class RedisConnections:
                 j = i + n
                 yield lst[i:j]
 
-<<<<<<< HEAD
         urls = self.urls
         if self.cluster:
             redis = await self.createFromUrl(self.urls[0])
@@ -117,7 +116,8 @@ class RedisConnections:
         text = ''
         chunkSize = 2 if self.cluster else 3
         for urlsChunk in chunks(urls, chunkSize):
-            s = await self.getRedisInfoForUrls(urls)
+
+            s = await self.getRedisInfoForUrls(urlsChunk)
             text += '\n\n' + s
 
         return text
