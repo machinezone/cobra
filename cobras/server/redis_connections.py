@@ -10,6 +10,7 @@ import sys
 from urllib.parse import urlparse
 
 import aioredis
+import tabulate
 from uhashring import HashRing
 
 
@@ -81,3 +82,49 @@ class RedisConnections:
                     timeout -= waitTime
 
             sys.stderr.write('\n')
+
+    async def getRedisInfo(self):
+        def chunks(lst, n):
+            """Yield successive n-sized chunks from lst."""
+            for i in range(0, len(lst), n):
+                j = i + n
+                yield lst[i:j]
+
+        text = ''
+        for urls in chunks(self.urls, 3):
+
+            s = await self.getRedisInfoForUrls(urls)
+            text += '\n\n' + s
+
+        return text
+
+    async def getRedisInfoForUrls(self, urls):
+        entries = []
+        headers = ['Metric']
+        headers.extend(urls)
+        entries.append(headers)
+
+        infos = {}
+        metrics = []
+
+        for url in urls:
+            try:
+                redis = await self.createFromUrl(url)
+                await redis.ping()
+
+                info = await redis.info()
+                infos[url] = info
+
+                metrics = info.keys()
+            except Exception:
+                pass
+
+        for metric in metrics:
+            data = [metric]
+            for url in urls:
+                val = infos.get(url, {}).get(metric, 'na')
+                data.append(val)
+
+            entries.append(data)
+
+        return tabulate.tabulate(entries, tablefmt="simple", headers="firstrow")

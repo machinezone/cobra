@@ -107,6 +107,7 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
     '''Used to validate appkey'''
 
     appsConfig = None
+    redisConnections = None
 
     async def process_request(self, path, request_headers):
 
@@ -118,6 +119,10 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
 
         if path == '/':
             return http.HTTPStatus.OK, [], bytes(getBanner(), 'utf8') + b'\n'
+
+        if path == '/redis':
+            info = await ServerProtocol.redisConnections.getRedisInfo()
+            return http.HTTPStatus.OK, [], bytes(info, 'utf8') + b'\n'
 
         appkey = parseAppKey(path)
         if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(appkey):
@@ -218,6 +223,7 @@ class AppRunner:
         # Create redis connection handler, and
         # wait until all the redis nodes are reachable
         redisConnections = RedisConnections(redisUrls, redisPassword)
+        self.app['redis_connections'] = redisConnections
         if self.probeRedisOnStartup:
             await redisConnections.waitForAllConnectionsToBeReady(
                 timeout=self.redisStartupProbingTimeout
@@ -265,6 +271,7 @@ class AppRunner:
         )
 
         ServerProtocol.appsConfig = self.app['apps_config']
+        ServerProtocol.redisConnections = self.app['redis_connections']
 
         if block:
             async with websockets.serve(

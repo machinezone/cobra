@@ -35,6 +35,8 @@ services:
       - redis2
 
   redis1:
+    ports:
+      - "10000:6379"
     image: redis:alpine
     networks:
       - cobra-net
