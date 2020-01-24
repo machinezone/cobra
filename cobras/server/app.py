@@ -229,7 +229,6 @@ class AppRunner:
         # wait until all the redis nodes are reachable
         redisConnections = RedisConnections(redisUrls, redisPassword, redisCluster)
         self.app['redis_connections'] = redisConnections
-
         if self.probeRedisOnStartup:
             await redisConnections.waitForAllConnectionsToBeReady(
                 timeout=self.redisStartupProbingTimeout
