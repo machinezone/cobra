@@ -14,6 +14,8 @@ FROM python:3.8.1-alpine3.11 as runtime
 RUN addgroup -S app && adduser -S -G app app
 
 RUN apk add --no-cache libstdc++
+RUN apk add --no-cache curl
+RUN apk add --no-cache ca-certificates
 
 COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
 
