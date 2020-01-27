@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.8] - 2020-01-27
+
+* add redis cluster utilities
+
 ## [2.6.6] - 2019-12-31
 
 * (server) bump aioredis, hiredis, rapidjson and pyyaml dependency
