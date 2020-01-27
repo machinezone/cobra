@@ -8,12 +8,12 @@ import json
 import click
 
 
-def getEndpoints(svc, port):
+def getEndpoints(service, port):
     '''
     kubectl get endpoints -o json redis-cluster
     '''
 
-    content = os.popen(f'kubectl get endpoints -o json {svc}').read()
+    content = os.popen(f'kubectl get endpoints -o json {service}').read()
     data = json.loads(content)
 
     assert len(data['subsets']) == 1
@@ -30,11 +30,11 @@ def getEndpoints(svc, port):
 
 @click.command()
 @click.option('--action', default='get_endpoints')
-@click.option('--svc', default='redis-cluster')
+@click.option('--service', default='redis-cluster')
 @click.option('--port', default=6379)
-def redis_cluster(action, svc, port):
+def redis_cluster(action, service, port):
     '''Help with redis cluster operations
     '''
 
     if action == 'get_endpoints':
-        getEndpoints(svc, port)
+        getEndpoints(service, port)
