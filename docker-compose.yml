@@ -1,6 +1,10 @@
 version: "3"
 services:
   web:
+    #
+    # Publish to this node with:
+    # cobra publish --rolesecret A0EF82AFedB52Eae16b7b3dB8dcCE5bc
+    #
     image: ${DOCKER_REPO}/cobra:build
     ports:
       - "8765:8765"
@@ -14,6 +18,10 @@ services:
       - COBRA_PLUGINS=republish
       - PYTHONPATH=/etc/secret-volume
     healthcheck:
+      #
+      # Run healthcheck externally with:
+      # cobra health --rolesecret bb17Ef9Df9Bef0FEc68Ea0Ff104DAF1C
+      #
       interval: 5s
     volumes:
       #
