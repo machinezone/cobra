@@ -8,7 +8,7 @@ import json
 import click
 
 
-def getEndpoints(service, port):
+def getEndpointsIps(service):
     '''
     kubectl get endpoints -o json redis-cluster
     '''
@@ -20,12 +20,35 @@ def getEndpoints(service, port):
     assert 'addresses' in data['subsets'][0]
     addresses = data['subsets'][0]['addresses']
 
-    endpoints = []
+    ips = []
     for address in addresses:
         ip = address.get('ip')
+        ips.append(ip)
+
+    return ips
+
+
+def printEndpoints(service, port):
+    ips = getEndpointsIps(service)
+
+    endpoints = []
+    for ip in ips:
         endpoints.append(f'redis://{ip}:{port}')
 
     print(';'.join(endpoints))
+
+
+def printRedisClusterInitCommand(service, port):
+    cmd = 'redis-cli --cluster create '
+
+    ips = getEndpointsIps(service)
+
+    for ip in ips:
+        cmd += f'{ip}:{port} '
+
+    cmd += ' --cluster-replicas 1'
+
+    print(cmd)
 
 
 @click.command()
@@ -34,7 +57,11 @@ def getEndpoints(service, port):
 @click.option('--port', default=6379)
 def redis_cluster(action, service, port):
     '''Help with redis cluster operations
+
+    \bcobra redis-cluster --service redis-cluster --action redis_cluster_init
     '''
 
     if action == 'get_endpoints':
-        getEndpoints(service, port)
+        printEndpoints(service, port)
+    elif action == 'redis_cluster_init':
+        printRedisClusterInitCommand(service, port)
