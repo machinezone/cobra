@@ -4,7 +4,7 @@ nodes="www.google.com"
 nodes="localhost localhost"
 nodes="redis11 redis12 redis13 redis14 redis15 redis16 redis17 redis18"
 nodes="redis1 redis2 redis3 redis4 redis5 redis6"
-nodes="localhost:10000 localhost:10001 localhost:10002 localhost:10003 localhost:10004 localhost:10005"
+nodes="localhost:10000 localhost:10001 localhost:10002 localhost:10003 localhost:10004 localhost:10005 localhost:10006 localhost:10007"
 
 ips=""
 OS=`uname`
