@@ -24,11 +24,7 @@ from cobras.server.app import AppRunner
     help='Binding host address. Set to 0.0.0.0 in prod environments',
 )
 @click.option('--port', envvar='COBRA_PORT', default='8765')
-@click.option(
-    '--redis_urls',
-    envvar='COBRA_REDIS_URLS',
-    default='redis://localhost',
-)
+@click.option('--redis_urls', envvar='COBRA_REDIS_URLS', default='redis://localhost')
 @click.option('--redis_password', envvar='COBRA_REDIS_PASSWORD')
 @click.option(
     '--apps_config_path', envvar='COBRA_APPS_CONFIG', default=getDefaultAppsConfigPath()
@@ -40,6 +36,11 @@ from cobras.server.app import AppRunner
 @click.option(
     '--debug_memory_no_tracemalloc',
     envvar='COBRA_DEBUG_MEMORY_NO_TRACEMALLOC',
+    is_flag=True,
+)
+@click.option(
+    '--debug_memory_print_all_tasks',
+    envvar='COBRA_DEBUG_MEMORY_PRINT_ALL_TASKS',
     is_flag=True,
 )
 @click.option('--sentry', envvar='COBRA_SENTRY', is_flag=True)
@@ -72,6 +73,7 @@ def run(
     apps_config_path_content,
     debug_memory,
     debug_memory_no_tracemalloc,
+    debug_memory_print_all_tasks,
     plugins,
     sentry,
     sentry_url,
@@ -123,6 +125,7 @@ def run(
         apps_config_path,
         debug_memory,
         debug_memory_no_tracemalloc,
+        debug_memory_print_all_tasks,
         plugins,
         not no_stats,
         max_subscriptions,

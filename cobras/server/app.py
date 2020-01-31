@@ -162,6 +162,7 @@ class AppRunner:
         appsConfigPath,
         debugMemory,
         debugMemoryNoTracemalloc,
+        debugMemoryPrintAllTasks,
         plugins,
         enableStats,
         maxSubscriptions,
@@ -177,6 +178,7 @@ class AppRunner:
 
         self.app['memory_debugger'] = debugMemory
         self.app['memory_debugger_no_tracemalloc'] = debugMemoryNoTracemalloc
+        self.app['memory_debugger_print_all_tasks'] = debugMemoryPrintAllTasks
         self.app['redis_urls'] = redisUrls
         self.app['redis_password'] = redisPassword
 
@@ -243,7 +245,8 @@ class AppRunner:
 
         if self.app.get('memory_debugger'):
             memoryDebugger = MemoryDebugger(
-                noTraceMalloc=self.app.get('memory_debugger_no_tracemalloc')
+                noTraceMalloc=self.app.get('memory_debugger_no_tracemalloc'),
+                printAllTasks=self.app.get('memory_debugger_print_all_tasks'),
             )
             self.app['memory_debugger'] = memoryDebugger
 

@@ -84,7 +84,7 @@ class MemoryDebugger:
 
         if self.printAllTasks:
             for task in tasks:
-                self.log(task)
+                self.log(str(task))
                 self.log()
         self.log()
 

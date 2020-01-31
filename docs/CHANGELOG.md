@@ -1,9 +1,13 @@
 # Changelog
 All changes to this project will be documented in this file.
 
-## [2.6.8] - 2020-01-27
+## [2.6.10] - 2020-01-30
 
-* add redis cluster utilities
+* add new server option to print all asyncio tasks
+
+## [2.6.9] - 2020-01-30
+
+* server: add user agent to some error messages
 
 ## [2.6.6] - 2019-12-31
 

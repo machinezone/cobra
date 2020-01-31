@@ -27,6 +27,7 @@ def makeRunner(
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause / FIXME(unused)
     debugMemoryNoTracemalloc = False
+    debugMemoryPrintAllTasks = False
 
     if redisUrls is None:
         redisUrls = 'redis://localhost'
@@ -44,6 +45,7 @@ def makeRunner(
         appsConfigPath,
         debugMemory,
         debugMemoryNoTracemalloc,
+        debugMemoryPrintAllTasks,
         plugins,
         enableStats,
         maxSubscriptions,
