@@ -113,6 +113,7 @@ class AppsConfig:
                 'secret': genSecret(),
                 'permissions': [
                     'subscribe',
+                    'unsubscribe',
                     'publish',
                     'admin',
                     'read',

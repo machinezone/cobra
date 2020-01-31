@@ -39,11 +39,6 @@ def validatePermissions(permissions, action):
     if group == 'auth':
         return True
 
-    # FIXME: ugly that unsubscribe is the only rtm action that does not have
-    # its own permission
-    if verb == 'unsubscribe':
-        return True
-
     return verb in permissions
 
 
