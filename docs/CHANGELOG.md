@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.11] - 2020-01-31
+
+* unsubscribe requires a permission
+
 ## [2.6.10] - 2020-01-30
 
 * add new server option to print all asyncio tasks
