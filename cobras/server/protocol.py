@@ -69,6 +69,7 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes)
     except json.JSONDecodeError:
         msgEncoded = base64.b64encode(msg.encode())
         errMsg = f'malformed json pdu: base64: {msgEncoded} raw: {msg}'
+        errMsg += f' / agent "{ws.userAgent}"'
         await badFormat(state, ws, app, errMsg)
         return
 
@@ -86,7 +87,7 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes)
 
     # Make sure the user is authenticated
     if not state.authenticated and not action.startswith(AUTH_PREFIX):
-        errMsg = f'action "{action}" needs authentication'
+        errMsg = f'action "{action}" needs authentication / agent "{ws.userAgent}"'
         logging.warning(errMsg)
         response = {
             "action": f"{action}/error",
@@ -98,7 +99,7 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes)
 
     # Make sure the user has permission to access given endpoint
     if not validatePermissions(state.permissions, action):
-        errMsg = f'action "{action}": permission denied'
+        errMsg = f'action "{action}": permission denied / agent "{ws.userAgent}"'
         logging.warning(errMsg)
         response = {
             "action": f"{action}/error",
