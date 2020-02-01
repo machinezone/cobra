@@ -77,6 +77,8 @@ async def handleRead(
         if connection is not None:
             connection.close()
 
+    app['stats'].updateReads(state.role, len(serializedPdu))
+
     # Correct path
     response = {
         "action": "rtm/read/ok",
@@ -180,9 +182,6 @@ async def handleDelete(
         }
         await state.respond(ws, response)
         return
-
-    # Stats
-    app['stats'].updateWrites(state.role, len(serializedPdu))
 
     response = {"action": f"rtm/delete/ok", "id": pdu.get('id', 1), "body": {}}
     await state.respond(ws, response)
