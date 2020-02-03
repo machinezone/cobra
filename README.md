@@ -52,6 +52,12 @@ make docker
 docker-compose up
 ```
 
+Or as a one-liner:
+
+```
+(cd /tmp && curl -O https://raw.githubusercontent.com/machinezone/cobra/master/docker-compose.yml && echo 'DOCKER_REPO=bsergean\nTAG=latest' > .env && docker-compose up)
+```
+
 ## For development
 
 ```

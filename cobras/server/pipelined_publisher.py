@@ -50,15 +50,15 @@ class PipelinedPublisher:
 
         appkey, channel, data = job
         appChannel = '{}::{}'.format(appkey, channel)
-        pipe.xadd(
+
+        redis = pipe if pipe is not None else self.redis
+        redis.xadd(
             appChannel, {'json': data}, max_len=self.xaddMaxLength, exact_len=False
         )
 
     async def publishNow(self, job, maxLen: Optional[int] = None):
         async with self.lock:
-            pipe = self.redis.pipeline()
-            self.publish(pipe, job, maxLen)
-            await pipe.execute()
+            self.publish(None, job, maxLen)
 
     async def push(self, job, batchPublish=False):
         if not batchPublish:

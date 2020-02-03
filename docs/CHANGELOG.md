@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.12] - 2020-02-03
+
+* do not create a pipeline if we are not using batching publishing
+
 ## [2.6.11] - 2020-01-31
 
 * unsubscribe requires a permission

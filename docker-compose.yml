@@ -5,7 +5,7 @@ services:
     # Publish to this node with:
     # cobra publish --rolesecret A0EF82AFedB52Eae16b7b3dB8dcCE5bc
     #
-    image: ${DOCKER_REPO}/cobra:build
+    image: ${DOCKER_REPO}/cobra:${TAG}
     ports:
       - "8765:8765"
     environment:
@@ -36,8 +36,6 @@ services:
       # Note: we could set ${PWD} for the local (dev machine) folder to be mounted, and check-in a cobra config file
       #
       - /tmp/volume_cobra:/etc/secret-volume
-    networks:
-      - cobra-net
     depends_on:
       - redis1
       - redis2
@@ -46,13 +44,6 @@ services:
     ports:
       - "10000:6379"
     image: redis:alpine
-    networks:
-      - cobra-net
 
   redis2:
     image: redis:alpine
-    networks:
-      - cobra-net
-
-networks:
-  cobra-net:
