@@ -43,6 +43,15 @@ pip install cobras
 docker pull bsergean/cobra
 ```
 
+## With docker-compose
+
+Clone this repo first, then:
+
+```
+make docker
+docker-compose up
+```
+
 ## For development
 
 ```
