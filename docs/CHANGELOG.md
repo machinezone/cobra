@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.13] - 2020-02-04
+
+* use homegrown rcc redis client
+
 ## [2.6.12] - 2020-02-03
 
 * do not create a pipeline if we are not using batching publishing

@@ -9,7 +9,8 @@ import time
 import sys
 from urllib.parse import urlparse
 
-import aioredis
+from rcc.client import RedisClient
+
 import tabulate
 from uhashring import HashRing
 
@@ -50,7 +51,8 @@ class RedisConnections:
         else:
             port = 6379
 
-        redis = await aioredis.create_redis(url, password=self.password)
+        redis = RedisClient(url, self.password)
+        await redis.connect()
         redis.host = host
         return redis
 

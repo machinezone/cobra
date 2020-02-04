@@ -12,13 +12,14 @@ from cobras.common.cobra_types import JsonDict
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.throttle import Throttle
 from cobras.server.connection_state import ConnectionState
-from cobras.server.redis_connections import RedisConnections
-from cobras.server.redis_subscriber import (
+from rcc.subscriber import (
     RedisSubscriberMessageHandlerClass,
     redisSubscriber,
     validatePosition,
 )
 from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
+
+from rcc.client import RedisClient
 
 
 async def handlePublish(
@@ -63,6 +64,7 @@ async def handlePublish(
         channels = [channel]
 
     batchPublish = app['apps_config'].isBatchPublishEnabled(state.appkey)
+    streams = {}
 
     for chan in channels:
 
@@ -76,7 +78,10 @@ async def handlePublish(
         try:
             pipelinedPublisher = await pipelinedPublishers.get(appkey, chan)
 
-            await pipelinedPublisher.push((appkey, chan, serializedPdu), batchPublish)
+            streamId = await pipelinedPublisher.push(
+                (appkey, chan, serializedPdu), batchPublish
+            )
+            streams[chan] = streamId
         except Exception as e:
             await pipelinedPublishers.erasePublisher(appkey, chan)
 
@@ -95,7 +100,7 @@ async def handlePublish(
     response = {
         "action": "rtm/publish/ok",
         "id": pdu.get('id', 1),
-        "body": {'channels': channels},
+        "body": {'streams': streams},
     }
     await state.respond(ws, response)
 
@@ -300,11 +305,11 @@ async def handleSubscribe(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
+    redisClient = RedisClient(app['redis_urls'], app['redis_password'])
 
     task = asyncio.create_task(
         redisSubscriber(
-            redisConnections,
+            redisClient,
             appChannel,
             position,
             MessageHandlerClass,
