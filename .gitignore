@@ -10,5 +10,4 @@ dist
 .coverage
 htmlcov/
 coverage.xml
-.env
 site/
