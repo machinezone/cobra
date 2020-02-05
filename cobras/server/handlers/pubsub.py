@@ -8,6 +8,7 @@ import rapidjson as json
 import logging
 from typing import Dict
 
+from cobras.server.redis_connections import RedisConnections
 from cobras.common.cobra_types import JsonDict
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.throttle import Throttle
@@ -305,7 +306,9 @@ async def handleSubscribe(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisClient = RedisClient(app['redis_urls'], app['redis_password'])
+    redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
+    url = redisConnections.hashChannel(appChannel)
+    redisClient = RedisClient(url, app['redis_password'])
 
     task = asyncio.create_task(
         redisSubscriber(
