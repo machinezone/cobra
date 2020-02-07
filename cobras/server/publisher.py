@@ -12,7 +12,7 @@ import logging
 from typing import Optional
 
 
-class PipelinedPublisher:
+class Publisher:
     def __init__(self, redis, batchSize=None, channelMaxLength=None):
         self.redis = redis
         self.queue = asyncio.Queue()

@@ -5,11 +5,11 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 
-from cobras.server.pipelined_publisher import PipelinedPublisher
+from cobras.server.publisher import Publisher
 from cobras.server.redis_connections import RedisConnections
 
 
-class PipelinedPublishers:
+class Publishers:
     def __init__(
         self,
         redisConnections: RedisConnections,
@@ -17,14 +17,14 @@ class PipelinedPublishers:
         channelMaxLength: int,
     ) -> None:
         self.redisConnections = redisConnections
-        self.pipelinedPublishers: dict = {}
+        self.publishers: dict = {}
         self.batchPublishSize: int = batchPublishSize
         self.channelMaxLength: int = channelMaxLength
         self.lock = asyncio.Lock()
 
     def close(self):
-        for pipelinedPublisher in self.pipelinedPublishers.values():
-            pipelinedPublisher.close()
+        for publisher in self.publishers.values():
+            publisher.close()
 
     def getAppChannelAndKey(self, appkey, channel):
         '''
@@ -48,22 +48,20 @@ class PipelinedPublishers:
         appChannel, key = self.getAppChannelAndKey(appkey, channel)
 
         async with self.lock:
-            pipelinedPublisher = self.pipelinedPublishers.get(key)
-            if pipelinedPublisher is not None:
-                return pipelinedPublisher
+            publisher = self.publishers.get(key)
+            if publisher is not None:
+                return publisher
 
             db = await self.redisConnections.create(appChannel)
-            pipelinedPublisher = PipelinedPublisher(
-                db, self.batchPublishSize, self.channelMaxLength
-            )
-            self.pipelinedPublishers[key] = pipelinedPublisher
-            return pipelinedPublisher
+            publisher = Publisher(db, self.batchPublishSize, self.channelMaxLength)
+            self.publishers[key] = publisher
+            return publisher
 
     async def erasePublisher(self, appkey, channel):
         appChannel, key = self.getAppChannelAndKey(appkey, channel)
 
         async with self.lock:
-            pipelinedPublisher = self.pipelinedPublishers.get(key)
-            if pipelinedPublisher is not None:
-                pipelinedPublisher.close()
-                del self.pipelinedPublishers[key]
+            publisher = self.publishers.get(key)
+            if publisher is not None:
+                publisher.close()
+                del self.publishers[key]

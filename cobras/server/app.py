@@ -21,7 +21,7 @@ from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.version import getVersion
 from cobras.common.banner import getBanner
 from cobras.server.connection_state import ConnectionState
-from cobras.server.pipelined_publishers import PipelinedPublishers
+from cobras.server.publishers import Publishers
 from cobras.server.protocol import processCobraMessage
 from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
@@ -231,12 +231,10 @@ class AppRunner:
                 timeout=self.redisStartupProbingTimeout
             )
 
-        pipelinedPublishers = PipelinedPublishers(
-            redisConnections, batchPublishSize, channelMaxLength
-        )
-        self.app['pipelined_publishers'] = pipelinedPublishers
+        publishers = Publishers(redisConnections, batchPublishSize, channelMaxLength)
+        self.app['publishers'] = publishers
 
-        serverStats = ServerStats(pipelinedPublishers, STATS_APPKEY)
+        serverStats = ServerStats(publishers, STATS_APPKEY)
         self.app['stats'] = serverStats
 
         if self.enableStats:
@@ -304,7 +302,7 @@ class AppRunner:
         asyncio.get_event_loop().run_until_complete(self.setup(stop, block=True))
 
     def closeRedis(self):
-        db = self.app['pipelined_publishers']
+        db = self.app['publishers']
         db.close()
 
     async def closeServer(self):

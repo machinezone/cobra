@@ -74,17 +74,15 @@ async def handlePublish(
             continue
 
         appkey = state.appkey
-        pipelinedPublishers = app['pipelined_publishers']
+        publishers = app['publishers']
 
         try:
-            pipelinedPublisher = await pipelinedPublishers.get(appkey, chan)
+            publisher = await publishers.get(appkey, chan)
 
-            streamId = await pipelinedPublisher.push(
-                (appkey, chan, serializedPdu), batchPublish
-            )
+            streamId = await publisher.push((appkey, chan, serializedPdu), batchPublish)
             streams[chan] = streamId
         except Exception as e:
-            await pipelinedPublishers.erasePublisher(appkey, chan)
+            await publishers.erasePublisher(appkey, chan)
 
             errMsg = f'publish: cannot connect to redis {e}'
             logging.warning(errMsg)
