@@ -53,7 +53,6 @@ class RedisConnections:
 
         redis = RedisClient(url, self.password)
         await redis.connect()
-        redis.host = host
         return redis
 
     def hashChannel(self, appChannel: str):
