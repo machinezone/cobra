@@ -11,7 +11,7 @@ import traceback
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from cobras.server.redis_connections import RedisConnections
+from cobras.server.redis_client import RedisClient
 
 POSITION_PATTERN = re.compile('^(?P<id1>[0-9]+)-(?P<id2>[0-9]+)')
 
@@ -32,7 +32,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def on_init(self, streamExists: bool):
+    async def on_init(self, client: RedisClient, streamExists: bool, streamLength: int):
         pass  # pragma: no cover
 
     @abstractmethod
@@ -41,7 +41,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
 
 
 async def redisSubscriber(
-    redisConnections: RedisConnections,
+    client: RedisClient,
     stream: str,
     position: Optional[str],
     messageHandlerClass: RedisSubscriberMessageHandlerClass,  # noqa
@@ -49,33 +49,25 @@ async def redisSubscriber(
 ):
     messageHandler = messageHandlerClass(obj)
 
-    redisHost = redisConnections.hashChannel(stream)
-    logPrefix = f'subscriber[{redisHost} / {stream}]:'
-
-    try:
-        # Create connection
-        connection = await redisConnections.create(stream)
-    except Exception as e:
-        logging.error(f"{logPrefix} cannot connect to redis: {e}")
-        connection = None
+    logPrefix = f'subscriber[{stream}]: {client}'
 
     streamExists = False
 
-    if connection:
+    if client:
         # query the stream size
         try:
-            streamExists = await connection.exists(stream)
+            streamExists = await client.exists(stream)
         except Exception as e:
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
-            connection = None
+            client = None
 
     try:
-        await messageHandler.on_init(connection, streamExists)
+        await messageHandler.on_init(client, streamExists, streamLength=0)  # FIXME
     except Exception as e:
         logging.error(f'{logPrefix} cannot initialize message handler: {e}')
-        connection = None
+        client = None
 
-    if connection is None:
+    if client is None:
         return messageHandler
 
     # lastId = '0-0'
@@ -85,7 +77,7 @@ async def redisSubscriber(
         # wait for incoming events.
         while True:
             streams = {stream: lastId}
-            results = await connection.xread(count=None, block=0, **streams)
+            results = await client.xread(streams)
 
             results = results[stream.encode()]
 
@@ -114,15 +106,3 @@ async def redisSubscriber(
         messageHandler.log('redis subscription stopped')
 
         return messageHandler
-
-
-def runSubscriber(
-    redisConnections: RedisConnections,
-    channel: str,
-    position: str,
-    messageHandlerClass,
-    obj=None,
-):
-    asyncio.get_event_loop().run_until_complete(
-        redisSubscriber(redisConnections, channel, position, messageHandlerClass, obj)
-    )

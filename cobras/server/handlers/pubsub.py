@@ -13,7 +13,6 @@ from cobras.common.cobra_types import JsonDict
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.throttle import Throttle
 from cobras.server.connection_state import ConnectionState
-from cobras.server.redis_connections import RedisConnections
 from cobras.server.redis_subscriber import (
     RedisSubscriberMessageHandlerClass,
     redisSubscriber,
@@ -62,7 +61,10 @@ async def handlePublish(
     if channels is None:
         channels = [channel]
 
-    batchPublish = app['apps_config'].isBatchPublishEnabled(state.appkey)
+    streams = {}
+
+    appkey = state.appkey
+    redis = app['redis_clients'].getRedisClient(appkey)
 
     for chan in channels:
 
@@ -70,15 +72,14 @@ async def handlePublish(
         if chan is None:
             continue
 
-        appkey = state.appkey
-        pipelinedPublishers = app['pipelined_publishers']
-
         try:
-            pipelinedPublisher = await pipelinedPublishers.get(appkey, chan)
+            maxLen = app['channel_max_length']
+            stream = '{}::{}'.format(appkey, chan)
+            streamId = await redis.xadd(stream, 'json', serializedPdu, maxLen)
 
-            await pipelinedPublisher.push((appkey, chan, serializedPdu), batchPublish)
+            streams[chan] = streamId
         except Exception as e:
-            await pipelinedPublishers.erasePublisher(appkey, chan)
+            # await publishers.erasePublisher(appkey, chan)  # FIXME
 
             errMsg = f'publish: cannot connect to redis {e}'
             logging.warning(errMsg)
@@ -227,9 +228,9 @@ async def handleSubscribe(
         def log(self, msg):
             self.state.log(msg)
 
-        async def on_init(self, redisConnection, streamExists):
+        async def on_init(self, client, streamExists, streamLength):
             response = self.subscribeResponse
-            if redisConnection is None:
+            if client is None:
                 msgId = response['id']
                 response = {
                     'action': 'rtm/subscribe/error',
@@ -240,7 +241,11 @@ async def handleSubscribe(
                 }
             else:
                 response['body'].update(
-                    {'redis_node': redisConnection.host, 'stream_exists': streamExists}
+                    {
+                        'redis_node': client.host,  # FIXME(redis cluster)
+                        'stream_exists': streamExists,
+                        'stream_length': streamLength,
+                    }
                 )
 
             # Send response. By now
@@ -298,13 +303,12 @@ async def handleSubscribe(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisConnections = RedisConnections(
-        app['redis_urls'], app['redis_password'], app['redis_cluster']
-    )
+    # We need to create a new connection as reading from it will be blocking
+    redisClient = app['redis_clients'].makeRedisClient()
 
     task = asyncio.create_task(
         redisSubscriber(
-            redisConnections,
+            redisClient,
             appChannel,
             position,
             MessageHandlerClass,
