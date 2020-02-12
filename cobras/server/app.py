@@ -12,19 +12,21 @@ import logging
 import time
 import traceback
 import zlib
+import sys
 from urllib.parse import parse_qs, urlparse
 
 import websockets
+
 from cobras.common.apps_config import STATS_APPKEY, AppsConfig
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.version import getVersion
 from cobras.common.banner import getBanner
 from cobras.server.connection_state import ConnectionState
-from cobras.server.pipelined_publishers import PipelinedPublishers
 from cobras.server.protocol import processCobraMessage
-from cobras.server.redis_connections import RedisConnections
 from cobras.server.stats import ServerStats
+from cobras.server.redis_client import RedisClient
+from cobras.server.redis_clients import RedisClients
 
 
 def parseAppKey(path):
@@ -107,7 +109,6 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
     '''Used to validate appkey'''
 
     appsConfig = None
-    redisConnections = None
 
     async def process_request(self, path, request_headers):
 
@@ -119,10 +120,6 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
 
         if path == '/':
             return http.HTTPStatus.OK, [], bytes(getBanner(), 'utf8') + b'\n'
-
-        if path == '/redis':
-            info = await ServerProtocol.redisConnections.getRedisInfo()
-            return http.HTTPStatus.OK, [], bytes(info, 'utf8') + b'\n'
 
         appkey = parseAppKey(path)
         if appkey is None or not ServerProtocol.appsConfig.isAppKeyValid(appkey):
@@ -196,6 +193,13 @@ class AppRunner:
         appsConfig = AppsConfig(appsConfigPath)
         self.app['apps_config'] = appsConfig
 
+        # Create app redis connection handler, one per apps to avoid one busy
+        # app blocking others
+        self.redisClients = RedisClients(
+            redisUrls, redisPassword, redisCluster, appsConfig
+        )
+        self.app['redis_clients'] = self.redisClients
+
         try:
             appsConfig.validateConfig()
         except ValueError as e:
@@ -212,6 +216,37 @@ class AppRunner:
         self.app['channel_max_length'] = appsConfig.getChannelMaxLength()
         self.server = None
 
+    async def waitForAllConnectionsToBeReady(self, timeout: int):
+        start = time.time()
+
+        urls = self.app['redis_urls'].split(';')
+
+        for url in urls:
+            sys.stderr.write(f'Checking {url} ')
+
+            while True:
+                sys.stderr.write('.')
+                sys.stderr.flush()
+
+                try:
+                    redis = RedisClient(
+                        url, self.app['redis_password'], self.app['redis_cluster']
+                    )
+                    await redis.connect()
+                    await redis.ping()
+                    redis.close()
+                    break
+                except Exception:
+                    if time.time() - start > timeout:
+                        sys.stderr.write('\n')
+                        raise
+
+                    waitTime = 0.1
+                    await asyncio.sleep(waitTime)
+                    timeout -= waitTime
+
+            sys.stderr.write('\n')
+
     async def init_app(self):
         '''Example urls:
            * redis://localhost
@@ -222,24 +257,18 @@ class AppRunner:
         redisUrls = self.app['redis_urls']
         redisPassword = self.app['redis_password']
         redisCluster = self.app['redis_cluster']
-        batchPublishSize = self.app['batch_publish_size']
-        channelMaxLength = self.app['channel_max_length']
 
-        # Create redis connection handler, and
-        # wait until all the redis nodes are reachable
-        redisConnections = RedisConnections(redisUrls, redisPassword, redisCluster)
-        self.app['redis_connections'] = redisConnections
         if self.probeRedisOnStartup:
-            await redisConnections.waitForAllConnectionsToBeReady(
+            await self.waitForAllConnectionsToBeReady(
                 timeout=self.redisStartupProbingTimeout
             )
 
-        pipelinedPublishers = PipelinedPublishers(
-            redisConnections, batchPublishSize, channelMaxLength
-        )
-        self.app['pipelined_publishers'] = pipelinedPublishers
+        # Create redis connection handler, and
+        # wait until all the redis nodes are reachable
+        redis = RedisClient(redisUrls, redisPassword, redisCluster)
+        self.app['redis'] = redis
 
-        serverStats = ServerStats(pipelinedPublishers, STATS_APPKEY)
+        serverStats = ServerStats(redis, STATS_APPKEY)
         self.app['stats'] = serverStats
 
         if self.enableStats:
@@ -277,7 +306,6 @@ class AppRunner:
         )
 
         ServerProtocol.appsConfig = self.app['apps_config']
-        ServerProtocol.redisConnections = self.app['redis_connections']
 
         if block:
             async with websockets.serve(
@@ -304,6 +332,10 @@ class AppRunner:
 
     def run(self, stop):
         asyncio.get_event_loop().run_until_complete(self.setup(stop, block=True))
+
+    def closeRedis(self):
+        redis = self.app['redis']
+        redis.close()
 
     async def closeServer(self):
         '''Used by the unittest'''

@@ -2,6 +2,7 @@
 
 import gc
 import os
+import asyncio
 
 import pytest
 from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
@@ -77,3 +78,11 @@ def test_server_mem(debugMemoryRunner):
 
     gc.collect()
     memoryDebugger.collect_stats()
+
+
+async def startAndProbRedisExpectSuccess(runner):
+    await runner.waitForAllConnectionsToBeReady(1)
+
+
+def test_redis_startup_probing_success(runner):
+    asyncio.get_event_loop().run_until_complete(startAndProbRedisExpectSuccess(runner))

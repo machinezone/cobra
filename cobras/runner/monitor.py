@@ -28,6 +28,7 @@ from cobras.common.apps_config import STATS_APPKEY, getDefaultEndpoint, makeUrl
 @click.option('--system', is_flag=True)
 @click.option('--once', is_flag=True)
 @click.option('--tidy', is_flag=True)
+@click.option('--unsafe', is_flag=True)
 def monitor(
     endpoint,
     appkey,
@@ -43,6 +44,7 @@ def monitor(
     system,
     once,
     tidy,
+    unsafe,
 ):
     '''Monitor cobra
     '''
@@ -54,6 +56,8 @@ def monitor(
         hide_nodes = True
         hide_roles = True
         hide_channels = True
+
+    retry = not unsafe
 
     runMonitor(
         url,
@@ -67,4 +71,5 @@ def monitor(
         subscribers,
         system,
         once,
+        retry,
     )
