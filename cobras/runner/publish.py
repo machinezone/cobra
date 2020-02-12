@@ -39,7 +39,12 @@ async def sendEvent(connection, channel, event, connectionId):
     now = datetime.datetime.now().strftime("%H:%M:%S.%f")
     logging.info(f"[{now}][{connectionId}] > {event}")
 
-    await connection.publish(channel, data)
+    channels = [channel]
+    if data.get('id'):
+        channels.append(data.get('id'))
+
+    for chan in channels:
+        await connection.publish(chan, data)
 
 
 async def clientCallback(connection, **args):
