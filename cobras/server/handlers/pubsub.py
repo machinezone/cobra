@@ -8,7 +8,6 @@ import rapidjson as json
 import logging
 from typing import Dict
 
-from cobras.server.redis_connections import RedisConnections
 from cobras.common.cobra_types import JsonDict
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.throttle import Throttle
@@ -64,7 +63,6 @@ async def handlePublish(
     if channels is None:
         channels = [channel]
 
-    batchPublish = app['apps_config'].isBatchPublishEnabled(state.appkey)
     streams = {}
 
     for chan in channels:
@@ -74,15 +72,16 @@ async def handlePublish(
             continue
 
         appkey = state.appkey
-        publishers = app['publishers']
+        redis = app['redis']
 
         try:
-            publisher = await publishers.get(appkey, chan)
+            maxLen = app['channel_max_length']
+            stream = '{}::{}'.format(appkey, chan)
+            streamId = await redis.xadd(stream, 'json', serializedPdu, maxLen)
 
-            streamId = await publisher.push((appkey, chan, serializedPdu), batchPublish)
             streams[chan] = streamId
         except Exception as e:
-            await publishers.erasePublisher(appkey, chan)
+            # await publishers.erasePublisher(appkey, chan)  # FIXME
 
             errMsg = f'publish: cannot connect to redis {e}'
             logging.warning(errMsg)
@@ -245,7 +244,7 @@ async def handleSubscribe(
             else:
                 response['body'].update(
                     {
-                        'redis_node': redisConnection.host,
+                        'redis_node': redisConnection.host,  # FIXME(redis cluster)
                         'stream_exists': streamExists,
                         'stream_length': streamLength,
                     }
@@ -304,9 +303,7 @@ async def handleSubscribe(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisConnections = RedisConnections(app['redis_urls'], app['redis_password'])
-    url = redisConnections.hashChannel(appChannel)
-    redisClient = RedisClient(url, app['redis_password'])
+    redisClient = RedisClient(app['redis_urls'], app['redis_password'])
 
     task = asyncio.create_task(
         redisSubscriber(
