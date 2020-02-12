@@ -13,10 +13,9 @@ from typing import Dict, Optional
 
 from cobras.common.cobra_types import JsonDict
 from cobras.server.connection_state import ConnectionState
-from cobras.server.redis_connections import RedisConnections
 
 
-async def kvStoreRead(connection, stream: str, position: Optional[str], logger):
+async def kvStoreRead(redis, stream: str, position: Optional[str], logger):
     if position is None:
         # Get the last entry written to a stream
         end = '-'
@@ -26,7 +25,7 @@ async def kvStoreRead(connection, stream: str, position: Optional[str], logger):
         end = start
 
     try:
-        results = await connection.xrevrange(stream, start, end, 1)
+        results = await redis.xrevrange(stream, start, end, 1)
         if not results:
             return None
 
@@ -48,22 +47,17 @@ async def handleRead(
     state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
 ):
 
-    connection = None
     body = pdu.get('body', {})
     position = body.get('position')
     channel = body.get('channel')
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisConnections = RedisConnections(
-        app['redis_urls'], app['redis_password'], app['redis_cluster']
-    )
+    redis = app['redis_clients'].makeRedisClient()
 
     try:
-        # Create connection
-        connection = await redisConnections.create(appChannel)
-
-        message = await kvStoreRead(connection, appChannel, position, state.log)
+        # Handle read
+        message = await kvStoreRead(redis, appChannel, position, state.log)
     except Exception as e:
         errMsg = f'read: cannot connect to redis {e}'
         logging.warning(errMsg)
@@ -119,17 +113,15 @@ async def handleWrite(
     message = pdu['body']['message']
 
     appkey = state.appkey
-    pipelinedPublishers = app['pipelined_publishers']
+    redis = app['redis_clients'].getRedisClient(appkey)
 
     try:
-        pipelinedPublisher = await pipelinedPublishers.get(appkey, channel)
+        appChannel = '{}::{}'.format(state.appkey, channel)
 
-        await pipelinedPublisher.publishNow(
-            (appkey, channel, json.dumps(message)), maxLen=1
-        )
+        serializedPdu = json.dumps(message)
+        streamId = await redis.xadd(appChannel, 'json', serializedPdu, maxLen=1)
+
     except Exception as e:
-        await pipelinedPublishers.erasePublisher(appkey, channel)
-
         errMsg = f'write: cannot connect to redis {e}'
         logging.warning(errMsg)
         response = {
@@ -143,7 +135,11 @@ async def handleWrite(
     # Stats
     app['stats'].updateWrites(state.role, len(serializedPdu))
 
-    response = {"action": f"rtm/write/ok", "id": pdu.get('id', 1), "body": {}}
+    response = {
+        "action": f"rtm/write/ok",
+        "id": pdu.get('id', 1),
+        "body": {"stream": streamId},
+    }
     await state.respond(ws, response)
 
 
@@ -165,12 +161,11 @@ async def handleDelete(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
+    appkey = state.appkey
+    redis = app['redis_clients'].getRedisClient(appkey)
+
     try:
-        redisConnections = RedisConnections(
-            app['redis_urls'], app['redis_password'], app['redis_cluster']
-        )
-        redisConnection = await redisConnections.create(appChannel)
-        await redisConnection.delete(appChannel)
+        await redis.delete(appChannel)
     except Exception as e:
         errMsg = f'delete: cannot connect to redis {e}'
         logging.warning(errMsg)
