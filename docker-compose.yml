@@ -9,11 +9,12 @@ services:
     ports:
       - "8765:8765"
     environment:
-      - COBRA_REDIS_URLS=redis://redis1;redis://redis2
+      # FIXME: second nodes in urls are not used
+      - COBRA_REDIS_URLS=redis://redis1
       - COBRA_HOST=0.0.0.0
       - COBRA_PORT=8765
       - COBRA_VERBOSE=1
-      - COBRA_APPS_CONFIG_CONTENT=H4sICHrZZl0AAy5jb2JyYS55YW1sAM2SS47DIAxA9z0FFxgJSElJdySBa4z4GAUpbSNM1etPmFkMixwgXtnPku0n2W4b3i+EfNvwSM+aEZJfK+BfSkjDa2yQHwkxvZ74D78Ivh36nBw0bHu7NeHSkN9ZTZ3Bhqb85FTaAQFWaACCz1DupBM22IkKGrmkxijBIu+GKPnMVc9UX20WsGtZDnTaxkl8nGM3HYc5DiNEarTvpbbUREavszJsqj777v2kA5+2cRIfRbWRXBkIo+DaAuvdzXVhlMFPWjhffbDYggc6DT+JjfEu9D4YbkZKlZ6lvzoPQe0fCFxEdvkBCOnNtEIDAAA=
+      - COBRA_APPS_CONFIG_CONTENT=H4sICPuYRF4AA2Zvby55YW1sAM2SS46DMAxA9z1FLjBSEhoauguQXGOUjyMiUYrioF5/YGYxWXAAvLKfJdtPsl1XfN4I+bbhlZYjIyS/Z8C/lJCKH7FCfiXE9F7wH34R3Bz6nBxUbFvO6Lq5OeFUkd8NVZ3Bhqr85FTqAQFmqACCz1CepBE22IEKGrmkxijBIm+6KPnIVctUezhOYOcynUjWjUtbOsceOnZj7HqI1GjfSm2piYzeR2XYcFjuu/eTTizrxqUtFdVGcmUg9IJrC6x1D9eEXgY/aOH8YYnFFjyRrPilHY13ofXBcNNTqvQo/d15CGr/YeAistsPbCiZW5oDAAA=
       - PYTHONUNBUFFERED=1
       - COBRA_PLUGINS=republish
       - PYTHONPATH=/etc/secret-volume
@@ -22,7 +23,7 @@ services:
       # Run healthcheck externally with:
       # cobra health --rolesecret bb17Ef9Df9Bef0FEc68Ea0Ff104DAF1C
       #
-      interval: 5s
+      interval: 30s
     volumes:
       #
       # To run in an environment similar to kubernete:
@@ -41,8 +42,8 @@ services:
       - redis2
 
   redis1:
-    ports:
-      - "10000:6379"
+    #ports:
+    #  - "10000:6379"
     image: redis:alpine
 
   redis2:
