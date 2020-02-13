@@ -30,8 +30,8 @@ def makeRunner(
     debugMemoryPrintAllTasks = False
 
     if redisUrls is None:
-        redisUrls = 'redis://localhost'
-        # redisUrls = 'redis://localhost:10000'  # to run against a redis cluster
+        # redisUrls = 'redis://localhost'
+        redisUrls = 'redis://localhost:10000'  # to run against a redis cluster
 
     appsConfigPath = tempfile.mktemp()
     appsConfig = AppsConfig(appsConfigPath)

@@ -19,8 +19,6 @@ from rcc.subscriber import (
 )
 from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 
-from rcc.client import RedisClient
-
 
 async def handlePublish(
     state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
@@ -72,7 +70,7 @@ async def handlePublish(
             continue
 
         appkey = state.appkey
-        redis = app['redis']
+        redis = app['redis_clients'].getRedisClient(appkey)
 
         try:
             maxLen = app['channel_max_length']
@@ -303,7 +301,7 @@ async def handleSubscribe(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redisClient = RedisClient(app['redis_urls'], app['redis_password'])
+    redisClient = app['redis_clients'].makeRedisClient()
 
     task = asyncio.create_task(
         redisSubscriber(

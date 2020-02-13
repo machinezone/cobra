@@ -12,11 +12,9 @@ import logging
 import time
 import traceback
 import zlib
-import sys
 from urllib.parse import parse_qs, urlparse
 
 import websockets
-from rcc.client import RedisClient
 
 from cobras.common.apps_config import STATS_APPKEY, AppsConfig
 from cobras.common.memory_debugger import MemoryDebugger
@@ -26,6 +24,7 @@ from cobras.common.banner import getBanner
 from cobras.server.connection_state import ConnectionState
 from cobras.server.protocol import processCobraMessage
 from cobras.server.stats import ServerStats
+from cobras.server.redis_clients import RedisClients
 
 
 def parseAppKey(path):
@@ -190,6 +189,11 @@ class AppRunner:
         appsConfig = AppsConfig(appsConfigPath)
         self.app['apps_config'] = appsConfig
 
+        # Create app redis connection handler, one per apps to avoid one busy
+        # app blocking others
+        self.redisClients = RedisClients(redisUrls, redisPassword, appsConfig)
+        self.app['redis_clients'] = self.redisClients
+
         try:
             appsConfig.validateConfig()
         except ValueError as e:
@@ -206,35 +210,6 @@ class AppRunner:
         self.app['channel_max_length'] = appsConfig.getChannelMaxLength()
         self.server = None
 
-    async def waitForAllConnectionsToBeReady(self, timeout: int):
-        start = time.time()
-
-        urls = self.app['redis_urls'].split(';')
-
-        for url in urls:
-            sys.stderr.write(f'Checking {url} ')
-
-            while True:
-                sys.stderr.write('.')
-                sys.stderr.flush()
-
-                try:
-                    redis = RedisClient(url, self.app['redis_password'])
-                    await redis.connect()
-                    await redis.ping()
-                    redis.close()
-                    break
-                except Exception:
-                    if time.time() - start > timeout:
-                        sys.stderr.write('\n')
-                        raise
-
-                    waitTime = 0.1
-                    await asyncio.sleep(waitTime)
-                    timeout -= waitTime
-
-            sys.stderr.write('\n')
-
     async def init_app(self):
         '''Example urls:
            * redis://localhost
@@ -242,20 +217,15 @@ class AppRunner:
            * redis://172.18.176.220:7379
            * redis://sentryredis-1-002.shared.live.las1.mz-inc.com:6310
         '''
-        redisUrls = self.app['redis_urls']
-        redisPassword = self.app['redis_password']
-
+        # wait until all the redis nodes are reachable
         if self.probeRedisOnStartup:
-            await self.waitForAllConnectionsToBeReady(
+            await self.redisClients.waitForAllConnectionsToBeReady(
                 timeout=self.redisStartupProbingTimeout
             )
 
-        # Create redis connection handler, and
-        # wait until all the redis nodes are reachable
-        redis = RedisClient(redisUrls, redisPassword)
-        self.app['redis'] = redis
-
-        serverStats = ServerStats(redis, STATS_APPKEY)
+        serverStats = ServerStats(
+            self.redisClients.getRedisClient(STATS_APPKEY), STATS_APPKEY
+        )
         self.app['stats'] = serverStats
 
         if self.enableStats:
@@ -305,7 +275,7 @@ class AppRunner:
                 ping_interval=None,
             ) as self.server:
                 await stop
-                self.closeRedis()
+                self.redisClients.closeRedis()
                 await self.cleanup()
         else:
             self.server = await websockets.serve(
@@ -321,10 +291,6 @@ class AppRunner:
     def run(self, stop):
         asyncio.get_event_loop().run_until_complete(self.setup(stop, block=True))
 
-    def closeRedis(self):
-        redis = self.app['redis']
-        redis.close()
-
     async def closeServer(self):
         '''Used by the unittest'''
         # Now close websocket server
@@ -333,6 +299,6 @@ class AppRunner:
 
     def terminate(self):
         '''Used by the unittest'''
-        self.closeRedis()
+        self.redisClients.closeRedis()
         asyncio.get_event_loop().run_until_complete(self.cleanup())
         asyncio.get_event_loop().run_until_complete(self.closeServer())

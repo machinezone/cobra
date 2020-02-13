@@ -81,7 +81,8 @@ def test_server_mem(debugMemoryRunner):
 
 
 async def startAndProbRedisExpectSuccess(runner):
-    await runner.waitForAllConnectionsToBeReady(1)
+    # FIXME / move this test to its own file
+    await runner.redisClients.waitForAllConnectionsToBeReady(1)
 
 
 def test_redis_startup_probing_success(runner):

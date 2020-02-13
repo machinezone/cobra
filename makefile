@@ -79,6 +79,7 @@ docker_tag:
 	docker push ${IMG}
 	oc import-image -n cobra-live cobra:production
 	oc import-image -n cobra-internal cobra:production
+	#oc import-image -n cobra-live cobra-cluster:production
 
 docker:
 	git clean -dfx -e venv -e cobras.egg-info/

@@ -11,8 +11,6 @@ import rapidjson as json
 import logging
 from typing import Dict, Optional
 
-from rcc.client import RedisClient
-
 from cobras.common.cobra_types import JsonDict
 from cobras.server.connection_state import ConnectionState
 
@@ -56,7 +54,7 @@ async def handleRead(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
-    redis = RedisClient(app['redis_urls'], app['redis_password'])
+    redis = app['redis_clients'].makeRedisClient()
 
     try:
         # Handle read
@@ -119,7 +117,7 @@ async def handleWrite(
     # Extract the message. This is what will be published
     message = pdu['body']['message']
 
-    redis = RedisClient(app['redis_urls'], app['redis_password'])
+    redis = app['redis_clients'].makeRedisClient()
 
     try:
         appChannel = '{}::{}'.format(state.appkey, channel)
@@ -166,9 +164,9 @@ async def handleDelete(
         return
 
     appChannel = '{}::{}'.format(state.appkey, channel)
+    redis = app['redis_clients'].makeRedisClient()
 
     try:
-        redis = RedisClient(app['redis_urls'], app['redis_password'])
         await redis.delete(appChannel)
     except Exception as e:
         errMsg = f'delete: cannot connect to redis {e}'
