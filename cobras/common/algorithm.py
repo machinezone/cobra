@@ -16,12 +16,11 @@ def transpose(entries):
 
 def extractAttributeFromDict(subtree, attribute):
     '''extract a subfield'''
-
     if subtree is None:
         return subtree
 
     fieldsComponents = attribute.split('.')
     for component in fieldsComponents:
-        subtree = subtree.get(component, {})
+        subtree = subtree.get(component, {}) or {}
 
     return subtree
