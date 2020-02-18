@@ -21,6 +21,7 @@ COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
 
 RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra
 RUN ln -sf /home/app/.local/bin/rcc /usr/bin/rcc
+
 COPY --chown=app:app . /home/app
 USER app
 WORKDIR /home/app

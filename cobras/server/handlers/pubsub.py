@@ -8,6 +8,7 @@ import rapidjson as json
 import logging
 from typing import Dict
 
+from cobras.common.channel_builder import updateMsg
 from cobras.common.cobra_types import JsonDict
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.throttle import Throttle
@@ -27,10 +28,9 @@ async def handlePublish(
     '''Here we don't write back a result to the client for efficiency.
     Client doesn't really needs it.
     '''
-    # Use plugins to transform input data, if any
-    plugins = app.get('plugins')
-    if plugins is not None:
-        pdu = plugins.updateMsg(state.appkey, pdu)
+    # Potentially add extra channels with channel builder rules
+    rules = app['apps_config'].getChannelBuilderRules(state.appkey)
+    pdu = updateMsg(rules, pdu)
 
     # Missing message
     message = pdu.get('body', {}).get('message')

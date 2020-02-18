@@ -157,6 +157,13 @@ class AppsConfig:
         role = roles.get(roleName, {})
         return role.get('secret', '')
 
+    def getChannelBuilderRules(self, app) -> list:
+        try:
+            rules = self.data['apps'][app].get('channel_builder', {})
+            return rules
+        except KeyError:
+            return []
+
 
 def generateAppsConfig(apps_config_path_content) -> str:
     tempPath = tempfile.mktemp(suffix='_apps.yaml')

@@ -2,9 +2,9 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
-    -   id: check-yaml
-    -   id: check-json
-        args: [--no-sort-keys]
+      # -   id: check-json
+      #-   id: check-yaml
+      #  args: [--no-sort-keys]
     -   id: pretty-format-json
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
