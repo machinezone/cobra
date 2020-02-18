@@ -17,6 +17,9 @@ RUN apk add --no-cache libstdc++
 RUN apk add --no-cache curl
 RUN apk add --no-cache ca-certificates
 
+# install busybox-extras for telnet
+RUN apk add --no-cache busybox-extras
+
 COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
 
 RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra
