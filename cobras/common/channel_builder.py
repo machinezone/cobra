@@ -49,7 +49,13 @@ def updateMsg(rules, msg):
                 logging.warning(f'Invalid compose2 rule \'{rule}\'')
             else:
                 field1 = extractAttributeFromDict(message, field1)
+                if field1 is None or field1 == {}:
+                    continue
+
                 field2 = extractAttributeFromDict(message, field2)
+                if field2 is None or field2 == {}:
+                    continue
+
                 channel = f'{field1}{separator}{field2}'
         elif kind == 'add':
             channel = rule.get('channel')
