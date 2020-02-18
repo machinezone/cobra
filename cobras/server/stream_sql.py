@@ -7,6 +7,8 @@ import collections
 import fnmatch
 import logging
 
+from cobras.common.algorithm import extractAttributeFromDict
+
 StreamSQLExpression = collections.namedtuple(
     'StreamSQLExpression',
     [
@@ -222,11 +224,7 @@ class StreamSqlFilter:
         ret = {}
         fields = self.fields.split(',')
         for field in fields:
-            subtree = dict(msg)
-            fieldsComponents = field.split('.')
-            for component in fieldsComponents:
-                subtree = subtree.get(component, {})
-
+            subtree = extractAttributeFromDict(dict(msg), field)
             ret.update({field: subtree})
 
         return ret

@@ -12,3 +12,13 @@ def transpose(entries):
         return []
 
     return list(map(list, zip(*entries)))
+
+
+def extractAttributeFromDict(subtree, attribute):
+    '''extract a subfield'''
+
+    fieldsComponents = attribute.split('.')
+    for component in fieldsComponents:
+        subtree = subtree.get(component, {})
+
+    return subtree
