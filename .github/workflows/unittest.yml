@@ -13,9 +13,18 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
+    - name: Install redis
+      run: |
+        sudo apt install build-essential
+        sudo apt-get install redis-server
+        curl -O http://download.redis.io/redis-stable.tar.gz
+        tar xzvf redis-stable.tar.gz
+        cd redis-stable
+        make
+        sudo make install
+        sudo systemctl restart redis
     - name: Install dependencies
       run: |
-        sudo apt-get install redis-server
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Lint with flake8
