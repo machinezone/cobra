@@ -1,0 +1,8 @@
+server1: redis-server server1.conf --protected-mode no --cluster-enabled yes --port 10000
+server2: redis-server server2.conf --protected-mode no --cluster-enabled yes --port 10001
+server3: redis-server server3.conf --protected-mode no --cluster-enabled yes --port 10002
+server4: redis-server server4.conf --protected-mode no --cluster-enabled yes --port 10003
+server5: redis-server server5.conf --protected-mode no --cluster-enabled yes --port 10004
+server6: redis-server server6.conf --protected-mode no --cluster-enabled yes --port 10005
+server7: redis-server server7.conf --protected-mode no --cluster-enabled yes --port 10006
+server8: redis-server server8.conf --protected-mode no --cluster-enabled yes --port 10007

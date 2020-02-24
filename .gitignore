@@ -1,0 +1,15 @@
+rcc.egg-info/
+.DS_Store
+venv/
+__pycache__
+dist
+*.pyc
+*.swp
+.pytest_cache
+.mypy_cache/
+.coverage
+htmlcov/
+coverage.xml
+.env
+site/
+weights.csv

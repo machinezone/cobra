@@ -1,0 +1,80 @@
+# Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
+
+version: "3"
+services:
+  web:
+    image: ${DOCKER_REPO}/cobra:build
+    ports:
+      - "8765:8765"
+    environment:
+      - COBRA_REDIS_STARTUP_PROBING_TIMEOUT=3600
+      - COBRA_REDIS_URLS=redis://proxy:7777
+      - COBRA_HOST=0.0.0.0
+      - COBRA_PORT=8765
+      - COBRA_VERBOSE=1
+      - COBRA_APPS_CONFIG_CONTENT=H4sICHrZZl0AAy5jb2JyYS55YW1sAM2SS47DIAxA9z0FFxgJSElJdySBa4z4GAUpbSNM1etPmFkMixwgXtnPku0n2W4b3i+EfNvwSM+aEZJfK+BfSkjDa2yQHwkxvZ74D78Ivh36nBw0bHu7NeHSkN9ZTZ3Bhqb85FTaAQFWaACCz1DupBM22IkKGrmkxijBIu+GKPnMVc9UX20WsGtZDnTaxkl8nGM3HYc5DiNEarTvpbbUREavszJsqj777v2kA5+2cRIfRbWRXBkIo+DaAuvdzXVhlMFPWjhffbDYggc6DT+JjfEu9D4YbkZKlZ6lvzoPQe0fCFxEdvkBCOnNtEIDAAA=
+      - PYTHONUNBUFFERED=1
+      - COBRA_PLUGINS=republish
+      - PYTHONPATH=/etc/secret-volume
+    healthcheck:
+      interval: 5s
+    volumes:
+      #
+      # To run in an environment similar to kubernete:
+      # 1. mkdir /tmp/volume_cobra
+      # 2. make sure /tmp is 'mountable' in Docker desktop
+      # 3. run: cobra init
+      # 4. cp $HOME/.cobra.yaml /tmp/volume_cobra/apps.yaml
+      #    That file will be seen as /etc/secret-volume/apps.yaml in the container ran by docker-compose
+      #
+      # Alternatively, you can set COBRA_APPS_CONFIG_CONTENT.
+      # Note: we could set ${PWD} for the local (dev machine) folder to be mounted, and check-in a cobra config file
+      #
+      - /tmp/volume_cobra:/etc/secret-volume
+    depends_on:
+      - proxy
+
+  redis1:
+    image: redis:alpine
+    ports:
+      - "10000:6379"
+    command: ["redis-server", "--cluster-enabled", "yes"]
+
+  redis2:
+    image: redis:alpine
+    ports:
+      - "11000:6379"
+    command: ["redis-server", "--cluster-enabled", "yes"]
+
+  redis3:
+    image: redis:alpine
+    ports:
+      - "12000:6379"
+    command: ["redis-server", "--cluster-enabled", "yes"]
+
+  # cluster_init:
+  #   image: redis:alpine
+  #   entrypoint: sh -c "sleep 1 && yes | redis-cli --cluster create `getent hosts redis1 | cut -d ' ' -f1`:6379 `getent hosts redis2 | cut -d ' ' -f1`:6379 `getent hosts redis3 | cut -d ' ' -f1`:6379 && watch sleep 1"
+  #   depends_on:
+  #     - redis1
+  #     - redis2
+  #     - redis3
+
+  proxy:
+    image: bsergean/redis-cluster-proxy:build
+    entrypoint: python3 /home/app/host_cwd/init_cluster.py
+    volumes:
+      - $PWD:/home/app/host_cwd
+    ports:
+      - "7777:7777"
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis1
+      - redis2
+      - redis3
+
+  #
+  # https://rancher.com/blog/2019/deploying-redis-cluster/
+  # https://pingredis.blogspot.com/2016/09/redis-cluster-how-to-create-cluster.html
+  #
