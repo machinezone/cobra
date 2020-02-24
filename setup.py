@@ -24,13 +24,15 @@ dev_requires = ["wheel", "isort", "mypy", "twine", "black", "pre-commit"]
 with open("requirements.txt") as f:
     install_requires = f.read().splitlines()
 
+DESC = "A simple asyncio redis client with cluster support and a resharding cli tool."
+
 setup(
     name="rcc",
     version=VERSION,
     author="Benjamin Sergeant",
     author_email="bsergean@gmail.com",
-    url="https://github.com/bsergean/rcc",
-    description="A simple Redis client.",
+    url="https://github.com/machinezone/rcc",
+    description=DESC,
     long_description=open(os.path.join(ROOT, "README.md")).read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=["tests"]),
