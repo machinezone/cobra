@@ -3,6 +3,8 @@
 Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 '''
 import asyncio
+import logging
+
 import click
 
 from rcc.cluster.info import printRedisClusterInfoCoro
@@ -18,4 +20,7 @@ def cluster_nodes(redis_urls, role):
     rcc cluster-nodes
     '''
 
-    asyncio.run(printRedisClusterInfoCoro(redis_urls, role))
+    try:
+        asyncio.run(printRedisClusterInfoCoro(redis_urls, role))
+    except Exception as e:
+        logging.error(f'cluster_nodes error: {e}')
