@@ -77,7 +77,7 @@ async def runServer(root, startPort):
         stdout, stderr = await proc.communicate()
     except asyncio.CancelledError:
         print('Cancelling honcho')
-        await proc.terminate()
+        proc.terminate()
 
 
 async def initCluster(cmd):
