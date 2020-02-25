@@ -22,7 +22,7 @@ def makeClientfromNode(node):
     return RedisClient(url, '')  # FIXME password
 
 
-async def migrateSlot(masterNodes, slot, sourceNode, destinationNode, dry=False):
+async def migrateSlot(masterClients, slot, sourceNode, destinationNode, dry=False):
     '''Migrate a slot to a node'''
     logging.info(
         f'migrate from {sourceNode.node_id} to {destinationNode.node_id} slot [{slot}]'
@@ -81,8 +81,7 @@ async def migrateSlot(masterNodes, slot, sourceNode, destinationNode, dry=False)
     # 4. Use CLUSTER SETSLOT <slot> NODE <destination-node-id> in the source or
     #    destination.
     # set the slot owner for every node in the cluster
-    for node in masterNodes:
-        client = makeClientfromNode(node)
+    for client in masterClients:
         try:
             await client.send(
                 'CLUSTER', 'SETSLOT', slot, 'NODE', destinationNode.node_id
@@ -107,6 +106,7 @@ async def binPackingReshardCoroutine(redis_urls, weights, dry=False, nodeId=None
 
     # There will be as many bins as there are master nodes
     masterNodes = [node for node in nodes if node.role == 'master']
+    masterClients = [makeClientfromNode(node) for node in masterNodes]
     binCount = len(masterNodes)
 
     # We need to know where each slots lives
@@ -154,7 +154,7 @@ async def binPackingReshardCoroutine(redis_urls, weights, dry=False, nodeId=None
             sourceNode = slotToNodes[slot]
             if sourceNode.node_id != node.node_id:
 
-                ret = await migrateSlot(masterNodes, slot, sourceNode, node, dry)
+                ret = await migrateSlot(masterClients, slot, sourceNode, node, dry)
                 if not ret:
                     return False
 

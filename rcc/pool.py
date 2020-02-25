@@ -17,3 +17,7 @@ class ConnectionPool(object):
             self.connections[url] = connection
 
         return self.connections[url]
+
+    def flush(self):
+        for connection in self.connections.values():
+            connection.close()

@@ -32,6 +32,13 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
         self.connection = self.pool.get(self.url)
         self.cluster = False
 
+    def __del__(self):
+        '''
+        It is a smell that we have to do this manually,
+        but without it we get a big resource leak
+        '''
+        self.close()
+
     @property
     def host(self):
         return self.connection.host
@@ -61,8 +68,7 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
         return response
 
     def close(self):
-        # FIXME
-        pass
+        self.pool.flush()
 
     async def getConnection(self, key):
         hashSlot = None

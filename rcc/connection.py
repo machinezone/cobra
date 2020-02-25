@@ -72,10 +72,12 @@ class Connection(object):
         try:
             if self.writer.can_write_eof():
                 self.writer.write_eof()
+
+            # ugly null check prevent errors when cancelling something with Ctrl-C
+            if self.writer is not None:
+                self.writer.close()
         except Exception:
             pass
-
-        self.writer.close()
 
         self.reader = None
         self.writer = None
