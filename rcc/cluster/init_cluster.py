@@ -5,10 +5,14 @@ Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 import os
+import sys
+import time
+import logging
 
 import click
 
 from rcc.cluster.info import clusterCheck
+from rcc.client import RedisClient
 
 
 def makeServerConfig(root, startPort=11000, masterNodeCount=3):
@@ -46,7 +50,28 @@ def makeServerConfig(root, startPort=11000, masterNodeCount=3):
     return clusterInitCmd
 
 
-async def runServer(root):
+async def runServer(root, startPort):
+    # first start by making sure that all ports are free.
+    # There is still room for data race but it's better than nothing
+
+    for port in range(startPort, startPort + 6):
+        while True:
+            sys.stderr.write('.')
+            sys.stderr.flush()
+
+            cmd = f'nc -vz localhost {port} 2> /dev/null'
+            ret = os.system(cmd)
+
+            if ret == 0:
+                # if we can connect it's not good, wait a bit, or
+                # we could straight out error out
+                await asyncio.sleep(0.1)
+            else:
+                break
+
+    sys.stderr.write('\n')
+    print('Free ports')
+
     try:
         os.chdir(root)
         proc = await asyncio.create_subprocess_shell('honcho start')
@@ -61,21 +86,63 @@ async def initCluster(cmd):
     stdout, stderr = await proc.communicate()
 
 
+# FIXME: cobra could use this version
+async def waitForAllConnectionsToBeReady(urls, password, timeout: int):
+    start = time.time()
+
+    for url in urls:
+        sys.stderr.write(f'Checking {url} ')
+
+        while True:
+            sys.stderr.write('.')
+            sys.stderr.flush()
+
+            try:
+                redis = RedisClient(url, password)
+                await redis.connect()
+                await redis.send('PING')
+                redis.close()
+                break
+            except Exception as e:
+                if time.time() - start > timeout:
+                    sys.stderr.write('\n')
+                    raise
+
+                logging.warning(e)
+
+                waitTime = 0.1
+                await asyncio.sleep(waitTime)
+                timeout -= waitTime
+
+        sys.stderr.write('\n')
+
+
 async def runNewCluster(root, startPort, size):
     size = int(size)
 
     initCmd = makeServerConfig(root, startPort, size)
 
     try:
-        task = asyncio.create_task(runServer(root))
-        await asyncio.sleep(1)
+        task = asyncio.create_task(runServer(root, startPort))
 
+        # Check that all connections are ready
+        urls = [
+            f'redis://localhost:{port}' for port in range(startPort, startPort + size)
+        ]
+        await waitForAllConnectionsToBeReady(urls, password='', timeout=5)
+
+        # Initialize the cluster (master/slave assignments, etc...)
         await initCluster(initCmd)
 
         # We just initialized the cluster, wait until it is 'consistent' and good to use
         redisUrl = f'redis://localhost:{startPort}'
         while True:
-            ret = await clusterCheck(redisUrl)
+            ret = False
+            try:
+                ret = await clusterCheck(redisUrl)
+            except Exception:
+                pass
+
             if ret:
                 break
 
