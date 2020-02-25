@@ -12,6 +12,7 @@ import uuid
 from rcc.cluster.init_cluster import runNewCluster
 from rcc.cluster.keyspace_analyzer import analyzeKeyspace
 from rcc.cluster.reshard import binPackingReshardCoroutine
+from rcc.cluster.info import getClusterSignature, clusterCheck
 
 from test_utils import makeClient
 
@@ -35,7 +36,7 @@ async def checkStrings(client):
     assert not exists
 
 
-async def runClusterCheck(port):
+async def runRedisCliClusterCheck(port):
     cmd = f'redis-cli --cluster check localhost:{port}'
 
     proc = await asyncio.create_subprocess_shell(cmd)
@@ -44,19 +45,19 @@ async def runClusterCheck(port):
 
 async def coro():
     root = tempfile.mkdtemp()
-    readyFile = os.path.join(root, 'ready')
+    clusterReadyFile = os.path.join(root, 'redis_cluster_ready')
     startPort = 12000
     task = asyncio.create_task(runNewCluster(root, startPort, size=3))
 
-    while not os.path.exists(readyFile):
-        await asyncio.sleep(1)
+    # Wait until cluster is initialized
+    while not os.path.exists(clusterReadyFile):
+        await asyncio.sleep(0.1)
 
     client = makeClient(startPort)
     await checkStrings(client)
 
     # now analyze keyspace for 3 seconds
-    redis_url = f'redis://localhost:{startPort}'
-    task = asyncio.create_task(analyzeKeyspace(redis_url, 3))
+    task = asyncio.create_task(analyzeKeyspace(redisUrl, 3))
 
     # wait a tiny bit so that the analyzer is ready
     # (it needs to make a couple of pubsub subscriptions)
@@ -85,12 +86,16 @@ async def coro():
     weights = task.result()
 
     print('weights', weights)
+    signature, _ = await getClusterSignature(redisUrl)
 
-    ret = await binPackingReshardCoroutine(redis_url, weights)
+    ret = await binPackingReshardCoroutine(redisUrl, weights)
     assert ret
 
+    newSignature, _ = await getClusterSignature(redisUrl)
+    assert signature != newSignature
+
     # Now run cluster check
-    await runClusterCheck(startPort)
+    await runRedisCliClusterCheck(startPort)
 
     # Validate that we can read back what we wrote, after resharding
     for i in range(1, 100):
@@ -103,7 +108,7 @@ async def coro():
 
     # Do another reshard. This one shoudl be a no-op
     # This should return statistics about the resharding
-    await binPackingReshardCoroutine(redis_url, weights)
+    await binPackingReshardCoroutine(redisUrl, weights)
 
 
 def test_reshard():

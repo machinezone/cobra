@@ -80,17 +80,16 @@ async def migrateSlot(masterNodes, slot, sourceNode, destinationNode, dry=False)
 
     # 4. Use CLUSTER SETSLOT <slot> NODE <destination-node-id> in the source or
     #    destination.
-    try:
-        # set the slot owner for every node in the cluster
-        for node in masterNodes:
-            client = makeClientfromNode(node)
+    # set the slot owner for every node in the cluster
+    for node in masterNodes:
+        client = makeClientfromNode(node)
+        try:
             await client.send(
                 'CLUSTER', 'SETSLOT', slot, 'NODE', destinationNode.node_id
             )
-
-    except Exception as e:
-        logging.error(f'error with SETSLOT NODE command: {e}')
-        return False
+        except Exception as e:
+            logging.error(f'error with SETSLOT NODE command: {e}')
+            return False
 
     return True
 

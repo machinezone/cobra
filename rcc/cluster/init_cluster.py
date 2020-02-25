@@ -6,6 +6,10 @@ Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 import asyncio
 import os
 
+import click
+
+from rcc.cluster.info import clusterCheck
+
 
 def makeServerConfig(root, startPort=11000, masterNodeCount=3):
 
@@ -68,7 +72,19 @@ async def runNewCluster(root, startPort, size):
 
         await initCluster(initCmd)
 
-        path = os.path.join(root, 'ready')
+        # We just initialized the cluster, wait until it is 'consistent' and good to use
+        redisUrl = f'redis://localhost:{startPort}'
+        while True:
+            ret = await clusterCheck(redisUrl)
+            if ret:
+                break
+
+            print('Waiting for cluster to be consistent...')
+            await asyncio.sleep(1)
+
+        click.secho('Cluster ready !', fg='green')
+
+        path = os.path.join(root, 'redis_cluster_ready')
         with open(path, 'w') as f:
             f.write('cluster ready')
 

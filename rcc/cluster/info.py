@@ -3,6 +3,7 @@
 Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 '''
 
+import collections
 import hashlib
 import logging
 
@@ -82,16 +83,18 @@ async def getClusterSignature(redisUrl):
     redisClient = RedisClient(redisUrl, '')
     nodes = await redisClient.cluster_nodes()
 
+    roles = collections.defaultdict(int)
+
     signature = ''
     for node in nodes:
-        if node.role != 'master':
-            continue
+        roles[node.role] += 1
 
         slotRange = getSlotsRange(node.slots)
         tokens = [node.node_id, node.ip + ':' + node.port, node.role, slotRange]
         signature += ' '.join(tokens) + '\n'
 
-    return signature
+    balanced = roles['master'] <= roles['slave']
+    return signature, balanced
 
 
 async def getClusterUrls(redisUrl):
@@ -116,9 +119,13 @@ async def clusterCheck(redisUrl, verbose=False):
 
     signatures = set()
 
+    allBalanced = True
+
     for url in urls:
-        signature = await getClusterSignature(url)
+        signature, balanced = await getClusterSignature(url)
         signatures.add(signature)
+
+        balanced = allBalanced and balanced
 
         cksum = hashlib.md5(signature.encode('utf-8')).hexdigest()
 
@@ -127,4 +134,4 @@ async def clusterCheck(redisUrl, verbose=False):
 
     logging.info(f'{len(signatures)} different signatures')
 
-    return len(signatures) == 1
+    return len(signatures) == 1 and allBalanced
