@@ -1,7 +1,7 @@
 # General
 
 [![PyPI version](https://badge.fury.io/py/rcc.svg)](https://badge.fury.io/py/rcc)
-[![Build Status](https://travis-ci.org/machinezone/cobra.svg?branch=master)](https://travis-ci.org/machinezone/cobra)
+![Build status](https://github.com/machinezone/rcc/workflows/unittest/badge.svg)
 [![PyPI Python Versions](https://img.shields.io/pypi/pyversions/rcc.svg)](https://img.shields.io/pypi/pyversions/rcc)
 [![License](https://img.shields.io/pypi/l/rcc.svg)](https://img.shields.io/pypi/l/rcc)
 [![Wheel](https://img.shields.io/pypi/wheel/rcc.svg)](https://img.shields.io/pypi/wheel/rcc)
