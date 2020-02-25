@@ -73,8 +73,7 @@ async def runServer(root, startPort):
     print('Free ports')
 
     try:
-        os.chdir(root)
-        proc = await asyncio.create_subprocess_shell('honcho start')
+        proc = await asyncio.create_subprocess_shell('honcho start', cwd=root)
         stdout, stderr = await proc.communicate()
     except asyncio.CancelledError:
         print('Cancelling honcho')
