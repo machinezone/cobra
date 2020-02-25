@@ -22,7 +22,5 @@ def analyze_keyspace(redis_url, port, redis_password, timeout, path):
     rcc analyze-keyspace --redis_url redis://localhost:10000 --timeout 60
     '''
 
-    weights = asyncio.run(
-        analyzeKeyspace(redis_url, timeout)
-    )
+    weights = asyncio.run(analyzeKeyspace(redis_url, timeout))
     writeWeightsToCsv(weights, path)

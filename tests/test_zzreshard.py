@@ -12,7 +12,7 @@ import uuid
 from rcc.cluster.init_cluster import runNewCluster
 from rcc.cluster.keyspace_analyzer import analyzeKeyspace
 from rcc.cluster.reshard import binPackingReshardCoroutine
-from rcc.cluster.info import getClusterSignature, clusterCheck
+from rcc.cluster.info import getClusterSignature
 
 from test_utils import makeClient
 
@@ -47,6 +47,7 @@ async def coro():
     root = tempfile.mkdtemp()
     clusterReadyFile = os.path.join(root, 'redis_cluster_ready')
     startPort = 12000
+    redisUrl = f'redis://localhost:{startPort}'
     task = asyncio.create_task(runNewCluster(root, startPort, size=3))
 
     # Wait until cluster is initialized

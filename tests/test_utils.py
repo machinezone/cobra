@@ -3,11 +3,7 @@
 Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 '''
 
-import os
-import tempfile
-
 from rcc.client import RedisClient
-from rcc.cluster.init_cluster import runNewCluster
 
 
 def makeClient(port=None):
