@@ -51,27 +51,6 @@ def makeServerConfig(root, startPort=11000, masterNodeCount=3):
 
 
 async def runServer(root, startPort):
-    # first start by making sure that all ports are free.
-    # There is still room for data race but it's better than nothing
-
-    for port in range(startPort, startPort + 6):
-        while True:
-            sys.stderr.write('.')
-            sys.stderr.flush()
-
-            cmd = f'nc -vz localhost {port} 2> /dev/null'
-            ret = os.system(cmd)
-
-            if ret == 0:
-                # if we can connect it's not good, wait a bit, or
-                # we could straight out error out
-                await asyncio.sleep(0.1)
-            else:
-                break
-
-    sys.stderr.write('\n')
-    print('Free ports')
-
     try:
         proc = await asyncio.create_subprocess_shell('honcho start', cwd=root)
         stdout, stderr = await proc.communicate()
@@ -83,6 +62,34 @@ async def runServer(root, startPort):
 async def initCluster(cmd):
     proc = await asyncio.create_subprocess_shell(cmd)
     stdout, stderr = await proc.communicate()
+
+
+async def checkOpenedPort(portRange, timeout: int):
+    # start by making sure that all ports are free.
+    # There is still room for data race but it's better than nothing
+    start = time.time()
+
+    for port in portRange:
+        while True:
+            sys.stderr.write('.')
+            sys.stderr.flush()
+
+            if time.time() - start > timeout:
+                sys.stderr.write('\n')
+                raise ValueError(f'Timeout trying to check opened ports {portRange}')
+
+            # FIXME there's probably a more portable thing that using nc
+            cmd = f'nc -vz -w 1 localhost {port} 2> /dev/null'
+            ret = os.system(cmd)
+
+            if ret == 0:
+                # if we can connect it's not good, wait a bit, or
+                # we could straight out error out
+                await asyncio.sleep(0.1)
+            else:
+                break
+
+    sys.stderr.write('\n')
 
 
 # FIXME: cobra could use this version
@@ -119,21 +126,32 @@ async def waitForAllConnectionsToBeReady(urls, password, timeout: int):
 async def runNewCluster(root, startPort, size):
     size = int(size)
 
+    portRange = [port for port in range(startPort, startPort + 2 * size)]
+    click.secho(f'1/6 Creating server config for range {portRange}', bold=True)
+
     initCmd = makeServerConfig(root, startPort, size)
 
+    click.secho('2/6 Check that ports are opened', bold=True)
+    await checkOpenedPort(portRange, timeout=10)
+
     try:
+        click.secho(f'3/6 Configuring and running', bold=True)
         task = asyncio.create_task(runServer(root, startPort))
 
         # Check that all connections are ready
+        click.secho(f'4/6 Wait for the cluster nodes to be running', bold=True)
         urls = [
             f'redis://localhost:{port}' for port in range(startPort, startPort + size)
         ]
         await waitForAllConnectionsToBeReady(urls, password='', timeout=5)
 
         # Initialize the cluster (master/slave assignments, etc...)
+        click.secho(f'5/6 Initialize the cluster', bold=True)
         await initCluster(initCmd)
 
         # We just initialized the cluster, wait until it is 'consistent' and good to use
+        click.secho(f'6/6 Wait for all cluster nodes to be consistent', bold=True)
+
         redisUrl = f'redis://localhost:{startPort}'
         while True:
             ret = False

@@ -109,12 +109,6 @@ async def binPackingReshardCoroutine(redis_urls, weights, dry=False, nodeId=None
     masterClients = [makeClientfromNode(node) for node in masterNodes]
     binCount = len(masterNodes)
 
-    # We need to know where each slots lives
-    slotToNodes = {}
-    for node in masterNodes:
-        for slot in node.slots:
-            slotToNodes[slot] = node
-
     # Run the bin packing algorithm
     bins = to_constant_bin_number(weights, binCount)
 
@@ -130,7 +124,8 @@ async def binPackingReshardCoroutine(redis_urls, weights, dry=False, nodeId=None
         binSlots.sort()
         slots.append(binSlots)
 
-    verbose = False
+    # We need to know where each slots lives
+    slotToNodes = await getSlotsToNodesMapping(redis_urls)
 
     totalMigratedSlots = 0
 
@@ -142,15 +137,15 @@ async def binPackingReshardCoroutine(redis_urls, weights, dry=False, nodeId=None
         if nodeId is not None and node.node_id != nodeId:
             continue
 
-        if verbose:
-            print(binSlots)
-            for slot in binSlots:
-                sourceNode = slotToNodes[slot]
-                print(f'{slot} owned by {sourceNode.node_id}')
-            print()
-
         for slot in binSlots:
+            sourceNode = slotToNodes[slot]
+            logging.debug(f'{slot} owned by {sourceNode.node_id}')
+
+        # Migrate each slot
+        for slot in binSlots:
+            # recompute the slots to node mapping after each node migration
             slotToNodes = await getSlotsToNodesMapping(redis_urls)
+
             sourceNode = slotToNodes[slot]
             if sourceNode.node_id != node.node_id:
 
