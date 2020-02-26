@@ -84,6 +84,7 @@ async def getClusterSignature(redisUrl):
     nodes = await redisClient.cluster_nodes()
 
     roles = collections.defaultdict(int)
+    allSlots = set()
 
     signature = ''
     for node in nodes:
@@ -93,8 +94,13 @@ async def getClusterSignature(redisUrl):
         tokens = [node.node_id, node.ip + ':' + node.port, node.role, slotRange]
         signature += ' '.join(tokens) + '\n'
 
+        for slot in node.slots:
+            allSlots.add(slot)
+
+    fullCoverage = len(allSlots) == 16384
     balanced = roles['master'] <= roles['slave']
-    return signature, balanced
+
+    return signature, balanced, fullCoverage
 
 
 async def getClusterUrls(redisUrl):
@@ -120,18 +126,20 @@ async def clusterCheck(redisUrl, verbose=False):
     signatures = set()
 
     allBalanced = True
+    allCovered = True
 
     for url in urls:
-        signature, balanced = await getClusterSignature(url)
+        signature, balanced, fullCoverage = await getClusterSignature(url)
         signatures.add(signature)
 
-        balanced = allBalanced and balanced
+        allBalanced = allBalanced and balanced
+        allCovered = allCovered and fullCoverage
 
         cksum = hashlib.md5(signature.encode('utf-8')).hexdigest()
 
-        logging.info(f'{url} {cksum}')
+        logging.info(f'{url} {cksum} balanced {balanced} coverage {fullCoverage}')
         logging.info('\n' + signature)
 
-    logging.info(f'{len(signatures)} different signatures')
+    logging.info(f'{len(signatures)} unique signatures')
 
-    return len(signatures) == 1 and allBalanced
+    return len(signatures) == 1 and allBalanced and allCovered

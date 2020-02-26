@@ -18,7 +18,7 @@ async def checkCluster(redis_urls):
         return
 
     if ok:
-        click.secho('cluster ok', fd='green')
+        click.secho('cluster ok', fg='green')
     else:
         click.secho('cluster unhealthy. Re-run with -v', fg='red')
 

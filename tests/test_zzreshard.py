@@ -87,13 +87,17 @@ async def coro():
     weights = task.result()
 
     print('weights', weights)
-    signature, _ = await getClusterSignature(redisUrl)
+    signature, balanced, fullCoverage = await getClusterSignature(redisUrl)
+    assert balanced
+    assert fullCoverage
 
     ret = await binPackingReshardCoroutine(redisUrl, weights)
     assert ret
 
-    newSignature, _ = await getClusterSignature(redisUrl)
+    newSignature, balanced, fullCoverage = await getClusterSignature(redisUrl)
     assert signature != newSignature
+    assert balanced
+    assert fullCoverage
 
     # Now run cluster check
     await runRedisCliClusterCheck(startPort)
