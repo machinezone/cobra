@@ -1,8 +1,17 @@
 '''Resharding tool
 
-See this too https://github.com/projecteru/redis-trib.py
-
 Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
+
+There is a cluster-tool python project at https://github.com/projecteru/redis-trib.py
+Which contains a migrate slot tool. It has different dependencies so we do not use it
+
+cmd = '/Users/bsergeant/sandbox/venv/bin/redis-trib.py migrate'
+cmd += ' --src-addr ' + f'{sourceNode.ip}:{sourceNode.port}'
+cmd += ' --dst-addr ' + f'{destinationNode.ip}:{destinationNode.port}'
+cmd += ' '            + f'{slot}'
+print(cmd)
+ret = os.system(cmd)
+return ret == 0
 '''
 
 import asyncio
@@ -37,14 +46,6 @@ async def migrateSlot(masterClients, slot, sourceNode, destinationNode, dry=Fals
     sourceClient = makeClientfromNode(sourceNode)
     destinationClient = makeClientfromNode(destinationNode)
 
-    # cmd = '/Users/bsergeant/sandbox/venv/bin/redis-trib.py migrate'
-    # cmd += ' --src-addr ' + f'{sourceNode.ip}:{sourceNode.port}'
-    # cmd += ' --dst-addr ' + f'{destinationNode.ip}:{destinationNode.port}'
-    # cmd += ' '            + f'{slot}'
-    # print(cmd)
-    # ret = os.system(cmd)
-    # return ret == 0
-
     # 1. Set the destination node slot to importing state using CLUSTER SETSLOT
     #    <slot> IMPORTING <source-node-id>.
     try:
@@ -67,16 +68,27 @@ async def migrateSlot(masterClients, slot, sourceNode, destinationNode, dry=Fals
 
     # 3. Get keys from the source node with CLUSTER GETKEYSINSLOT command and
     #    move them into the destination node using the MIGRATE command.
-    # FIXME / we need to repeat this process / make this scalable etc...
-    keys = await sourceClient.send('CLUSTER', 'GETKEYSINSLOT', slot, 1000)
+    while True:
 
-    timeout = 5000  # 5 seconds
-    db = 0
-    if len(keys) > 0:
+        # Migrate 100 keys at a time
+        batchSize = 100
+        keys = await sourceClient.send('CLUSTER', 'GETKEYSINSLOT', slot, batchSize)
+
+        if len(keys) == 0:
+            break
+
         print('migrating', len(keys), 'keys')
         host = destinationNode.ip
         port = destinationNode.port
-        await sourceClient.send('MIGRATE', host, port, "", db, timeout, "KEYS", *keys)
+        db = 0
+        timeout = 5000  # 5 seconds timeout
+        try:
+            await sourceClient.send(
+                'MIGRATE', host, port, "", db, timeout, "KEYS", *keys
+            )
+        except Exception as e:
+            logging.error(f'error with MIGRATE command: {e}')
+            return False
 
     # 4. Use CLUSTER SETSLOT <slot> NODE <destination-node-id> in the source or
     #    destination.
