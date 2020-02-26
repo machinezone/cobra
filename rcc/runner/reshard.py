@@ -17,7 +17,8 @@ DEFAULT_WEIGHTS_PATH = 'weights.csv'
 @click.option('--weight', '-w', required=True, default=DEFAULT_WEIGHTS_PATH)
 @click.option('--dry', is_flag=True)
 @click.option('--node_id')
-def reshard(port, redis_url, weight, dry, node_id):
+@click.option('--timeout', default=15, help='Max time to wait for consistency check')
+def reshard(port, redis_url, weight, timeout, dry, node_id):
     '''Reshard using the bin-packing technique
     '''
 
@@ -27,4 +28,4 @@ def reshard(port, redis_url, weight, dry, node_id):
         f'resharding can be hungry, bump it with ulimit -n if needed', fg='cyan'
     )
 
-    binPackingReshard(redis_url, weight, dry, node_id)
+    binPackingReshard(redis_url, weight, timeout, dry, node_id)

@@ -91,7 +91,7 @@ async def coro():
     assert balanced
     assert fullCoverage
 
-    ret = await binPackingReshardCoroutine(redisUrl, weights)
+    ret = await binPackingReshardCoroutine(redisUrl, weights, timeout=15)
     assert ret
 
     newSignature, balanced, fullCoverage = await getClusterSignature(redisUrl)
@@ -113,7 +113,7 @@ async def coro():
 
     # Do another reshard. This one shoudl be a no-op
     # This should return statistics about the resharding
-    await binPackingReshardCoroutine(redisUrl, weights)
+    await binPackingReshardCoroutine(redisUrl, weights, timeout=15)
 
 
 def test_reshard():

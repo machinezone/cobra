@@ -16,9 +16,10 @@ return ret == 0
 
 import asyncio
 import csv
+import logging
 import os
 import sys
-import logging
+import time
 
 from rcc.client import RedisClient
 from rcc.hash_slot import getHashSlot
@@ -112,7 +113,9 @@ async def runClusterCheck(port):
     stdout, stderr = await proc.communicate()
 
 
-async def binPackingReshardCoroutine(redis_urls, weights, dry=False, nodeId=None):
+async def binPackingReshardCoroutine(
+    redis_urls, weights, timeout, dry=False, nodeId=None
+):
     redisClient = RedisClient(redis_urls, '')
     nodes = await redisClient.cluster_nodes()
 
@@ -183,6 +186,10 @@ async def binPackingReshardCoroutine(redis_urls, weights, dry=False, nodeId=None
         # while this script does
         #
         print('Waiting for cluster view to be consistent...')
+        start = time.time()
+
+        # give us 15 seconds max for all nodes to agree
+
         while True:
             sys.stderr.write('.')
             sys.stderr.flush()
@@ -191,13 +198,19 @@ async def binPackingReshardCoroutine(redis_urls, weights, dry=False, nodeId=None
             if ok:
                 break
 
-            await asyncio.sleep(0.5)
+            if time.time() - start > timeout:
+                logging.error(f'timeout exceeded')
+                return False
+            else:
+                waitTime = 0.5
+                await asyncio.sleep(waitTime)
+                timeout -= waitTime
 
     print(f'total migrated slots: {migratedSlots}')
     return True
 
 
-def binPackingReshard(redis_urls, path, dry=False, nodeId=None):
+def binPackingReshard(redis_urls, path, timeout, dry=False, nodeId=None):
     if not os.path.exists(path):
         logging.error(f'{path} does not exists')
         return False
@@ -220,4 +233,6 @@ def binPackingReshard(redis_urls, path, dry=False, nodeId=None):
             )
             return False
 
-    return asyncio.run(binPackingReshardCoroutine(redis_urls, weights, dry, nodeId))
+    return asyncio.run(
+        binPackingReshardCoroutine(redis_urls, weights, timeout, dry, nodeId)
+    )
