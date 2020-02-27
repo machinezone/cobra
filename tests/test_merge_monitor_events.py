@@ -1,4 +1,5 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
+# flake8: noqa
 
 eventB = '''
 data:

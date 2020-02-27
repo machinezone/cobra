@@ -1,6 +1,6 @@
 # Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 
-all: pylint
+all: flake
 
 dev:
 	@echo "--> Installing Python dependencies"
@@ -25,7 +25,7 @@ indent:
 format: indent
 
 flake:
-	flake8 --max-line-length=88 `find cobras -name '*.py'`
+	flake8 --max-line-length=88 `find cobras tests -name '*.py'`
 
 test:
 	py.test -n 4 --disable-warnings tests/*.py

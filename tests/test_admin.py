@@ -1,19 +1,12 @@
 '''Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.'''
 
 import asyncio
-import gc
 import os
-import tempfile
 
 import pytest
 
 from cobras.client.credentials import getDefaultRoleForApp, getDefaultSecretForApp
-from cobras.client.health_check import (
-    getDefaultHealthCheckHttpUrl,
-    getDefaultHealthCheckUrl,
-    healthCheck,
-)
-from cobras.common.memory_debugger import MemoryDebugger
+from cobras.client.health_check import getDefaultHealthCheckUrl
 from cobras.client.credentials import createCredentials
 from cobras.client.connection import Connection
 

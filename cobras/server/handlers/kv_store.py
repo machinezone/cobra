@@ -25,9 +25,7 @@ async def kvStoreRead(redis, stream: str, position: Optional[str], logger):
         end = start
 
     try:
-        results = await redis.send(
-            'XREVRANGE', stream, start, end, b'COUNT', 1 
-        )
+        results = await redis.send('XREVRANGE', stream, start, end, b'COUNT', 1)
 
         if not results:
             return None

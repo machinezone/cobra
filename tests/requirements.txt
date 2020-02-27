@@ -1,7 +1,7 @@
+codecov==2.0.15
 coverage==4.5.3
+flake8
 pytest==5.0.1
 pytest-cov==2.7.1
 pytest-forked==1.0.2
 pytest-xdist==1.29.0
-codecov==2.0.15
-flake8

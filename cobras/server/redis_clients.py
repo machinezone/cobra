@@ -2,10 +2,6 @@
 
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
-import asyncio
-import sys
-import time
-import logging
 
 from rcc.client import RedisClient
 from rcc.cluster.init_cluster import waitForAllConnectionsToBeReady
