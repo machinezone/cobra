@@ -37,7 +37,7 @@ pylint:
 	pylint -E -j 10 -r n -d C0301 -d C0103 -d C0111 -d C0330 -d W1401 -d W1203 -d W1202 `find rcc -name '*.py'`
 
 coverage:
-	py.test -n 4 --disable-warnings --cov=rcc --cov-report html --cov-report term tests
+	py.test -n 1 --disable-warnings --cov=rcc --cov-report html --cov-report term tests
 
 isort:
 	isort `find rcc tests -name '*.py'`
