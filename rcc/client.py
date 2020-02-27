@@ -57,6 +57,9 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
         if self.cluster:
             await self.connect_cluster_nodes()
 
+    def connected(self):
+        return self.connection.connected()
+
     async def connect_cluster_nodes(self):
         nodes = await self.cluster_nodes()
         for node in nodes:
@@ -113,6 +116,19 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
         return key
 
     async def send(self, cmd, *args):
+        '''Small wrapper to be able to disconnect on error
+        1. to avoid resource leaks
+        2. to handle redis cluster re-configuring itself
+        '''
+        try:
+            return await self.doSend(cmd, *args)
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            self.close()
+            raise
+
+    async def doSend(self, cmd, *args):
         '''Send a command to the redis server.
         Handle cluster mode redirects with the MOVE response
         '''
