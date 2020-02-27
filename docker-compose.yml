@@ -5,6 +5,9 @@ services:
     # Publish to this node with:
     # cobra publish --rolesecret A0EF82AFedB52Eae16b7b3dB8dcCE5bc
     #
+    # Monitor traffic with
+    # cobra monitor --rolesecret Fcbd6cdF2FB00AED8c4bcedAaC0e25f1
+    #
     image: ${DOCKER_REPO}/cobra:${TAG}
     ports:
       - "8765:8765"
