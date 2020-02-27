@@ -43,6 +43,23 @@ class Connection(object):
             # FIXME: need AUTH error checking
             await self.auth(self.password)
 
+    def close(self):
+        try:
+            if self.writer.can_write_eof():
+                self.writer.write_eof()
+
+            # ugly null check prevent errors when cancelling something with Ctrl-C
+            if self.writer is not None:
+                self.writer.close()
+        except Exception:
+            pass
+
+        self.reader = None
+        self.writer = None
+
+    def connected(self):
+        return self.writer is not None and self.reader is not None
+
     async def readResponse(self):
         '''
         # hiredis.ReplyError
@@ -67,23 +84,6 @@ class Connection(object):
             response = self._reader.gets()
 
         return response
-
-    def close(self):
-        try:
-            if self.writer.can_write_eof():
-                self.writer.write_eof()
-
-            # ugly null check prevent errors when cancelling something with Ctrl-C
-            if self.writer is not None:
-                self.writer.close()
-        except Exception:
-            pass
-
-        self.reader = None
-        self.writer = None
-
-    def connected(self):
-        return self.writer is not None and self.reader is not None
 
     def writeString(self, data):
         self.writer.write(b'$%d\r\n' % len(data))
