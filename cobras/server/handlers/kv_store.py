@@ -25,7 +25,10 @@ async def kvStoreRead(redis, stream: str, position: Optional[str], logger):
         end = start
 
     try:
-        results = await redis.xrevrange(stream, start, end, 1)
+        results = await redis.send(
+            'XREVRANGE', stream, start, end, b'COUNT', 1 
+        )
+
         if not results:
             return None
 
@@ -52,8 +55,10 @@ async def handleRead(
     position = body.get('position')
     channel = body.get('channel')
 
-    appChannel = '{}::{}'.format(state.appkey, channel)
+    appkey = state.appkey
+    appChannel = '{}::{}'.format(appkey, channel)
 
+    # We need to create a new connection as reading from it will be blocking
     redis = app['redis_clients'].makeRedisClient()
 
     try:
@@ -117,13 +122,16 @@ async def handleWrite(
     # Extract the message. This is what will be published
     message = pdu['body']['message']
 
-    redis = app['redis_clients'].makeRedisClient()
+    appkey = state.appkey
+    redis = app['redis_clients'].getRedisClient(appkey)
 
     try:
-        appChannel = '{}::{}'.format(state.appkey, channel)
+        appChannel = '{}::{}'.format(appkey, channel)
 
         serializedPdu = json.dumps(message)
-        streamId = await redis.xadd(appChannel, 'json', serializedPdu, maxLen=1)
+        streamId = await redis.send(
+            'XADD', appChannel, 'MAXLEN', '~', 1, b'*', 'json', serializedPdu
+        )
 
     except Exception as e:
         errMsg = f'write: cannot connect to redis {e}'
@@ -163,11 +171,12 @@ async def handleDelete(
         await state.respond(ws, response)
         return
 
-    appChannel = '{}::{}'.format(state.appkey, channel)
-    redis = app['redis_clients'].makeRedisClient()
+    appkey = state.appkey
+    appChannel = '{}::{}'.format(appkey, channel)
+    redis = app['redis_clients'].getRedisClient(appkey)
 
     try:
-        await redis.delete(appChannel)
+        await redis.send('DEL', appChannel)
     except Exception as e:
         errMsg = f'delete: cannot connect to redis {e}'
         logging.warning(errMsg)

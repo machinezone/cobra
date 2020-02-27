@@ -19,8 +19,8 @@ DEFAULT_STATS_CHANNEL = '/stats'
 
 
 class ServerStats:
-    def __init__(self, redis, appkey):
-        self.redis = redis
+    def __init__(self, redisClients, appkey):
+        self.redisClients = redisClients
 
         self.node = platform.uname().node
         self.connectionCount = 0
@@ -215,16 +215,17 @@ class ServerStats:
 
             chan = self.statsChannel
             appkey = self.internalAppKey
+            redis = self.redisClients.getRedisClient(appkey)
 
             try:
                 stream = '{}::{}'.format(appkey, chan)
                 maxLen = 100
-                streamId = await self.redis.xadd(stream, 'json', data, maxLen)
+                streamId = await redis.send(
+                    'XADD', stream, 'MAXLEN', '~', maxLen, b'*', 'json', data
+                )
                 logging.debug(f'stats: xadd result {streamId}')
 
             except Exception as e:
-                # await publishers.erasePublisher(appkey, chan) # FIXME
-
                 logging.warning(f'stats: cannot connect to redis {e}')
                 pass
 

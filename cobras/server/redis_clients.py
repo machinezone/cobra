@@ -8,6 +8,7 @@ import time
 import logging
 
 from rcc.client import RedisClient
+from rcc.cluster.init_cluster import waitForAllConnectionsToBeReady
 
 
 class RedisClients(object):
@@ -30,32 +31,5 @@ class RedisClients(object):
         print('closeRedis not implemented ... FIXME')
 
     async def waitForAllConnectionsToBeReady(self, timeout: int):
-        start = time.time()
-
         urls = self.redisUrls.split(';')
-
-        for url in urls:
-            sys.stderr.write(f'Checking {url} ')
-
-            while True:
-                sys.stderr.write('.')
-                sys.stderr.flush()
-
-                try:
-                    redis = RedisClient(url, self.redisPassword)
-                    await redis.connect()
-                    await redis.ping()
-                    redis.close()
-                    break
-                except Exception as e:
-                    if time.time() - start > timeout:
-                        sys.stderr.write('\n')
-                        raise
-
-                    logging.warning(e)
-
-                    waitTime = 0.1
-                    await asyncio.sleep(waitTime)
-                    timeout -= waitTime
-
-            sys.stderr.write('\n')
+        await waitForAllConnectionsToBeReady(urls, self.redisPassword, timeout)

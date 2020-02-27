@@ -223,9 +223,7 @@ class AppRunner:
                 timeout=self.redisStartupProbingTimeout
             )
 
-        serverStats = ServerStats(
-            self.redisClients.getRedisClient(STATS_APPKEY), STATS_APPKEY
-        )
+        serverStats = ServerStats(self.redisClients, STATS_APPKEY)
         self.app['stats'] = serverStats
 
         if self.enableStats:

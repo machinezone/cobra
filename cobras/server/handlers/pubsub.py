@@ -63,24 +63,24 @@ async def handlePublish(
 
     streams = {}
 
+    appkey = state.appkey
+    redis = app['redis_clients'].getRedisClient(appkey)
+
     for chan in channels:
 
         # sanity check to skip empty channels
         if chan is None:
             continue
 
-        appkey = state.appkey
-        redis = app['redis_clients'].getRedisClient(appkey)
-
         try:
             maxLen = app['channel_max_length']
             stream = '{}::{}'.format(appkey, chan)
-            streamId = await redis.xadd(stream, 'json', serializedPdu, maxLen)
+            streamId = await redis.send(
+                'XADD', stream, b'MAXLEN', '~', maxLen, b'*', b'json', serializedPdu
+            )
 
             streams[chan] = streamId
         except Exception as e:
-            # await publishers.erasePublisher(appkey, chan)  # FIXME
-
             errMsg = f'publish: cannot connect to redis {e}'
             logging.warning(errMsg)
             response = {
@@ -248,7 +248,7 @@ async def handleSubscribe(
                     }
                 )
 
-            # Send response. By now
+            # Send response.
             await self.state.respond(self.ws, response)
 
         async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:
@@ -301,6 +301,7 @@ async def handleSubscribe(
 
     appChannel = '{}::{}'.format(state.appkey, channel)
 
+    # We need to create a new connection as reading from it will be blocking
     redisClient = app['redis_clients'].makeRedisClient()
 
     task = asyncio.create_task(
