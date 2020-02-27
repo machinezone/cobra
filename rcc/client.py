@@ -24,13 +24,12 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
         self.url = url
         self.password = password
 
-        self.lock = asyncio.Lock()
-
-        self.pool = ConnectionPool(password)
         self.urls = {}
-
+        self.pool = ConnectionPool(password)
         self.connection = self.pool.get(self.url)
         self.cluster = False
+
+        self.lock = asyncio.Lock()
 
     def __del__(self):
         '''
@@ -38,6 +37,9 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
         but without it we get a big resource leak
         '''
         self.close()
+
+    def close(self):
+        self.pool.flush()
 
     @property
     def host(self):
@@ -66,9 +68,6 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
     async def readResponse(self, connection):
         response = await connection.readResponse()
         return response
-
-    def close(self):
-        self.pool.flush()
 
     async def getConnection(self, key):
         hashSlot = None

@@ -20,7 +20,16 @@ async def analyzeKeyspace(redisUrl: str, timeout: int):
     pattern = '__key*__:*'
 
     redisClient = RedisClient(redisUrl, '')
-    nodes = await redisClient.cluster_nodes()
+    await redisClient.connect()
+
+    clients = []
+    if redisClient.cluster:
+        nodes = await redisClient.cluster_nodes()
+        for node in nodes:
+            client = makeClientfromNode(node)
+            clients.append(client)
+    else:
+        clients = [redisClient]
 
     cmds = 'xadd'
     keyspaceConfig = 'KEAt'
@@ -43,19 +52,17 @@ async def analyzeKeyspace(redisUrl: str, timeout: int):
     # First we need to make sure keyspace notifications are ON
     # Do this manually with redis-cli -p 10000 config set notify-keyspace-events KEAt
     confs = []
-    for node in nodes:
-        client = makeClientfromNode(node)
+    for client in clients:
         conf = await client.send('CONFIG', 'GET', 'notify-keyspace-events')
         if conf[1]:
-            print(f'{node.ip}:{node.port} current keyspace config: {conf[1].decode()}')
+            print(f'{client} current keyspace config: {conf[1].decode()}')
             confs.append(conf[1].decode())
 
         # Set the new conf
         await client.send('CONFIG', 'SET', 'notify-keyspace-events', keyspaceConfig)
 
     try:
-        for node in nodes:
-            client = makeClientfromNode(node)
+        for client in clients:
             task = asyncio.create_task(client.psubscribe(pattern, cb, obj))
             tasks.append(task)
 
@@ -69,9 +76,7 @@ async def analyzeKeyspace(redisUrl: str, timeout: int):
 
     finally:
         # Now restore the notification
-        for node, conf in zip(nodes, confs):
-            client = makeClientfromNode(node)
-
+        for client, conf in zip(clients, confs):
             # reset the previous conf
             print(f'resetting old config {conf}')
             await client.send('CONFIG', 'SET', 'notify-keyspace-events', conf)
