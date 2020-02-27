@@ -56,7 +56,15 @@ async def client(url, creds, clientCallback, waitTime=None):
             logging.error(e)
             await asyncio.sleep(waitTime)
             pass
+        except websockets.exceptions.InvalidMessage as e:
+            logging.error(e)
+            await asyncio.sleep(waitTime)
+            pass
         except OSError as e:
+            logging.error(e)
+            await asyncio.sleep(waitTime)
+            pass
+        except EOFError as e:
             logging.error(e)
             await asyncio.sleep(waitTime)
             pass
