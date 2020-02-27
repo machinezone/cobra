@@ -28,7 +28,7 @@ flake:
 	flake8 --max-line-length=88 `find rcc -name '*.py'`
 
 test:
-	py.test -n 4 --disable-warnings tests/*.py
+	py.test -n 1 --disable-warnings tests/*.py
 
 mypy:
 	mypy --ignore-missing-imports rcc/*.py

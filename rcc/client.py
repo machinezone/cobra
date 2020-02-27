@@ -28,7 +28,6 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
         self.pool = ConnectionPool(password)
         self.connection = self.pool.get(self.url)
         self.cluster = False
-
         self.lock = asyncio.Lock()
 
     def __del__(self):
