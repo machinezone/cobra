@@ -16,7 +16,7 @@ def makeClientfromNode(node):
     return RedisClient(url, '')  # FIXME password
 
 
-async def analyzeKeyspace(redisUrl: str, timeout: int):
+async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
     pattern = '__key*__:*'
 
     redisClient = RedisClient(redisUrl, '')
@@ -35,19 +35,25 @@ async def analyzeKeyspace(redisUrl: str, timeout: int):
     keyspaceConfig = 'KEAt'
 
     async def cb(obj, message):
-        sys.stderr.write('.')
-        sys.stderr.flush()
+        if obj['progress']:
+            sys.stderr.write('.')
+            sys.stderr.flush()
 
         msg = message[2].decode()
         _, _, cmd = msg.partition(':')
 
         if cmd in cmds:
             key = message[3].decode()
-            obj[key] += 1
+            obj['keys'][key] += 1
+            obj['notifications'] += 1
 
     tasks = []
 
-    obj = collections.defaultdict(int)
+    obj = {
+        'progress': progress,
+        'notifications': 0,
+        'keys': collections.defaultdict(int),
+    }
 
     # First we need to make sure keyspace notifications are ON
     # Do this manually with redis-cli -p 10000 config set notify-keyspace-events KEAt
@@ -81,11 +87,14 @@ async def analyzeKeyspace(redisUrl: str, timeout: int):
             print(f'resetting old config {conf}')
             await client.send('CONFIG', 'SET', 'notify-keyspace-events', conf)
 
-    print()
-    plural = 's' if len(obj) > 1 else ''
-    print(f'Got notifications for {len(obj)} key{plural} access')
+    # FIXME: note how many things
 
-    return obj
+    print()
+    notificationCount = obj['notifications']
+    accessedKeys = len(obj['keys'])
+    print(f'notifications {notificationCount} accessed keys {accessedKeys}')
+
+    return obj['keys']
 
 
 def writeWeightsToCsv(weights: dict, path: str):
