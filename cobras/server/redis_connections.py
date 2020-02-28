@@ -69,7 +69,6 @@ class RedisConnections:
 
                 try:
                     redis = await self.createFromUrl(url)
-                    await redis.ping()
                     redis.close()
                     break
                 except Exception:
