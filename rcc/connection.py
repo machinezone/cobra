@@ -6,7 +6,10 @@ Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 import logging
 import sys
 import asyncio
+import io
 import uuid
+import collections
+import socket
 from urllib.parse import urlparse
 
 import hiredis
@@ -36,12 +39,21 @@ class Connection(object):
 
         self.read_size = 4 * 1024
 
+        self.waiters = collections.deque()
+
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+
+        # disable nagle algorithm
+        sock = self.writer.transport.get_extra_info('socket')
+        if sock is not None:
+            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         if self.password:
             # FIXME: need AUTH error checking
             await self.auth(self.password)
+
+        self.task = asyncio.create_task(self.readResponseTask())
 
     def close(self):
         try:
@@ -57,8 +69,19 @@ class Connection(object):
         self.reader = None
         self.writer = None
 
+        self.task.cancel()
+
     def connected(self):
         return self.writer is not None and self.reader is not None
+
+    async def readResponseTask(self):
+        # breakpoint()
+        while True:
+            response = await self.readResponse()
+
+            # FIXME / we should do the convertion here
+            waiter = self.waiters.popleft()
+            waiter.set_result(response)
 
     async def readResponse(self):
         '''
@@ -85,38 +108,45 @@ class Connection(object):
 
         return response
 
-    def writeString(self, data):
-        self.writer.write(b'$%d\r\n' % len(data))
+    def writeString(self, buf, data):
+        buf.write(b'$%d\r\n' % len(data))
 
         if not isinstance(data, bytes):
-            self.writer.write(data.encode())
+            buf.write(data.encode())
         else:
-            self.writer.write(data)
+            buf.write(data)
 
-        self.writer.write(b'\r\n')
+        buf.write(b'\r\n')
 
     async def send(self, cmd, key=None, *args):
-        '''key will be used by redis cluster '''
+        '''key will be used by redis cluster'''
 
         if not self.connected():
             await self.connect()
 
+        buf = io.BytesIO()
+
         if len(args) == 0:
-            self.writer.write(cmd.encode() + b'\r\n')
+            buf.write(cmd.encode() + b'\r\n')
         else:
             size = len(args) + 1
             s = f'*{size}\r\n'
-            self.writer.write(s.encode())
+            buf.write(s.encode())
 
-            self.writeString(cmd)
+            self.writeString(buf, cmd)
             for arg in args:
                 # FIXME Are there other types to support ?
                 if isinstance(arg, int):
-                    self.writeString(str(arg))
+                    self.writeString(buf, str(arg))
                 else:
-                    self.writeString(arg)
+                    self.writeString(buf, arg)
 
             logging.debug(f'{self.logPrefix} {cmd} {args}')
+
+        self.writer.write(buf.getbuffer())
+
+        fut = asyncio.get_event_loop().create_future()
+        self.waiters.append(fut)
 
         try:
             await self.writer.drain()
@@ -125,3 +155,5 @@ class Connection(object):
         except Exception:  # noqa
             self.close()
             raise
+
+        return fut

@@ -51,11 +51,12 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
     async def connect(self):
         await self.connection.connect()
 
-        info = await self.send('INFO')
-        self.cluster = info.get('cluster_enabled') == '1'
+        # FIXME
+        # info = await self.send('INFO')
+        # self.cluster = info.get('cluster_enabled') == '1'
 
-        if self.cluster:
-            await self.connect_cluster_nodes()
+        # if self.cluster:
+        #     await self.connect_cluster_nodes()
 
     def connected(self):
         return self.connection.connected()
@@ -121,12 +122,27 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
         2. to handle redis cluster re-configuring itself
         '''
         try:
-            return await self.doSend(cmd, *args)
+            # return await self.doSend(cmd, *args)
+            return await self.doSendSimple(cmd, *args)
         except asyncio.CancelledError:
             raise
         except Exception:
             self.close()
             raise
+
+    async def doSendSimple(self, cmd, *args):
+        '''Send a command to the redis server.
+        Handle cluster mode redirects with the MOVE response
+        '''
+        # We need to extract the key to hash it in cluster mode
+        key = self.findKey(cmd, *args)
+
+        # we should optimize this for the common case
+        connection = await self.getConnection(key)
+
+        fut = await connection.send(cmd, key, *args)
+        res = await fut
+        return res
 
     async def doSend(self, cmd, *args):
         '''Send a command to the redis server.

@@ -5,8 +5,9 @@ Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 
 import asyncio
 import random
+import time
 
-import pytest
+# import pytest
 from test_utils import makeClient, runRedisServer
 
 
@@ -25,9 +26,12 @@ async def sharedClient():
         for i in range(count):
             await client.send('INCR', 'a')
 
-            # wait a random amount of time, a tenth of a millisecond
-            waitTime = random.randint(1, 8) / 10000
-            await asyncio.sleep(waitTime)
+            if False:
+                # wait a random amount of time, a tenth of a millisecond
+                waitTime = random.randint(1, 8) / 10000
+                await asyncio.sleep(waitTime)
+
+    start = time.time()
 
     taskA = asyncio.create_task(incrementer(client, 1000))
     taskB = asyncio.create_task(incrementer(client, 1000))
@@ -41,6 +45,9 @@ async def sharedClient():
     await taskD
     await taskE
 
+    delta = time.time() - start
+    print(delta)
+
     val = await client.send('GET', 'a')
     assert val == b'5001'
 
@@ -49,10 +56,10 @@ async def sharedClient():
 
     await asyncio.sleep(0.1)  # wait a bit until the server is not running
 
-    with pytest.raises(OSError):
-        await client.send('PING')
+    # with pytest.raises(OSError):
+    #     await client.send('PING')
 
-    assert not client.connected()
+    # assert not client.connected()
 
 
 def test_ping():
