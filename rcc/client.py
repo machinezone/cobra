@@ -16,10 +16,10 @@ from rcc.pool import ConnectionPool
 
 from rcc.commands.cluster import ClusterCommandsMixin
 from rcc.commands.pubsub import PubSubCommandsMixin
-from rcc.response import ResponseConverterMixin
+from rcc.response import convertResponse
 
 
-class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMixin):
+class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
     def __init__(self, url: str, password):
         self.url = url
         self.password = password
@@ -164,7 +164,7 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin, ResponseConverterMi
 
                 responseType = type(response)
                 if responseType != hiredis.ReplyError:
-                    return self.convert(response, cmd)
+                    return convertResponse(response, cmd)
 
                 attempts -= 1
 

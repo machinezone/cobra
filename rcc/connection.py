@@ -14,6 +14,8 @@ from urllib.parse import urlparse
 
 import hiredis
 
+from rcc.response import convertResponse
+
 
 class Connection(object):
     def __init__(self, url, password, verbose=False):
@@ -85,8 +87,8 @@ class Connection(object):
                 response = await self.readResponse()
 
                 # FIXME / we should do the convertion here
-                waiter = self.waiters.popleft()
-                waiter.set_result(response)
+                waiter, cmd = self.waiters.popleft()
+                waiter.set_result(convertResponse(response, cmd))
             except Exception as e:
                 if len(self.waiters):
                     waiter = self.waiters.popleft()
@@ -160,7 +162,7 @@ class Connection(object):
         self.writer.write(buf.getbuffer())
 
         fut = asyncio.get_event_loop().create_future()
-        self.waiters.append(fut)
+        self.waiters.append((fut, cmd))
 
         try:
             await self.writer.drain()
