@@ -55,7 +55,7 @@ class Connection(object):
 
         self.task = asyncio.create_task(self.readResponseTask())
 
-    def close(self):
+    def close(self, error=None):
         try:
             if self.writer.can_write_eof():
                 self.writer.write_eof()
@@ -69,19 +69,33 @@ class Connection(object):
         self.reader = None
         self.writer = None
 
-        self.task.cancel()
+        if error:
+            raise error
+        else:
+            self.task.cancel()
 
     def connected(self):
         return self.writer is not None and self.reader is not None
 
     async def readResponseTask(self):
-        # breakpoint()
-        while True:
-            response = await self.readResponse()
+        lastError = None
 
-            # FIXME / we should do the convertion here
-            waiter = self.waiters.popleft()
-            waiter.set_result(response)
+        while True:
+            try:
+                response = await self.readResponse()
+
+                # FIXME / we should do the convertion here
+                waiter = self.waiters.popleft()
+                waiter.set_result(response)
+            except Exception as e:
+                if len(self.waiters):
+                    waiter = self.waiters.popleft()
+                    waiter.set_exception(e)
+                else:
+                    lastError = e
+                    break
+
+        asyncio.get_event_loop().call_soon(self.close, lastError)
 
     async def readResponse(self):
         '''

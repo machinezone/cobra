@@ -7,7 +7,7 @@ import asyncio
 import random
 import time
 
-# import pytest
+import pytest
 from test_utils import makeClient, runRedisServer
 
 
@@ -56,10 +56,10 @@ async def sharedClient():
 
     await asyncio.sleep(0.1)  # wait a bit until the server is not running
 
-    # with pytest.raises(OSError):
-    #     await client.send('PING')
+    with pytest.raises(Exception):
+        await client.send('PING')
 
-    # assert not client.connected()
+    assert not client.connected()
 
 
 def test_ping():
