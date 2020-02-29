@@ -52,11 +52,11 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
         await self.connection.connect()
 
         # FIXME
-        # info = await self.send('INFO')
-        # self.cluster = info.get('cluster_enabled') == '1'
+        info = await self.send('INFO')
+        self.cluster = info.get('cluster_enabled') == '1'
 
-        # if self.cluster:
-        #     await self.connect_cluster_nodes()
+        if self.cluster:
+            await self.connect_cluster_nodes()
 
     def connected(self):
         return self.connection.connected()
