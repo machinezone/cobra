@@ -42,6 +42,9 @@ class Connection(object):
         self.read_size = 4 * 1024
 
         self.waiters = collections.deque()
+        self.task = None
+        self.inPubSub = False
+        self.pubSubEvent = asyncio.Event()
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
@@ -71,10 +74,14 @@ class Connection(object):
         self.reader = None
         self.writer = None
 
+        self.pubSubEvent.set()
+
         if error:
             raise error
         else:
-            self.task.cancel()
+            if self.task is not None:
+                self.task.cancel()
+                self.task = None
 
     def connected(self):
         return self.writer is not None and self.reader is not None
@@ -86,9 +93,15 @@ class Connection(object):
             try:
                 response = await self.readResponse()
 
-                # FIXME / we should do the convertion here
                 waiter, cmd = self.waiters.popleft()
                 waiter.set_result(convertResponse(response, cmd))
+
+                # If we are in pubsub mode client code takes over
+                # it call readResponse manually + we freeze this
+                # co-routine with an event
+                if self.inPubSub:
+                    await self.pubSubEvent.wait()
+
             except Exception as e:
                 if len(self.waiters):
                     waiter = self.waiters.popleft()
@@ -100,10 +113,6 @@ class Connection(object):
         asyncio.get_event_loop().call_soon(self.close, lastError)
 
     async def readResponse(self):
-        '''
-        # hiredis.ReplyError
-        '''
-
         response = self._reader.gets()
         while response is False:
             try:
@@ -124,6 +133,15 @@ class Connection(object):
 
         return response
 
+    def handlePubSub(self, cmd):
+        if cmd in ('SUBSCRIBE', 'PSUBSCRIBE'):
+            self.inPubSub = True
+            self.pubSubEvent.clear()
+
+        if cmd in ('UNSUBSCRIBE', 'PUNSUBSCRIBE'):
+            self.inPubSub = False
+            self.pubSubEvent.set()
+
     def writeString(self, buf, data):
         buf.write(b'$%d\r\n' % len(data))
 
@@ -139,6 +157,8 @@ class Connection(object):
 
         if not self.connected():
             await self.connect()
+
+        self.handlePubSub(cmd)
 
         buf = io.BytesIO()
 
@@ -158,7 +178,6 @@ class Connection(object):
                     self.writeString(buf, arg)
 
             logging.debug(f'{self.logPrefix} {cmd} {args}')
-
         self.writer.write(buf.getbuffer())
 
         fut = asyncio.get_event_loop().create_future()
