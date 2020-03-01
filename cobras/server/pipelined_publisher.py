@@ -47,7 +47,7 @@ class PipelinedPublisher:
         )
 
     async def publishNow(self, job, maxLen: Optional[int] = None):
-        self.publish(None, job, maxLen)
+        await self.publish(None, job, maxLen)
 
     async def push(self, job, batchPublish=False):
         if not batchPublish:
