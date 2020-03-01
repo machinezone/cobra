@@ -66,7 +66,8 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
         for node in nodes:
             if node.role == 'master':
                 url = f'redis://{node.ip}:{node.port}'
-                await self.setConnection(node.slots, url)
+                for slot in node.slots:
+                    self.urls[slot] = url
 
     async def readResponse(self, connection):
         response = await connection.readResponse()
@@ -78,6 +79,7 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
             hashSlot = getHashSlot(key)
 
         url = self.urls.get(hashSlot, self.url)
+
         connection = self.pool.get(url)
 
         msg = f'key {key} -> slot {hashSlot}'
@@ -85,13 +87,6 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
         logging.debug(msg)
 
         return connection
-
-    async def setConnection(self, slots, url: str):
-        connection = self.pool.get(url)
-        await connection.connect()
-
-        for slot in slots:
-            self.urls[slot] = url
 
     def findKey(self, cmd, *args):
         '''Find where the key lives in a command, so that it can be hashed
@@ -141,8 +136,42 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
         connection = await self.getConnection(key)
 
         fut = await connection.send(cmd, key, *args)
-        res = await fut
-        return res
+        response = await fut
+
+        if self.needsRedirect(response):
+            return await self.handleRedirect(response, cmd, *args)
+
+        return response
+
+    # FIXME locks / static method / ASKING
+    def needsRedirect(self, response):
+        responseType = type(response)
+        if responseType != hiredis.ReplyError:
+            return False
+
+        responseStr = str(response)
+        return responseStr.startswith('MOVED')
+
+    # FIXME locks
+    async def handleRedirect(self, response, cmd, *args):
+        responseStr = str(response)
+        tokens = responseStr.split()
+        slotStr = tokens[1]
+        slot = int(slotStr)
+        url = tokens[2]
+        url = 'redis://' + url
+
+        self.urls[slot] = url
+
+        # We need to extract the key to hash it in cluster mode
+        key = self.findKey(cmd, *args)
+
+        # we should optimize this for the common case
+        connection = await self.getConnection(key)
+
+        fut = await connection.send(cmd, key, *args)
+        response = await fut
+        return response
 
     async def doSend(self, cmd, *args):
         '''Send a command to the redis server.

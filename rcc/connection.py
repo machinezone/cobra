@@ -94,7 +94,14 @@ class Connection(object):
                 response = await self.readResponse()
 
                 waiter, cmd = self.waiters.popleft()
-                waiter.set_result(convertResponse(response, cmd))
+
+                responseType = type(response)
+                if responseType != hiredis.ReplyError:
+                    raise response
+
+                response = convertResponse(response, cmd)
+
+                waiter.set_result(response)
 
                 # If we are in pubsub mode client code takes over
                 # it call readResponse manually + we freeze this
