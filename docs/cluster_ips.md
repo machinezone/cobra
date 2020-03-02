@@ -1,5 +1,7 @@
 # Cluster Ips
 
+![picture](cluster_bad_ips.png)
+
 ## Problem
 
 Sometimes a redis cluster node dies, and kubernetes restarts it for you. And when this happens sometimes your pod will get a new ip address. However Redis read the cluster config from a file, nodes.conf, and that file could have the old value prior to the restart.
