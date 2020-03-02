@@ -11,6 +11,9 @@ class ConnectionPool(object):
         self.password = password or ''
         self.connections = {}
 
+    def __del__(self):
+        self.flush()
+
     def get(self, url: str):
         if url not in self.connections:
             connection = Connection(url, self.password)

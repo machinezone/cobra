@@ -44,7 +44,7 @@ class Connection(object):
         self.waiters = collections.deque()
         self.task = None
         self.inPubSub = False
-        self.pubSubEvent = asyncio.Event()
+        self.pubSubEvent = None
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
@@ -58,6 +58,7 @@ class Connection(object):
             # FIXME: need AUTH error checking
             await self.auth(self.password)
 
+        self.pubSubEvent = asyncio.Event()
         self.task = asyncio.create_task(self.readResponseTask())
 
     def close(self, error=None):
@@ -74,7 +75,8 @@ class Connection(object):
         self.reader = None
         self.writer = None
 
-        self.pubSubEvent.set()
+        if self.pubSubEvent is not None:
+            self.pubSubEvent.set()
 
         if error:
             raise error
