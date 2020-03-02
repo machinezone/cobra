@@ -5,7 +5,7 @@ humanfriendly==6.1
 psutil==5.6.7
 python-rapidjson==0.9.1
 PyYAML==5.2
-rcc>=0.7.6
+rcc==0.8.0
 sentry-sdk>=0.13.5
 tabulate==0.8.5
 websockets==8.1
