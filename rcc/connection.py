@@ -95,22 +95,23 @@ class Connection(object):
 
                 # FIXME: do we need the if check
                 # we only encoutered it while using pubsub + analyze
-                if len(self.waiters):
-                    waiter, cmd = self.waiters.popleft()
 
-                    responseType = type(response)
-                    if responseType == hiredis.ReplyError:
-                        raise response
+                waiter, cmd = self.waiters.popleft()
 
-                    response = convertResponse(response, cmd)
+                # responseType = type(response)
+                # if responseType == hiredis.ReplyError:
+                # breakpoint()
+                # raise response
+                # waiter.set_exception(response)
 
-                    waiter.set_result(response)
+                response = convertResponse(response, cmd)
+                waiter.set_result(response)
 
-                    # If we are in pubsub mode client code takes over
-                    # it call readResponse manually + we freeze this
-                    # co-routine with an event
-                    if self.inPubSub:
-                        await self.pubSubEvent.wait()
+                # If we are in pubsub mode client code takes over
+                # it call readResponse manually + we freeze this
+                # co-routine with an event
+                if self.inPubSub:
+                    await self.pubSubEvent.wait()
 
             except Exception as e:
                 if len(self.waiters):

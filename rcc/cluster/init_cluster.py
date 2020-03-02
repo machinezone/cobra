@@ -118,7 +118,6 @@ async def waitForAllConnectionsToBeReady(urls, password, timeout: int):
 
                 waitTime = 0.1
                 await asyncio.sleep(waitTime)
-                timeout -= waitTime
 
         sys.stderr.write('\n')
 

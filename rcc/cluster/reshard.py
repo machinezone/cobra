@@ -106,6 +106,30 @@ async def migrateSlot(masterClients, slot, sourceNode, destinationNode, dry=Fals
     return True
 
 
+async def waitForClusterViewToBeConsistent(redis_urls, timeout):
+    print('Waiting for cluster view to be consistent...')
+    start = time.time()
+
+    # give us 'timeout' seconds max for all nodes to agree
+
+    while True:
+        sys.stderr.write('.')
+        sys.stderr.flush()
+
+        ok = await clusterCheck(redis_urls)
+        if ok:
+            break
+
+        if time.time() - start > timeout:
+            logging.error(f'timeout exceeded')
+            return False
+        else:
+            waitTime = 0.5
+            await asyncio.sleep(waitTime)
+
+    return True
+
+
 async def runClusterCheck(port):
     cmd = f'redis-cli --cluster check localhost:{port}'
 
@@ -185,26 +209,9 @@ async def binPackingReshardCoroutine(
         # note that existing redis cli command do not migrate to multiple nodes at once
         # while this script does
         #
-        print('Waiting for cluster view to be consistent...')
-        start = time.time()
-
-        # give us 15 seconds max for all nodes to agree
-
-        while True:
-            sys.stderr.write('.')
-            sys.stderr.flush()
-
-            ok = await clusterCheck(redis_urls)
-            if ok:
-                break
-
-            if time.time() - start > timeout:
-                logging.error(f'timeout exceeded')
-                return False
-            else:
-                waitTime = 0.5
-                await asyncio.sleep(waitTime)
-                timeout -= waitTime
+        consistent = await waitForClusterViewToBeConsistent(redis_urls, timeout)
+        if not consistent:
+            return False
 
     print(f'total migrated slots: {migratedSlots}')
     return True
