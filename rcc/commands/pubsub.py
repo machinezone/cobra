@@ -15,7 +15,7 @@ class PubSubCommandsMixin:
         try:
             while True:
                 response = await self.readResponse(self.connection)
-                await callback(obj, response)
+                await callback(self, obj, response)
 
         except asyncio.CancelledError:
             await self.send('UNSUBSCRIBE', key)
@@ -29,7 +29,7 @@ class PubSubCommandsMixin:
         try:
             while True:
                 response = await self.readResponse(self.connection)
-                await callback(obj, response)
+                await callback(self, obj, response)
 
         except asyncio.CancelledError:
             await self.send('PUNSUBSCRIBE', key)

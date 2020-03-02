@@ -34,7 +34,7 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
     cmds = 'xadd'
     keyspaceConfig = 'KEAt'
 
-    async def cb(obj, message):
+    async def cb(client, obj, message):
         if obj['progress']:
             sys.stderr.write('.')
             sys.stderr.flush()
@@ -47,12 +47,16 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
             obj['keys'][key] += 1
             obj['notifications'] += 1
 
+            node = f'{client.host}:{client.port}'
+            obj['nodes'][node] += 1
+
     tasks = []
 
     obj = {
         'progress': progress,
         'notifications': 0,
         'keys': collections.defaultdict(int),
+        'nodes': collections.defaultdict(int),
     }
 
     # First we need to make sure keyspace notifications are ON
@@ -92,9 +96,12 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
     print()
     notificationCount = obj['notifications']
     accessedKeys = len(obj['keys'])
-    print(f'notifications {notificationCount} accessed keys {accessedKeys}')
+    accessedNodes = len(obj['nodes'])
+    print(f'notifications {notificationCount}')
+    print(f'accessed keys {accessedKeys}')
+    print(f'nodes {accessedNodes}')
 
-    return obj['keys']
+    return obj
 
 
 def writeWeightsToCsv(weights: dict, path: str):
