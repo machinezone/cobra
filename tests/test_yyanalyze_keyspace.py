@@ -36,8 +36,9 @@ async def coro():
             assert streamId is not None
 
     await task
-    weights = task.result()
+    keySpace = task.result()
 
+    weights = keySpace.keys
     print('weights', weights)
     assert len(weights) >= 50
 

@@ -28,12 +28,12 @@ def analyze_keyspace(redis_url, port, redis_password, timeout, path, quiet):
     redis-cli -p 11000 flushdb ; rcc publish -p 11000 --batch --random_channel
     '''
 
-    result = asyncio.run(analyzeKeyspace(redis_url, timeout, progress=not quiet))
-    weights = result['keys']
+    keySpace = asyncio.run(analyzeKeyspace(redis_url, timeout, progress=not quiet))
+    weights = keySpace.keys
     writeWeightsToCsv(weights, path)
 
     # print key access by redis node
     # for node, access in sorted(result['nodes'].items()):
     #    print(node, access)
 
-    asciiPlot('Nodes', result['nodes'])
+    asciiPlot('Nodes', keySpace.nodes)

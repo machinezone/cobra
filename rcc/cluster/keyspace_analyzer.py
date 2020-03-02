@@ -10,6 +10,14 @@ import sys
 from rcc.client import RedisClient
 
 
+class KeySpace(object):
+    def __init__(self, progress=True):
+        self.progress = progress
+        self.notifications = 0
+        self.keys = collections.defaultdict(int)
+        self.nodes = collections.defaultdict(int)
+
+
 # FIXME: make this a utility
 def makeClientfromNode(node):
     url = f'redis://{node.ip}:{node.port}'
@@ -35,7 +43,7 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
     keyspaceConfig = 'KEAt'
 
     async def cb(client, obj, message):
-        if obj['progress']:
+        if obj.progress:
             sys.stderr.write('.')
             sys.stderr.flush()
 
@@ -44,20 +52,15 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
 
         if cmd in cmds:
             key = message[3].decode()
-            obj['keys'][key] += 1
-            obj['notifications'] += 1
+            obj.keys[key] += 1
+            obj.notifications += 1
 
             node = f'{client.host}:{client.port}'
-            obj['nodes'][node] += 1
+            obj.nodes[node] += 1
 
     tasks = []
 
-    obj = {
-        'progress': progress,
-        'notifications': 0,
-        'keys': collections.defaultdict(int),
-        'nodes': collections.defaultdict(int),
-    }
+    keySpace = KeySpace(progress)
 
     # First we need to make sure keyspace notifications are ON
     # Do this manually with redis-cli -p 10000 config set notify-keyspace-events KEAt
@@ -73,7 +76,7 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
 
     try:
         for client in clients:
-            task = asyncio.create_task(client.psubscribe(pattern, cb, obj))
+            task = asyncio.create_task(client.psubscribe(pattern, cb, keySpace))
             tasks.append(task)
 
         # Monitor during X seconds
@@ -94,14 +97,11 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
     # FIXME: note how many things
 
     print()
-    notificationCount = obj['notifications']
-    accessedKeys = len(obj['keys'])
-    accessedNodes = len(obj['nodes'])
-    print(f'notifications {notificationCount}')
-    print(f'accessed keys {accessedKeys}')
-    print(f'nodes {accessedNodes}')
+    print(f'notifications {keySpace.notifications}')
+    print(f'accessed keys {keySpace.keys}')
+    print(f'nodes {keySpace.nodes}')
 
-    return obj
+    return keySpace
 
 
 def writeWeightsToCsv(weights: dict, path: str):

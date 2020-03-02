@@ -84,7 +84,8 @@ async def coro():
         assert val == value
 
     await task
-    weights = task.result()
+    keySpace = task.result()
+    weights = keySpace.keys
 
     print('weights', weights)
     signature, balanced, fullCoverage = await getClusterSignature(redisUrl)
@@ -111,7 +112,7 @@ async def coro():
         value = f'val_{i}'
         assert val == value
 
-    # Do another reshard. This one shoudl be a no-op
+    # Do another reshard. This one should be a no-op
     # This should return statistics about the resharding
     await binPackingReshardCoroutine(redisUrl, weights, timeout=15)
 
