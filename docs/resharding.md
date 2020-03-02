@@ -1,8 +1,6 @@
-# Using rcc to reshard a redis cluster using keyspace notification
+# Resharding
 
-<img src="pie.jpg" />
-
-## Introduction
+## Using rcc to reshard a redis cluster using keyspace notification
 
 [rcc](https://github.com/machinezone/rcc/) comes with 2 important tools, one for analyzing the keys access accross nodes, built on top of [redis keyspace notifications](https://redis.io/topics/notifications) (which in turns runs on top of redis PubSub). The instrumentation is done over a period of time to sample the key access patterns. A 'weights' file is created as part of this tool. That file is saved in the current working directory by default. It is a very simple csv file that show how often a key is accessed. Currently rcc only support tracking *XADD* redis commands.
 
