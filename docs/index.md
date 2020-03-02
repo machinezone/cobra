@@ -18,3 +18,7 @@ The main asyncio redis library does not support redis cluster at this point. The
 
 * analyze-keyspace / will turn on redis keyspace notifications and tell you what your _hot_ keys are.
 * binpacking / will help reshard your cluster in an optimal way based on your usage. This will consume the output of the analyze-keyspace command
+
+## Contributing
+
+rcc is developed on [GitHub](https://github.com/machinezone/rcc). We'd love to hear about how you use it; opening up an issue on GitHub is ok for that. If things don't work as expected, please create an issue on GitHub, or even better a pull request if you know how to fix your problem.
