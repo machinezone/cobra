@@ -33,7 +33,8 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
     clients = []
     if redisClient.cluster:
         nodes = await redisClient.cluster_nodes()
-        for node in nodes:
+        masterNodes = [node for node in nodes if node.role == 'master']
+        for node in masterNodes:
             client = makeClientfromNode(node)
             clients.append(client)
     else:
