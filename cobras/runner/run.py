@@ -24,7 +24,9 @@ from cobras.server.app import AppRunner
     help='Binding host address. Set to 0.0.0.0 in prod environments',
 )
 @click.option('--port', envvar='COBRA_PORT', default='8765')
-@click.option('--redis_urls', envvar='COBRA_REDIS_URLS', default='redis://localhost')
+@click.option(
+    '--redis_urls', '-r', envvar='COBRA_REDIS_URLS', default='redis://localhost'
+)
 @click.option('--redis_password', envvar='COBRA_REDIS_PASSWORD')
 @click.option(
     '--apps_config_path', envvar='COBRA_APPS_CONFIG', default=getDefaultAppsConfigPath()
