@@ -141,6 +141,9 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
         if self.needsRedirect(response):
             return await self.handleRedirect(response, cmd, *args)
 
+        # we should handle other hiredis reply-error here,
+        # and potentially rethrow
+
         return response
 
     # FIXME locks / static method / ASKING

@@ -93,16 +93,10 @@ class Connection(object):
             try:
                 response = await self.readResponse()
 
-                # FIXME: do we need the if check
-                # we only encoutered it while using pubsub + analyze
+                # we only encoutered this while using pubsub + analyze
+                assert len(self.waiters) != 0
 
                 waiter, cmd = self.waiters.popleft()
-
-                # responseType = type(response)
-                # if responseType == hiredis.ReplyError:
-                # breakpoint()
-                # raise response
-                # waiter.set_exception(response)
 
                 response = convertResponse(response, cmd)
                 waiter.set_result(response)
