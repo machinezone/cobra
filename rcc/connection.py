@@ -111,7 +111,7 @@ class Connection(object):
 
             except Exception as e:
                 if len(self.waiters):
-                    waiter = self.waiters.popleft()
+                    waiter, cmd = self.waiters.popleft()
                     waiter.set_exception(e)
                 else:
                     lastError = e
