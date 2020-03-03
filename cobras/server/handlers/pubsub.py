@@ -228,7 +228,7 @@ async def handleSubscribe(
         def log(self, msg):
             self.state.log(msg)
 
-        async def on_init(self, redisConnection, streamExists, streamLength):
+        async def on_init(self, client, streamExists, streamLength):
             response = self.subscribeResponse
             if redisConnection is None:
                 msgId = response['id']
@@ -242,7 +242,7 @@ async def handleSubscribe(
             else:
                 response['body'].update(
                     {
-                        'redis_node': redisConnection.host,  # FIXME(redis cluster)
+                        'redis_node': client.host,  # FIXME(redis cluster)
                         'stream_exists': streamExists,
                         'stream_length': streamLength,
                     }
