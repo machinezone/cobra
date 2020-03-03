@@ -71,7 +71,7 @@ async def redisSubscriber(
                 streamLength = results[b'length']
         except Exception as e:
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
-            pass
+            connection = None
 
     try:
         await messageHandler.on_init(connection, streamExists, streamLength)
