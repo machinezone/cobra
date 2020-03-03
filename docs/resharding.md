@@ -106,7 +106,6 @@ The node with the highest score (73055) receives more than double the amount of
 XADDs than the node with the lowest received commands (27295).
 
 ```
-
 # each ∎ represents a count of 1198. total 469148
 172.27.186.112:6379 [ 73055] ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
   172.26.9.248:6379 [ 67319] ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
@@ -118,6 +117,7 @@ XADDs than the node with the lowest received commands (27295).
 172.25.212.185:6379 [ 33084] ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
  172.24.142.39:6379 [ 31434] ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 172.25.150.103:6379 [ 27295] ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
+```
 
 ### After resharding
 
