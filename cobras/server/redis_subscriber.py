@@ -108,7 +108,7 @@ async def redisSubscriber(
     except Exception as e:
         messageHandler.log(e)
         backtrace = traceback.format_exc()
-        messageHandler.log(f'{logPrefix} Generic Exception caught in {}')
+        messageHandler.log(f'{logPrefix} Generic Exception caught in {backtrace}')
 
     finally:
         messageHandler.log('Closing redis subscription')
