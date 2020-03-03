@@ -10,15 +10,32 @@ from pkgutil import walk_packages
 
 import click
 import coloredlogs
+import io
+import pstats
+import atexit
+import cProfile
 
 LOGGING_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 coloredlogs.install(level='WARNING', fmt=LOGGING_FORMAT)
 
 
+def reportProfilerOutput(pr):
+    '''
+    https://docs.python.org/3/library/profile.html
+    https://docs.python.org/3/library/atexit.html
+    '''
+    s = io.StringIO()
+    sortby = 'cumulative'
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print(s.getvalue())
+
+
 @click.option('--verbose', '-v', envvar='COBRA_VERBOSE', is_flag=True)
+@click.option('--profile', envvar='COBRA_PROFILE', is_flag=True)
 @click.group()
 @click.version_option()
-def main(verbose):
+def main(verbose, profile):
     """\b
    ___      _
   / __\___ | |__  _ __ __ _
@@ -30,6 +47,11 @@ Cobra is a realtime messaging server using Python3, WebSockets and Redis.
     """
     if verbose:
         coloredlogs.install(level='INFO', fmt=LOGGING_FORMAT)
+
+    if profile:
+        pr = cProfile.Profile()
+        pr.enable()
+        atexit.register(reportProfilerOutput, pr)
 
 
 for loader, module_name, is_pkg in walk_packages(__path__, __name__ + '.'):
