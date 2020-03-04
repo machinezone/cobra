@@ -13,6 +13,7 @@ class RedisClient(object):
         self.url = url
         self.password = password
         self.cluster = cluster
+        self.library = library
 
         netloc = urlparse(url).netloc
         host, _, port = netloc.partition(':')
@@ -20,9 +21,6 @@ class RedisClient(object):
             port = int(port)
         else:
             port = 6379
-
-        self.library = 'rcc'
-        self.library = 'aredis'
 
         if self.library == 'aredis':
             if self.cluster:
@@ -55,21 +53,33 @@ class RedisClient(object):
     async def ping(self):
         if self.library == 'aredis':
             return await self.redis.ping()
+        else:
+            return await self.redis.send('PING')
 
     async def delete(self, key):
         if self.library == 'aredis':
             await self.redis.delete(key)
+        else:
+            assert False, 'not implemented'
 
     async def xadd(self, stream, field, data, maxLen):
         if self.library == 'aredis':
             return await self.redis.xadd(
                 stream, {field: data}, max_len=maxLen, approximate=True
             )
+        else:
+            return await self.redis.send(
+                'XADD', stream, 'MAXLEN', '~', maxLen, b'*', field, data
+            )
 
     async def xread(self, streams):
         if self.library == 'aredis':
             return await self.redis.xread(count=None, block=0, **streams)
+        else:
+            assert False, 'not implemented'
 
     async def xrevrange(self, stream, start, end, count):
         if self.library == 'aredis':
             return await self.redis.xrevrange(stream, start, end, count)
+        else:
+            assert False, 'not implemented'
