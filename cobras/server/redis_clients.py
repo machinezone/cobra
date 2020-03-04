@@ -7,6 +7,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 from cobras.server.redis_libraries.aredis_client import RedisClientAredis
 from cobras.server.redis_libraries.rcc_client import RedisClientRcc
 from cobras.server.redis_libraries.justredis_client import RedisClientJustRedis
+from cobras.server.redis_libraries.aioredis_client import RedisClientAioRedis
 
 DEFAULT_REDIS_LIBRARY = 'aredis'
 
@@ -29,6 +30,8 @@ class RedisClients(object):
             klass = RedisClientRcc
         elif self.library == 'justredis':
             klass = RedisClientJustRedis
+        elif self.library == 'aioredis':
+            klass = RedisClientAioRedis
 
         return klass(
             self.redisUrls, self.redisPassword, self.redisCluster, self.library
