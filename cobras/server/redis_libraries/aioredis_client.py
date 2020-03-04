@@ -26,12 +26,15 @@ class RedisClientAioRedis(object):
         self.host = host
         self.connected = False
 
+        self.redis = None
+
     def __del__(self):
         self.close()
 
     def close(self):
         self.connected = False
-        self.redis.close()
+        if self.redis is not None:
+            self.redis.close()
 
     async def connect(self):
         self.redis = await aioredis.create_redis(self.url, password=self.password)

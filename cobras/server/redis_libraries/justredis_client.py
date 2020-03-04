@@ -30,8 +30,11 @@ class RedisClientJustRedis(object):
     def __del__(self):
         self.close()
 
+    async def closeMultiplexer(self):
+        await self.redis.aclose()
+
     def close(self):
-        # FIXME we should call aclose for justredis
+        # asyncio.get_event_loop().run_until_complete(self.closeMultiplexer())
         pass
 
     async def connect(self):

@@ -9,7 +9,7 @@ from cobras.server.redis_libraries.rcc_client import RedisClientRcc
 from cobras.server.redis_libraries.justredis_client import RedisClientJustRedis
 from cobras.server.redis_libraries.aioredis_client import RedisClientAioRedis
 
-DEFAULT_REDIS_LIBRARY = 'aredis'
+DEFAULT_REDIS_LIBRARY = 'aioredis'
 
 
 class RedisClients(object):
