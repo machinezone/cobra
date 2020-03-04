@@ -3,6 +3,7 @@
 Copyright (c) 2018-2020 Machine Zone, Inc. All rights reserved.
 '''
 
+import collections
 from urllib.parse import urlparse
 
 import aioredis
@@ -64,7 +65,7 @@ class RedisClientAioRedis(object):
         ids = [streamId for streamId in streams.values()]
 
         result = await self.redis.xread(names, timeout=0, latest_ids=ids)
-        return {names[0].encode(): result}
+        return self.transformXReadResponse(result)
 
     async def delete(self, key):
         if not self.connected:
@@ -77,3 +78,15 @@ class RedisClientAioRedis(object):
             await self.connect()
 
         return await self.redis.xrevrange(stream, start, end, count)
+
+    def transformXReadResponse(self, response):
+        d = collections.defaultdict(list)
+
+        for item in response:
+            streamName = item[0]
+            streamId = item[1]
+            value = item[2]
+
+            d[streamName].append((streamId, value))
+
+        return d
