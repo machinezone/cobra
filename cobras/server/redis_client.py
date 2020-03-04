@@ -49,16 +49,24 @@ class RedisClient(object):
     async def exists(self, key):
         if self.library == 'aredis':
             return await self.redis.exists(key)
+        elif self.library == 'rcc':
+            return await self.redis.send('EXISTS', key)
+        else:
+            assert False, 'not implemented'
 
     async def ping(self):
         if self.library == 'aredis':
             return await self.redis.ping()
-        else:
+        elif self.library == 'rcc':
             return await self.redis.send('PING')
+        else:
+            assert False, 'not implemented'
 
     async def delete(self, key):
         if self.library == 'aredis':
             await self.redis.delete(key)
+        elif self.library == 'aredis':
+            await self.redis.send('DEL', key)
         else:
             assert False, 'not implemented'
 
@@ -67,19 +75,32 @@ class RedisClient(object):
             return await self.redis.xadd(
                 stream, {field: data}, max_len=maxLen, approximate=True
             )
-        else:
+        elif self.library == 'rcc':
             return await self.redis.send(
                 'XADD', stream, 'MAXLEN', '~', maxLen, b'*', field, data
             )
+        else:
+            assert False, 'not implemented'
 
     async def xread(self, streams):
         if self.library == 'aredis':
             return await self.redis.xread(count=None, block=0, **streams)
+        elif self.library == 'rcc':
+
+            args = ['XREAD', 'BLOCK', b'0', b'STREAMS']
+            for item in streams.items():
+                args.append(item[0])
+                args.append(item[1])
+
+            result = await self.redis.send(*args)
+            return result
         else:
             assert False, 'not implemented'
 
     async def xrevrange(self, stream, start, end, count):
         if self.library == 'aredis':
             return await self.redis.xrevrange(stream, start, end, count)
+        elif self.library == 'rcc':
+            assert False, 'not implemented'
         else:
             assert False, 'not implemented'
