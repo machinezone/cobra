@@ -7,7 +7,7 @@ import random
 
 from cobras.common.apps_config import AppsConfig
 from cobras.server.app import AppRunner
-from cobras.server.redis_client import DEFAULT_REDIS_LIBRARY
+from cobras.server.redis_clients import DEFAULT_REDIS_LIBRARY
 
 import coloredlogs
 import pytest

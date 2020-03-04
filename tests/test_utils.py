@@ -9,7 +9,7 @@ import uuid
 import coloredlogs
 from cobras.common.apps_config import AppsConfig, getDefaultMessageMaxSize
 from cobras.server.app import AppRunner
-from cobras.server.redis_client import DEFAULT_REDIS_LIBRARY
+from cobras.server.redis_clients import DEFAULT_REDIS_LIBRARY
 
 coloredlogs.install(level='INFO')
 
@@ -31,7 +31,7 @@ def makeRunner(
     debugMemoryPrintAllTasks = False
 
     redisLibrary = DEFAULT_REDIS_LIBRARY
-    redisCluster = True
+    redisCluster = False
 
     if redisUrls is None:
         if redisCluster:

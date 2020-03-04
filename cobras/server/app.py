@@ -25,7 +25,6 @@ from cobras.common.banner import getBanner
 from cobras.server.connection_state import ConnectionState
 from cobras.server.protocol import processCobraMessage
 from cobras.server.stats import ServerStats
-from cobras.server.redis_client import RedisClient
 from cobras.server.redis_clients import RedisClients
 
 
@@ -234,12 +233,7 @@ class AppRunner:
                 sys.stderr.flush()
 
                 try:
-                    redis = RedisClient(
-                        url,
-                        self.app['redis_password'],
-                        self.app['redis_cluster'],
-                        self.app['redis_library'],
-                    )
+                    redis = self.redisClients.makeRedisClient()
                     await redis.connect()
                     await redis.ping()
                     redis.close()

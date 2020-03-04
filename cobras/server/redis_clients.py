@@ -3,7 +3,12 @@
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
-from cobras.server.redis_client import RedisClient
+# from cobras.server.redis_client import RedisClient
+from cobras.server.redis_libraries.aredis_client import RedisClientAredis
+from cobras.server.redis_libraries.rcc_client import RedisClientRcc
+from cobras.server.redis_libraries.justredis_client import RedisClientJustRedis
+
+DEFAULT_REDIS_LIBRARY = 'aredis'
 
 
 class RedisClients(object):
@@ -18,7 +23,14 @@ class RedisClients(object):
             self.clients[app] = self.makeRedisClient()
 
     def makeRedisClient(self):
-        return RedisClient(
+        if self.library == 'aredis':
+            klass = RedisClientAredis
+        elif self.library == 'rcc':
+            klass = RedisClientRcc
+        elif self.library == 'justredis':
+            klass = RedisClientJustRedis
+
+        return klass(
             self.redisUrls, self.redisPassword, self.redisCluster, self.library
         )
 

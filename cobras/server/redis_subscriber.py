@@ -11,8 +11,6 @@ import traceback
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from cobras.server.redis_client import RedisClient
-
 POSITION_PATTERN = re.compile('^(?P<id1>[0-9]+)-(?P<id2>[0-9]+)')
 
 
@@ -32,7 +30,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def on_init(self, client: RedisClient, streamExists: bool, streamLength: int):
+    async def on_init(self, client, streamExists: bool, streamLength: int):
         pass  # pragma: no cover
 
     @abstractmethod
@@ -41,7 +39,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
 
 
 async def redisSubscriber(
-    client: RedisClient,
+    client,
     stream: str,
     position: Optional[str],
     messageHandlerClass: RedisSubscriberMessageHandlerClass,  # noqa
