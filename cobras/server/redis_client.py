@@ -39,6 +39,12 @@ class RedisClient(object):
             from rcc.client import RedisClient as RC
 
             self.redis = RC(self.url, self.password)
+        elif self.library == 'justredis':
+            from cobras.server.justredis import Multiplexer
+            from cobras.server.justredis import utf8_bytes_as_strings
+
+            self.redis = Multiplexer({'endpoints': (host, port)})
+            self.db = self.redis.database(decoder=utf8_bytes_as_strings)
 
         self.host = host
 
@@ -48,27 +54,14 @@ class RedisClient(object):
     async def connect(self):
         pass
 
-    async def exists(self, key):
-        if self.library == 'aredis':
-            return await self.redis.exists(key)
-        elif self.library == 'rcc':
-            return await self.redis.send('EXISTS', key)
-        else:
-            assert False, 'not implemented'
-
     async def ping(self):
         if self.library == 'aredis':
             return await self.redis.ping()
         elif self.library == 'rcc':
             return await self.redis.send('PING')
-        else:
-            assert False, 'not implemented'
-
-    async def delete(self, key):
-        if self.library == 'aredis':
-            await self.redis.delete(key)
-        elif self.library == 'rcc':
-            await self.redis.send('DEL', key)
+        elif self.library == 'justredis':
+            cr = self.db.commandreply
+            return await cr(b'PING')
         else:
             assert False, 'not implemented'
 
@@ -81,6 +74,20 @@ class RedisClient(object):
             return await self.redis.send(
                 'XADD', stream, 'MAXLEN', '~', maxLen, b'*', field, data
             )
+        elif self.library == 'justredis':
+            cr = self.db.commandreply
+            return await cr('XADD', stream, 'MAXLEN', '~', maxLen, b'*', field, data)
+        else:
+            assert False, 'not implemented'
+
+    async def exists(self, key):
+        if self.library == 'aredis':
+            return await self.redis.exists(key)
+        elif self.library == 'rcc':
+            return await self.redis.send('EXISTS', key)
+        elif self.library == 'justredis':
+            cr = self.db.commandreply
+            return await cr(b'EXISTS', key)
         else:
             assert False, 'not implemented'
 
@@ -96,6 +103,18 @@ class RedisClient(object):
 
             result = await self.redis.send(*args)
             return result
+        elif self.library == 'justredis':
+            assert False, 'not implemented'
+        else:
+            assert False, 'not implemented'
+
+    async def delete(self, key):
+        if self.library == 'aredis':
+            await self.redis.delete(key)
+        elif self.library == 'rcc':
+            await self.redis.send('DEL', key)
+        elif self.library == 'justredis':
+            assert False, 'not implemented'
         else:
             assert False, 'not implemented'
 
@@ -106,5 +125,7 @@ class RedisClient(object):
             return await self.redis.send(
                 'XREVRANGE', stream, start, end, b'COUNT', count
             )
+        elif self.library == 'justredis':
+            assert False, 'not implemented'
         else:
             assert False, 'not implemented'
