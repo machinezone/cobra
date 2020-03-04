@@ -65,7 +65,7 @@ class RedisClient(object):
     async def delete(self, key):
         if self.library == 'aredis':
             await self.redis.delete(key)
-        elif self.library == 'aredis':
+        elif self.library == 'rcc':
             await self.redis.send('DEL', key)
         else:
             assert False, 'not implemented'
@@ -101,6 +101,8 @@ class RedisClient(object):
         if self.library == 'aredis':
             return await self.redis.xrevrange(stream, start, end, count)
         elif self.library == 'rcc':
-            assert False, 'not implemented'
+            return await self.redis.send(
+                'XREVRANGE', stream, start, end, b'COUNT', count
+            )
         else:
             assert False, 'not implemented'
