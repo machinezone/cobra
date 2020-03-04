@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 import aredis
 
-DEFAULT_REDIS_LIBRARY = 'rcc'
+DEFAULT_REDIS_LIBRARY = 'justredis'
 
 
 class RedisClient(object):
@@ -41,15 +41,20 @@ class RedisClient(object):
             self.redis = RC(self.url, self.password)
         elif self.library == 'justredis':
             from cobras.server.justredis import Multiplexer
-            from cobras.server.justredis import utf8_bytes_as_strings
 
+            # self.db = self.redis.database(decoder=utf8_bytes_as_strings)
             self.redis = Multiplexer({'endpoints': (host, port)})
-            self.db = self.redis.database(decoder=utf8_bytes_as_strings)
+            self.db = self.redis.database()
 
         self.host = host
 
+    def __del__(self):
+        self.close()
+
     def close(self):
-        pass  # FIXME ?
+        # FIXME we should call something
+        if self.library == 'justredis':
+            print('CLOSE')
 
     async def connect(self):
         pass
@@ -104,7 +109,14 @@ class RedisClient(object):
             result = await self.redis.send(*args)
             return result
         elif self.library == 'justredis':
-            assert False, 'not implemented'
+            args = ['XREAD', 'BLOCK', b'0', b'STREAMS']
+            for item in streams.items():
+                args.append(item[0])
+                args.append(item[1])
+
+            cr = self.db.commandreply
+            result = await cr(*args)
+            return self.transformXReadResponse(result)
         else:
             assert False, 'not implemented'
 
@@ -114,7 +126,8 @@ class RedisClient(object):
         elif self.library == 'rcc':
             await self.redis.send('DEL', key)
         elif self.library == 'justredis':
-            assert False, 'not implemented'
+            cr = self.db.commandreply
+            return await cr(b'DEL', key)
         else:
             assert False, 'not implemented'
 
@@ -126,6 +139,39 @@ class RedisClient(object):
                 'XREVRANGE', stream, start, end, b'COUNT', count
             )
         elif self.library == 'justredis':
-            assert False, 'not implemented'
+            cr = self.db.commandreply
+            args = ['XREVRANGE', stream, start, end, b'COUNT', count]
+            result = await cr(*args)
+            return self.transformXRevRangeResponse(result)
         else:
             assert False, 'not implemented'
+
+    def transformXReadResponse(self, response):
+        items = []
+        for item in response[0][1]:
+            position = item[0]
+            array = item[1]
+            entries = {}
+
+            for i in range(len(array) // 2):
+                key = array[2 * i]
+                value = array[2 * i + 1]
+                entries[key] = value
+
+            items.append((position, entries))
+        return {response[0][0]: items}
+
+    def transformXRevRangeResponse(self, response):
+        items = []
+        for item in response:
+            position = item[0]
+            array = item[1]
+            entries = {}
+
+            for i in range(len(array) // 2):
+                key = array[2 * i]
+                value = array[2 * i + 1]
+                entries[key] = value
+
+            items.append((position, entries))
+        return items
