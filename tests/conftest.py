@@ -7,6 +7,7 @@ import random
 
 from cobras.common.apps_config import AppsConfig
 from cobras.server.app import AppRunner
+from cobras.server.redis_client import DEFAULT_REDIS_LIBRARY
 
 import coloredlogs
 import pytest
@@ -27,6 +28,8 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause / FIXME(unused)
 
+    redisLibrary = DEFAULT_REDIS_LIBRARY
+
     if redisUrls is None:
         redisUrls = 'redis://localhost'
 
@@ -41,6 +44,7 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
         redisUrls,
         redisPassword,
         redisCluster,
+        redisLibrary,
         appsConfigPath,
         debugMemory,
         plugins,

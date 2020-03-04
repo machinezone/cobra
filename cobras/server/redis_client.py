@@ -7,6 +7,8 @@ from urllib.parse import urlparse
 
 import aredis
 
+DEFAULT_REDIS_LIBRARY = 'rcc'
+
 
 class RedisClient(object):
     def __init__(self, url, password, cluster, library):
