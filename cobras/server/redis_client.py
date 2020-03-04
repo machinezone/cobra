@@ -52,9 +52,8 @@ class RedisClient(object):
         self.close()
 
     def close(self):
-        # FIXME we should call something
-        if self.library == 'justredis':
-            print('CLOSE')
+        # FIXME we should call aclose for justredis
+        pass
 
     async def connect(self):
         pass
