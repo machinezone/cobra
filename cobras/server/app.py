@@ -238,7 +238,7 @@ class AppRunner:
                         url,
                         self.app['redis_password'],
                         self.app['redis_cluster'],
-                        self.redisLibrary,
+                        self.app['redis_library'],
                     )
                     await redis.connect()
                     await redis.ping()
