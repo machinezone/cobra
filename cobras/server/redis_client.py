@@ -9,7 +9,7 @@ import aredis
 
 
 class RedisClient(object):
-    def __init__(self, url, password, cluster):
+    def __init__(self, url, password, cluster, library):
         self.url = url
         self.password = password
         self.cluster = cluster
@@ -21,16 +21,24 @@ class RedisClient(object):
         else:
             port = 6379
 
-        if self.cluster:
-            cls = aredis.StrictRedisCluster
-            self.redis = cls(
-                max_connections=1024, startup_nodes=[{'host': host, 'port': port}]
-            )
-        else:
-            cls = aredis.StrictRedis
-            self.redis = aredis.StrictRedis(
-                host=host, port=port, password=self.password, max_connections=1024
-            )
+        self.library = 'rcc'
+        self.library = 'aredis'
+
+        if self.library == 'aredis':
+            if self.cluster:
+                cls = aredis.StrictRedisCluster
+                self.redis = cls(
+                    max_connections=1024, startup_nodes=[{'host': host, 'port': port}]
+                )
+            else:
+                cls = aredis.StrictRedis
+                self.redis = aredis.StrictRedis(
+                    host=host, port=port, password=self.password, max_connections=1024
+                )
+        elif self.library == 'rcc':
+            from rcc.client import RedisClient as RC
+
+            self.redis = RC(self.url, self.password)
 
         self.host = host
 
@@ -41,21 +49,27 @@ class RedisClient(object):
         pass
 
     async def exists(self, key):
-        return await self.redis.exists(key)
+        if self.library == 'aredis':
+            return await self.redis.exists(key)
 
     async def ping(self):
-        return await self.redis.ping()
+        if self.library == 'aredis':
+            return await self.redis.ping()
 
     async def delete(self, key):
-        await self.redis.delete(key)
+        if self.library == 'aredis':
+            await self.redis.delete(key)
 
     async def xadd(self, stream, field, data, maxLen):
-        return await self.redis.xadd(
-            stream, {field: data}, max_len=maxLen, approximate=True
-        )
+        if self.library == 'aredis':
+            return await self.redis.xadd(
+                stream, {field: data}, max_len=maxLen, approximate=True
+            )
 
     async def xread(self, streams):
-        return await self.redis.xread(count=None, block=0, **streams)
+        if self.library == 'aredis':
+            return await self.redis.xread(count=None, block=0, **streams)
 
     async def xrevrange(self, stream, start, end, count):
-        return await self.redis.xrevrange(stream, start, end, count)
+        if self.library == 'aredis':
+            return await self.redis.xrevrange(stream, start, end, count)

@@ -157,6 +157,7 @@ class AppRunner:
         redisUrls,
         redisPassword,
         redisCluster,
+        redisLibrary,
         appsConfigPath,
         debugMemory,
         debugMemoryNoTracemalloc,
@@ -181,11 +182,13 @@ class AppRunner:
         self.app['redis_urls'] = redisUrls
         self.app['redis_password'] = redisPassword
         self.app['redis_cluster'] = redisCluster
+        self.app['redis_library'] = redisLibrary
 
         self.host = host
         self.port = port
         self.redisUrls = redisUrls
         self.redisPassword = redisPassword
+        self.redisLibrary = redisLibrary
         self.plugins = plugins
         self.enableStats = enableStats
         self.probeRedisOnStartup = probeRedisOnStartup
@@ -198,7 +201,7 @@ class AppRunner:
         # Create app redis connection handler, one per apps to avoid one busy
         # app blocking others
         self.redisClients = RedisClients(
-            redisUrls, redisPassword, redisCluster, appsConfig
+            redisUrls, redisPassword, redisCluster, redisLibrary, appsConfig
         )
         self.app['redis_clients'] = self.redisClients
 
@@ -232,7 +235,10 @@ class AppRunner:
 
                 try:
                     redis = RedisClient(
-                        url, self.app['redis_password'], self.app['redis_cluster']
+                        url,
+                        self.app['redis_password'],
+                        self.app['redis_cluster'],
+                        self.redisLibrary,
                     )
                     await redis.connect()
                     await redis.ping()
@@ -256,19 +262,13 @@ class AppRunner:
            * redis://172.18.176.220:7379
            * redis://sentryredis-1-002.shared.live.las1.mz-inc.com:6310
         '''
-        redisUrls = self.app['redis_urls']
-        redisPassword = self.app['redis_password']
-        redisCluster = self.app['redis_cluster']
-
+        # wait until all the redis nodes are reachable
         if self.probeRedisOnStartup:
             await self.waitForAllConnectionsToBeReady(
                 timeout=self.redisStartupProbingTimeout
             )
 
-        # Create redis connection handler, and
-        # wait until all the redis nodes are reachable
-        redis = RedisClient(redisUrls, redisPassword, redisCluster)
-        self.app['redis'] = redis
+        redis = self.redisClients.getRedisClient(STATS_APPKEY)
 
         serverStats = ServerStats(redis, STATS_APPKEY)
         self.app['stats'] = serverStats
@@ -336,10 +336,6 @@ class AppRunner:
 
     def run(self, stop):
         asyncio.get_event_loop().run_until_complete(self.setup(stop, block=True))
-
-    def closeRedis(self):
-        redis = self.app['redis']
-        redis.close()
 
     async def closeServer(self):
         '''Used by the unittest'''

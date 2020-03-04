@@ -33,6 +33,7 @@ from cobras.server.app import AppRunner
 )
 @click.option('--redis_password', envvar='COBRA_REDIS_PASSWORD')
 @click.option('--redis_cluster', is_flag=True, envvar='COBRA_REDIS_CLUSTER')
+@click.option('--redis_library', envvar='COBRA_REDIS_LIBRARY', default='aredis')
 @click.option(
     '--apps_config_path', envvar='COBRA_APPS_CONFIG', default=getDefaultAppsConfigPath()
 )
@@ -82,6 +83,7 @@ def run(
     redis_urls,
     redis_password,
     redis_cluster,
+    redis_library,
     apps_config_path,
     apps_config_path_content,
     debug_memory,
@@ -138,6 +140,7 @@ def run(
         redis_urls,
         redis_password,
         redis_cluster,
+        redis_library,
         apps_config_path,
         debug_memory,
         debug_memory_no_tracemalloc,
