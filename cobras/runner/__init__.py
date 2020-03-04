@@ -11,6 +11,8 @@ from pkgutil import walk_packages
 import click
 import coloredlogs
 
+from cobras.common.atexit_profiler import registerProfiler
+
 LOGGING_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 coloredlogs.install(level='WARNING', fmt=LOGGING_FORMAT)
 
@@ -30,6 +32,9 @@ Cobra is a realtime messaging server using Python3, WebSockets and Redis.
     """
     if verbose:
         coloredlogs.install(level='INFO', fmt=LOGGING_FORMAT)
+
+    if profile:
+        registerProfiler()
 
 
 for loader, module_name, is_pkg in walk_packages(__path__, __name__ + '.'):
