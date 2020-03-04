@@ -32,7 +32,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def on_init(self, streamExists: bool, streamLength: int):
+    async def on_init(self, client: RedisClient, streamExists: bool, streamLength: int):
         pass  # pragma: no cover
 
     @abstractmethod
@@ -77,7 +77,7 @@ async def redisSubscriber(
                 streamLength = results[1]
         except Exception as e:
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
-            pass
+            client = None
 
     try:
         await messageHandler.on_init(client, streamExists, streamLength)
@@ -98,14 +98,16 @@ async def redisSubscriber(
                 'XREAD', 'BLOCK', b'0', b'STREAMS', stream, lastId
             )
 
+            results = results[stream.encode()]
+
             for result in results:
-                lastId = result[0]
+                lastId = result[0].decode()
                 msg = result[1]
                 data = msg[b'json']
 
                 payloadSize = len(data)
                 msg = json.loads(data)
-                ret = await messageHandler.handleMsg(msg, lastId.decode(), payloadSize)
+                ret = await messageHandler.handleMsg(msg, lastId, payloadSize)
                 if not ret:
                     break
 
@@ -115,9 +117,8 @@ async def redisSubscriber(
 
     except Exception as e:
         messageHandler.log(e)
-        messageHandler.log(
-            '{logPrefix} Generic Exception caught in {}'.format(traceback.format_exc())
-        )
+        backtrace = traceback.format_exc()
+        messageHandler.log(f'{logPrefix} Generic Exception caught in {backtrace}')
 
     finally:
         messageHandler.log('Closing redis subscription')

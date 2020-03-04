@@ -47,6 +47,7 @@ async def coro():
     # Validate that we can read back what we wrote
     channel = 'channel_2'
     results = await client.send('XREAD', 'BLOCK', b'0', b'STREAMS', channel, '0-0')
+    results = results[channel.encode()]
     # extract value
     val = results[0][1][b'foo'].decode()
     value = f'val_{i}'
@@ -82,6 +83,7 @@ async def coro():
 
     channel = 'channel_2'
     results = await client.send('XREAD', 'BLOCK', b'0', b'STREAMS', channel, '0-0')
+    results = results[channel.encode()]
     # extract value
     val = results[0][1][b'foo'].decode()
     value = f'val_{i}'

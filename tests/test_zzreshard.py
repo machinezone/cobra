@@ -78,6 +78,7 @@ async def coro():
     for i in range(1, 100):
         channel = f'channel_{i}'
         results = await client.send('XREAD', 'BLOCK', b'0', b'STREAMS', channel, '0-0')
+        results = results[channel.encode()]
         # extract value
         val = results[0][1][b'foo'].decode()
         value = f'val_{i}'
@@ -107,6 +108,7 @@ async def coro():
     for i in range(1, 100):
         channel = f'channel_{i}'
         results = await client.send('XREAD', 'BLOCK', b'0', b'STREAMS', channel, '0-0')
+        results = results[channel.encode()]
         # extract value
         val = results[0][1][b'foo'].decode()
         value = f'val_{i}'

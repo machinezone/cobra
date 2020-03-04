@@ -33,7 +33,7 @@ def convertResponse(response, cmd):
                 entries[key] = value
 
             items.append((position, entries))
-        return items
+        return {response[0][0]: items}
 
     elif cmd == 'XREVRANGE':
         items = []

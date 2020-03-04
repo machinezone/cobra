@@ -51,7 +51,7 @@ async def add_and_read(client):
             'XADD', channel, 'MAXLEN', '~', maxLen, b'*', 'json', val
         )
         results = await client.send('XREAD', 'BLOCK', b'0', b'STREAMS', channel, '0-0')
-
+        results = results[channel.encode()]
         assert len(results) == 1
 
         result = results[0]
