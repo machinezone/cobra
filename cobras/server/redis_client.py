@@ -42,7 +42,6 @@ class RedisClient(object):
         elif self.library == 'justredis':
             from cobras.server.justredis import Multiplexer
 
-            # self.db = self.redis.database(decoder=utf8_bytes_as_strings)
             self.redis = Multiplexer({'endpoints': (host, port)})
             self.db = self.redis.database()
 
