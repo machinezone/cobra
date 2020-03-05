@@ -11,24 +11,24 @@ from rcc.plot import asciiPlot
 
 
 @click.command()
-@click.option('--redis_url', default='redis://localhost')
+@click.option('--redis_urls', '-r', default='redis://localhost')
 @click.option('--redis_password')
 @click.option('--timeout', default=5)
 @click.option('--port', default=6379)
 @click.option('--path', '-w', default='weights.csv')
 @click.option('--quiet', '-q', is_flag=True)
-def keyspace(redis_url, port, redis_password, timeout, path, quiet):
+def keyspace(redis_urls, port, redis_password, timeout, path, quiet):
     '''Analyze keyspace
 
     \b
-    rcc analyze-keyspace --redis_url redis://localhost:11000 --timeout 3
+    rcc analyze-keyspace --redis_urls redis://localhost:11000 --timeout 3
 
     Insert keys with this command
     \b
     redis-cli -p 11000 flushdb ; rcc publish -p 11000 --batch --random_channel
     '''
 
-    keySpace = asyncio.run(analyzeKeyspace(redis_url, timeout, progress=not quiet))
+    keySpace = asyncio.run(analyzeKeyspace(redis_urls, timeout, progress=not quiet))
     weights = keySpace.keys
     writeWeightsToCsv(weights, path)
 

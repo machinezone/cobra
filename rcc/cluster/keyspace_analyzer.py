@@ -24,8 +24,11 @@ def makeClientfromNode(node):
     return RedisClient(url, '')  # FIXME password
 
 
-async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
+async def analyzeKeyspace(redisUrlsStr: str, timeout: int, progress: bool = True):
     pattern = '__key*__:*'
+
+    redisUrls = redisUrlsStr.split(';')
+    redisUrl = redisUrls[0]
 
     redisClient = RedisClient(redisUrl, '')
     await redisClient.connect()
@@ -38,7 +41,7 @@ async def analyzeKeyspace(redisUrl: str, timeout: int, progress: bool = True):
             client = makeClientfromNode(node)
             clients.append(client)
     else:
-        clients = [redisClient]
+        clients = [RedisClient(url, '') for url in redisUrls]
 
     cmds = 'xadd'
     keyspaceConfig = 'KEAt'
