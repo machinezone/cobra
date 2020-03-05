@@ -18,7 +18,7 @@ from rcc.response import convertResponse
 
 
 class Connection(object):
-    def __init__(self, url, password, verbose=False):
+    def __init__(self, url, password, multiplexing=False):
         netloc = urlparse(url).netloc
         host, _, port = netloc.partition(':')
         if port:
@@ -29,7 +29,6 @@ class Connection(object):
         self.host = host
 
         self.password = password
-        self.verbose = verbose
 
         self._reader = hiredis.Reader()
 
@@ -41,10 +40,13 @@ class Connection(object):
 
         self.read_size = 4 * 1024
 
-        self.waiters = collections.deque()
-        self.task = None
-        self.inPubSub = False
-        self.pubSubEvent = None
+        self.multiplexing = multiplexing
+
+        if self.multiplexing:
+            self.waiters = collections.deque()
+            self.task = None
+            self.inPubSub = False
+            self.pubSubEvent = None
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
@@ -58,8 +60,9 @@ class Connection(object):
             # FIXME: need AUTH error checking
             await self.auth(self.password)
 
-        self.pubSubEvent = asyncio.Event()
-        self.task = asyncio.create_task(self.readResponseTask())
+        if self.multiplexing:
+            self.pubSubEvent = asyncio.Event()
+            self.task = asyncio.create_task(self.readResponseTask())
 
     def close(self, error=None):
         try:
@@ -75,15 +78,16 @@ class Connection(object):
         self.reader = None
         self.writer = None
 
-        if self.pubSubEvent is not None:
-            self.pubSubEvent.set()
+        if self.multiplexing:
+            if self.pubSubEvent is not None:
+                self.pubSubEvent.set()
 
-        if error:
-            raise error
-        else:
-            if self.task is not None:
-                self.task.cancel()
-                self.task = None
+            if error:
+                raise error
+            else:
+                if self.task is not None:
+                    self.task.cancel()
+                    self.task = None
 
     def connected(self):
         return self.writer is not None and self.reader is not None
@@ -141,13 +145,14 @@ class Connection(object):
         return response
 
     def handlePubSub(self, cmd):
-        if cmd in ('SUBSCRIBE', 'PSUBSCRIBE'):
-            self.inPubSub = True
-            self.pubSubEvent.clear()
+        if self.multiplexing:
+            if cmd in ('SUBSCRIBE', 'PSUBSCRIBE'):
+                self.inPubSub = True
+                self.pubSubEvent.clear()
 
-        if cmd in ('UNSUBSCRIBE', 'PUNSUBSCRIBE'):
-            self.inPubSub = False
-            self.pubSubEvent.set()
+            if cmd in ('UNSUBSCRIBE', 'PUNSUBSCRIBE'):
+                self.inPubSub = False
+                self.pubSubEvent.set()
 
     def writeString(self, buf, data):
         buf.write(b'$%d\r\n' % len(data))
@@ -185,10 +190,12 @@ class Connection(object):
                     self.writeString(buf, arg)
 
             logging.debug(f'{self.logPrefix} {cmd} {args}')
+
         self.writer.write(buf.getbuffer())
 
-        fut = asyncio.get_event_loop().create_future()
-        self.waiters.append((fut, cmd))
+        if self.multiplexing:
+            fut = asyncio.get_event_loop().create_future()
+            self.waiters.append((fut, cmd))
 
         try:
             await self.writer.drain()
@@ -198,4 +205,5 @@ class Connection(object):
             self.close()
             raise
 
-        return fut
+        if self.multiplexing:
+            return fut

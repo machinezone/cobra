@@ -20,12 +20,14 @@ from rcc.response import convertResponse
 
 
 class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
-    def __init__(self, url: str, password):
+    def __init__(self, url: str, password, multiplexing=False):
         self.url = url
         self.password = password
 
+        self.multiplexing = multiplexing
+
         self.urls = {}
-        self.pool = ConnectionPool(password)
+        self.pool = ConnectionPool(password, self.multiplexing)
         self.connection = self.pool.get(self.url)
         self.cluster = False
         self.lock = asyncio.Lock()
@@ -117,15 +119,17 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
         2. to handle redis cluster re-configuring itself
         '''
         try:
-            # return await self.doSend(cmd, *args)
-            return await self.doSendSimple(cmd, *args)
+            if self.multiplexing:
+                return await self.doSendSimple(cmd, *args)
+            else:
+                return await self.doSend(cmd, *args)
         except asyncio.CancelledError:
             raise
         except Exception:
             self.close()
             raise
 
-    async def doSendSimple(self, cmd, *args):
+    async def doSendMultiplexed(self, cmd, *args):
         '''Send a command to the redis server.
         Handle cluster mode redirects with the MOVE response
         '''
@@ -208,7 +212,7 @@ class RedisClient(ClusterCommandsMixin, PubSubCommandsMixin):
                     url = tokens[2]
                     url = 'redis://' + url
 
-                    await self.setConnection([slot], url)
+                    self.urls[slot] = url
                 else:
                     raise response
 
