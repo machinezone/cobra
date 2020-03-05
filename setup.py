@@ -38,6 +38,7 @@ setup(
     packages=find_packages(exclude=["tests"]),
     zip_safe=False,
     install_requires=install_requires,
+    setup_requires=['vcversioner'],
     extras_require={"dev": dev_requires},
     license="BSD 3",
     include_package_data=True,
