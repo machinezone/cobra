@@ -17,7 +17,7 @@ from rcc.plot import asciiPlot
 @click.option('--port', default=6379)
 @click.option('--path', '-w', default='weights.csv')
 @click.option('--quiet', '-q', is_flag=True)
-def analyze_keyspace(redis_url, port, redis_password, timeout, path, quiet):
+def keyspace(redis_url, port, redis_password, timeout, path, quiet):
     '''Analyze keyspace
 
     \b

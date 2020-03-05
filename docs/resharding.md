@@ -34,7 +34,7 @@ The redis cluster is started with: `rcc make-cluster` ; rcc has a convenience su
 ### Keyspace access analysis before resharding
 
 ```
-rcc analyze-keyspace --redis_url redis://localhost:11000 --timeout 10
+rcc keyspace --redis_url redis://localhost:11000 --timeout 10
 ...
 == Nodes ==
 # each ∎ represents a count of 105. total 15515
@@ -87,7 +87,7 @@ It roughtly looks like we took slots away from the first node, and gave them to 
 ### Keyspace access analysis after resharding
 
 ```
-rcc analyze-keyspace --redis_url redis://localhost:11000 --timeout 10
+rcc keyspace --redis_url redis://localhost:11000 --timeout 10
 ...
 == Nodes ==
 # each ∎ represents a count of 79. total 15114
