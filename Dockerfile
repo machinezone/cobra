@@ -16,6 +16,7 @@ RUN addgroup -S app && adduser -S -G app app
 RUN apk add --no-cache libstdc++
 RUN apk add --no-cache curl
 RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache zsh
 
 COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
 
@@ -23,7 +24,9 @@ RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra
 RUN ln -sf /home/app/.local/bin/rcc /usr/bin/rcc
 
 COPY --chown=app:app . /home/app
+COPY --chown=app:app .zshrc /home/app/.zshrc
 USER app
+
 WORKDIR /home/app
 RUN pip install --cache-dir=/opt/pip_cache --user -e .
 
