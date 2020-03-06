@@ -203,6 +203,10 @@ def getDefaultEndpoint():
     return f'ws://127.0.0.1:{getDefaultPort()}'
 
 
+def getDefaultMessageMaxSize():
+    return 2 ** 20
+
+
 def makeUrl(endpoint, appkey):
     return f'{endpoint}/v2?appkey={appkey}'
 

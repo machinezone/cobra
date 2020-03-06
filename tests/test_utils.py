@@ -7,7 +7,7 @@ import tempfile
 import uuid
 
 import coloredlogs
-from cobras.common.apps_config import AppsConfig
+from cobras.common.apps_config import AppsConfig, getDefaultMessageMaxSize
 from cobras.server.app import AppRunner
 
 coloredlogs.install(level='INFO')
@@ -52,6 +52,7 @@ def makeRunner(
         idleTimeout,
         probeRedisOnStartup,
         redisStartupProbingTimeout=5,
+        messageMaxSize=getDefaultMessageMaxSize(),
     )
     asyncio.get_event_loop().run_until_complete(runner.setup())
     return runner, appsConfigPath

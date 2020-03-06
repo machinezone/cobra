@@ -169,6 +169,7 @@ class AppRunner:
         idleTimeout,
         probeRedisOnStartup,
         redisStartupProbingTimeout,
+        messageMaxSize,
     ):
         self.app = {}
         self.app['connections'] = {}
@@ -190,6 +191,7 @@ class AppRunner:
         self.enableStats = enableStats
         self.probeRedisOnStartup = probeRedisOnStartup
         self.redisStartupProbingTimeout = redisStartupProbingTimeout
+        self.messageMaxSize = messageMaxSize
 
         appsConfig = AppsConfig(appsConfigPath)
         self.app['apps_config'] = appsConfig
@@ -285,6 +287,7 @@ class AppRunner:
                 subprotocols=['json'],
                 ping_timeout=None,
                 ping_interval=None,
+                max_size=self.messageMaxSize,
             ) as self.server:
                 await stop
                 self.closeRedis()
@@ -298,6 +301,7 @@ class AppRunner:
                 subprotocols=['json'],
                 ping_timeout=None,
                 ping_interval=None,
+                max_size=self.messageMaxSize,
             )
 
     def run(self, stop):

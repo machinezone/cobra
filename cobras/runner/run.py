@@ -11,7 +11,11 @@ import sys
 
 import click
 import sentry_sdk
-from cobras.common.apps_config import generateAppsConfig, getDefaultAppsConfigPath
+from cobras.common.apps_config import (
+    generateAppsConfig,
+    getDefaultAppsConfigPath,
+    getDefaultMessageMaxSize,
+)
 from cobras.common.version import getVersion
 from cobras.server.app import AppRunner
 
@@ -66,6 +70,11 @@ from cobras.server.app import AppRunner
     default=30,
 )
 @click.option('--environment', envvar='COBRA_ENVIRONMENT', default='dev')
+@click.option(
+    '--message_max_size',
+    envvar='COBRA_MESSAGE_MAX_SIZE',
+    default=getDefaultMessageMaxSize(),
+)
 def run(
     host,
     port,
@@ -86,6 +95,7 @@ def run(
     disable_redis_startup_probing,
     redis_startup_probing_timeout,
     environment,
+    message_max_size,
 ):
     '''Run the cobra server
 
@@ -134,6 +144,7 @@ def run(
         idle_timeout,
         probeRedisOnStartup=not disable_redis_startup_probing,
         redisStartupProbingTimeout=redis_startup_probing_timeout,
+        messageMaxSize=message_max_size,
     )
 
     loop = asyncio.get_event_loop()

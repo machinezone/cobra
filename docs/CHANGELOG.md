@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.6.17] - 2020-03-06
+
+* (server) add --message_max_size option to set the max message size
+
 ## [2.6.12] - 2020-02-03
 
 * do not create a pipeline if we are not using batching publishing
