@@ -11,6 +11,9 @@ dev:
 	pip install -e .
 	pip install "file://`pwd`#egg=cobras[dev]"
 
+release:
+	git push ; make upload
+
 upload:
 	rm -rf dist/*
 	python setup.py sdist bdist_wheel
