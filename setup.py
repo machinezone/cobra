@@ -9,29 +9,14 @@ import sys
 
 from setuptools import find_packages, setup
 
-
-def computeVersion():
-    fullVersion = os.popen('git describe', 'r').read().splitlines()[0]
-    assert fullVersion[0] == 'v'
-
-    parts = fullVersion.split('-')
-    majorMinor = parts[0][1:]
-    if len(parts) > 1:
-        patch = parts[1]
-    else:
-        patch = 0
-
-    version = f'{majorMinor}.{patch}'
-    return version
-
-
 if sys.version_info[:2] < (3, 7):
     print("Error: Cobra requires Python 3.7")
     sys.exit(1)
 
 ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__)))
 
-VERSION = computeVersion()
+with open(os.path.join(ROOT, "DOCKER_VERSION")) as f:
+    VERSION = f.read().strip()
 
 
 dev_requires = ["wheel", "isort", "mypy", "twine", "black", "pre-commit"]
