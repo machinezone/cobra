@@ -4,6 +4,7 @@ all: pylint
 
 dev:
 	@echo "--> Installing Python dependencies"
+	python tools/compute_version_from_git.py > DOCKER_VERSION
 	# order matters here, base package must install first
 	pip install -U pip
 	pip install --requirement requirements.txt
@@ -15,6 +16,7 @@ release:
 	git push ; make upload
 
 upload:
+	python tools/compute_version_from_git.py > DOCKER_VERSION
 	rm -rf dist/*
 	python setup.py sdist bdist_wheel
 	twine upload dist/*.whl
@@ -84,7 +86,7 @@ docker_tag:
 	oc import-image -n cobra-internal cobra:production
 
 docker:
-	git clean -dfx -e venv -e cobras.egg-info/
+	git clean -dfx -e venv -e cobras.egg-info/ -e DOCKER_VERSION
 	docker build -t ${IMG} .
 	docker tag ${IMG} ${BUILD}
 	docker tag ${IMG} ${PROD}

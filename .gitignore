@@ -12,3 +12,4 @@ htmlcov/
 coverage.xml
 .env
 site/
+DOCKER_VERSION

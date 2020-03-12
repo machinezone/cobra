@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.8.6] - 2020-03-12
+
+* (dependencies) update psutils to fix a potential security vulnerability
+
 ## [2.6.17] - 2020-03-06
 
 * (server) add --message_max_size option to set the max message size
