@@ -1,4 +1,4 @@
-'''Read to the cobra key value store
+'''Read from the cobra key value store
 
 Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
@@ -26,7 +26,7 @@ from cobras.common.apps_config import PUBSUB_APPKEY, getDefaultEndpoint, makeUrl
 @click.option('--channel', default='sms_republished_v1_neo_kv_store')
 @click.option('--position')
 def read(endpoint, appkey, rolename, rolesecret, channel, position):
-    '''Read to the cobra key value store
+    '''Read from the cobra key value store
     '''
     url = makeUrl(endpoint, appkey)
     credentials = createCredentials(rolename, rolesecret)
