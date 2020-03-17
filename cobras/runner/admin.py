@@ -13,9 +13,7 @@ from cobras.client.credentials import (
     getDefaultRoleForApp,
     getDefaultSecretForApp,
 )
-from cobras.common.apps_config import ADMIN_APPKEY, getDefaultPort
-
-DEFAULT_URL = f'ws://127.0.0.1:{getDefaultPort()}/v2?appkey={ADMIN_APPKEY}'
+from cobras.common.apps_config import ADMIN_APPKEY, getDefaultEndpoint, makeUrl
 
 
 async def adminCoroutine(url, creds, action, connectionId):
@@ -37,20 +35,22 @@ async def adminCoroutine(url, creds, action, connectionId):
         await connection.adminCloseConnection(connectionId)
 
 
-@click.option('--url', default=DEFAULT_URL)
-@click.option('--role', default=getDefaultRoleForApp('admin'))
-@click.option('--secret', default=getDefaultSecretForApp('admin'))
+@click.option('--endpoint', default=getDefaultEndpoint())
+@click.option('--appkey', default=ADMIN_APPKEY)
+@click.option('--rolename', default=getDefaultRoleForApp('admin'))
+@click.option('--rolesecret', default=getDefaultSecretForApp('admin'))
 @click.option('--action', default='get_connections')
 @click.option('--connection_id')
 @click.command()
-def admin(url, role, secret, action, connection_id):
+def admin(endpoint, appkey, rolename, rolesecret, action, connection_id):
     '''Execute admin operations on the server
 
     \b
     cobra admin --action disconnect --connection_id 3919dc67
     '''
 
-    credentials = createCredentials(role, secret)
+    url = makeUrl(endpoint, appkey)
+    credentials = createCredentials(rolename, rolesecret)
 
     asyncio.get_event_loop().run_until_complete(
         adminCoroutine(url, credentials, action, connection_id)
