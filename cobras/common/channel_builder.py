@@ -57,13 +57,19 @@ def updateMsg(rules, msg):
                     continue
 
                 channel = f'{field1}{separator}{field2}'
+            channels.append(channel)
+
         elif kind == 'add':
             channel = rule.get('channel')
+            channels.append(channel)
+
+        elif kind == 'remove':
+            prefix = rule.get('prefix')
+            channels = {chan for chan in channels if not chan.startswith(prefix)}
+
         else:
             logging.warning(f'Invalid rule kind \'{kind}\'')
             continue
-
-        channels.append(channel)
 
     msg['body']['channels'] = list(set(channels))
 

@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.8.8] - 2020-03-25
+
+* (cobra) add channel builder rule to remove channel starting with a prefix
+
 ## [2.8.7] - 2020-03-16
 
 * (cobra) admin command arguments are --endpoint, --appkey etc... to be consistent with other commands

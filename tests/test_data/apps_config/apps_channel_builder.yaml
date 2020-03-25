@@ -15,3 +15,6 @@ apps:
             common:
                 kind: add
                 channel: foo
+            shard:
+                kind: remove
+                prefix: sms_live_shard_v1
