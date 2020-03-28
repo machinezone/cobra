@@ -46,43 +46,59 @@ class StreamSqlFilter:
         # Basic validation
         tokens = [token.strip() for token in sql_filter.split()]
 
-        validSql = (
-            len(tokens) >= 4
-            and tokens[0].lower() == 'select'
-            and tokens[2].lower() == 'from'
-        )
+        try:
+            selectIdx = tokens.index('SELECT')
+        except ValueError:
+            try:
+                selectIdx = tokens.index('select')
+            except ValueError:
+                raise InvalidStreamSQLError()
 
-        if not validSql:
+        if selectIdx != 0:
             raise InvalidStreamSQLError()
+
+        try:
+            fromIdx = tokens.index('FROM')
+        except ValueError:
+            try:
+                fromIdx = tokens.index('from')
+            except ValueError:
+                raise InvalidStreamSQLError()
 
         # Parse glob
         if tokens[1] == '*':
             self.fields = None
         else:
-            self.fields = tokens[1]
+            fields = ' '.join(tokens[1:fromIdx])
+            fields = fields.split(',')
+            self.fields = []
+            for field in fields:
+                field = field.strip()
+                field, delim, alias = field.partition(' AS ')
+                if not alias:
+                    alias = field
+                self.fields.append((field, alias))
 
         # Parse channel name
-        self.channel = tokens[3].replace('`', '')
+        channelIdx = fromIdx + 1
+        self.channel = tokens[channelIdx].replace('`', '')
 
-        if len(tokens) == 4:
-            self.emptyFilter = True
-            return
+        try:
+            whereIdx = tokens.index('WHERE')
+        except ValueError:
+            try:
+                whereIdx = tokens.index('where')
+            except ValueError:
+                self.emptyFilter = True
+                return
 
-        if 'where' in sql_filter:
-            whereStatement = 'where'
-        elif 'WHERE' in sql_filter:
-            whereStatement = 'WHERE'
-        else:
-            self.emptyFilter = True
-            return
-
-        _, _, sql_filter = sql_filter.partition(whereStatement)
-
+        conditionStart = whereIdx + 1
+        sql_filter = ' '.join(tokens[conditionStart:])
         sql_filter = sql_filter.replace('\n', ' ')
 
         # Since we don't have a legit lexer, we need spaces around our
         # OR and AND ...
-        # FIXME: we should figure out how to use ply
+        # FIXME: we should figure out how to use ply, or sqlparse
         self.andExpr = True
         if ' AND ' in sql_filter or ' OR ' in sql_filter:
             if ' AND ' in sql_filter:
@@ -222,10 +238,9 @@ class StreamSqlFilter:
             return msg
 
         ret = {}
-        fields = self.fields.split(',')
-        for field in fields:
+        for field, alias in self.fields:
             subtree = extractAttributeFromDict(dict(msg), field)
-            ret.update({field: subtree})
+            ret.update({alias: subtree})
 
         return ret
 

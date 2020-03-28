@@ -4,7 +4,7 @@ from cobras.server.stream_sql import match_stream_sql_filter
 
 
 def test_answer():
-    miso_sql_filter = "SELECT * from blah WHERE device.game = 'miso'"
+    miso_sql_filter = "SELECT * FROM blah WHERE device.game = 'miso'"
     miso_msg = {'device': {'game': 'miso'}}
     ody_msg = {'device': {'game': 'ody'}}
 
@@ -13,42 +13,42 @@ def test_answer():
 
 
 def test_invalid_sql():
-    sql_filter = "select *"
+    sql_filter = "SELECT *"
     msg = {'device': {'game': 'miso'}}
 
     assert not match_stream_sql_filter(sql_filter, msg)
 
 
 def test_answer_bad_message_list():
-    sql_filter = "select * from blah where device.game = 'miso'"
+    sql_filter = "SELECT * FROM blah WHERE device.game = 'miso'"
     msg = []
 
     assert not match_stream_sql_filter(sql_filter, msg)
 
 
 def test_answer_bad_message_list_of_list():
-    sql_filter = "select * from blah where device.game = 'miso'"
+    sql_filter = "SELECT * FROM blah WHERE device.game = 'miso'"
     msg = [[]]
 
     assert not match_stream_sql_filter(sql_filter, msg)
 
 
 def test_answer_bad_message_string():
-    sql_filter = "select * from blah where device.game = 'miso'"
+    sql_filter = "SELECT * FROM blah WHERE device.game = 'miso'"
     msg = 'asdcasdcadcascd'
 
     assert not match_stream_sql_filter(sql_filter, msg)
 
 
 def test_answer_bad_message_none():
-    sql_filter = "select * from blah where device.game = 'miso'"
+    sql_filter = "SELECT * FROM blah WHERE device.game = 'miso'"
     msg = None
 
     assert not match_stream_sql_filter(sql_filter, msg)
 
 
 def test_answer_bad_message_dictionary():
-    sql_filter = "select * from blah"
+    sql_filter = "SELECT * FROM blah"
     msg = {}
 
     assert match_stream_sql_filter(sql_filter, msg) == {}
@@ -62,7 +62,7 @@ def test_filter_is_none():
 
 
 def test_check_filter_sms_id():
-    sql_filter = "select * from blah where id = 'sms_test_id'"
+    sql_filter = "SELECT * FROM blah WHERE id = 'sms_test_id'"
     msg_pass = {'id': 'sms_test_id'}
     msg_fail = {'id': 'bar'}
 
@@ -71,7 +71,7 @@ def test_check_filter_sms_id():
 
 
 def test_check_filter_nested():
-    sql_filter = "select * from blah where foo.bar.baz = '10'"
+    sql_filter = "SELECT * FROM blah WHERE foo.bar.baz = '10'"
     msg_pass = {'foo': {'bar': {'baz': '10'}}}
     msg_fail = {'id': 'bar'}
 
@@ -81,7 +81,7 @@ def test_check_filter_nested():
 
 # FIXME: ints are unsupported
 def _test_check_filter_int():
-    sql_filter = "select * from blah where baz = 10"
+    sql_filter = "SELECT * FROM blah WHERE baz = 10"
     msg_pass = {'baz': 10}
     msg_fail = {'baz': 11}
 
@@ -90,7 +90,7 @@ def _test_check_filter_int():
 
 
 def test_check_and_combination():
-    sql_filter = "select * from blah where game = 'ody' AND os_name = 'Android'"
+    sql_filter = "SELECT * FROM blah WHERE game = 'ody' AND os_name = 'Android'"
     msg_pass = {'game': 'ody', 'os_name': 'Android'}
     msg_fail = {'game': 'ody', 'os_name': 'iOS'}
 
@@ -99,7 +99,7 @@ def test_check_and_combination():
 
 
 def test_check_or_combination():
-    sql_filter = "select * from blah where game = 'ody' OR os_name = 'Android'"
+    sql_filter = "SELECT * FROM blah WHERE game = 'ody' OR os_name = 'Android'"
     msg_pass = {'game': 'niso', 'os_name': 'Android'}
     msg_fail = {'game': 'ody', 'os_name': 'iOS'}
 
@@ -108,7 +108,7 @@ def test_check_or_combination():
 
 
 def test_like_statement():
-    miso_sql_filter = "SELECT * from blah WHERE device.game LIKE '_iso'"
+    miso_sql_filter = "SELECT * FROM blah WHERE device.game LIKE '_iso'"
     miso_msg = {'device': {'game': 'miso'}}
     ody_msg = {'device': {'game': 'ody'}}
 
@@ -117,7 +117,7 @@ def test_like_statement():
 
 
 def test_like_statement2():
-    miso_sql_filter = "SELECT * from blah WHERE device.game LIKE '*iso'"
+    miso_sql_filter = "SELECT * FROM blah WHERE device.game LIKE '*iso'"
     miso_msg = {'device': {'game': 'werwerweriso'}}
     ody_msg = {'device': {'game': 'ody'}}
 
@@ -126,7 +126,7 @@ def test_like_statement2():
 
 
 def test_like_statement3():
-    miso_sql_filter = "SELECT * from blah WHERE session LIKE '*aa'"
+    miso_sql_filter = "SELECT * FROM blah WHERE session LIKE '*aa'"
     good_session = {'session': 'asdcasdcasdcadscaa'}
     bad_session = {'session': 'asdcasdcasdcadcasbb'}
 
@@ -135,7 +135,7 @@ def test_like_statement3():
 
 
 def test_booleans_true():
-    essential_sql_filter = "SELECT * from blah WHERE data.essential = true"
+    essential_sql_filter = "SELECT * FROM blah WHERE data.essential = true"
     essential_msg = {'data': {'essential': True}}
     non_essential_msg = {'data': {'essential': False}}
 
@@ -144,7 +144,7 @@ def test_booleans_true():
 
 
 def test_booleans_false():
-    essential_sql_filter = "SELECT * from blah WHERE data.essential = false"
+    essential_sql_filter = "SELECT * FROM blah WHERE data.essential = false"
     essential_msg = {'data': {'essential': True}}
     non_essential_msg = {'data': {'essential': False}}
 
@@ -153,7 +153,7 @@ def test_booleans_false():
 
 
 def test_int_equal():
-    sql_filter = "SELECT * from blah WHERE data.file_count = 10"
+    sql_filter = "SELECT * FROM blah WHERE data.file_count = 10"
     low_file_count_msg = {'data': {'file_count': 10}}
     high_file_count_msg = {'data': {'file_count': 100}}
 
@@ -162,7 +162,7 @@ def test_int_equal():
 
 
 def test_int_multiple_conditions():
-    sql_filter = """SELECT * from `blah` WHERE data.file_count = 16
+    sql_filter = """SELECT * FROM `blah` WHERE data.file_count = 16
                                          AND data.payload_KB = 5637
                                          AND data.essential = true
                  """
@@ -186,7 +186,7 @@ def test_int_multiple_conditions():
 
 
 def test_different_operand():
-    sql_filter = """SELECT * from `blah` WHERE data.file_count != 16
+    sql_filter = """SELECT * FROM `blah` WHERE data.file_count != 16
                                          AND data.essential != true
                                          AND data.description != 'content_sync'
                  """
@@ -206,7 +206,7 @@ def test_different_operand():
 
 
 def test_larger_than_operand():
-    sql_filter = """SELECT * from `blah` WHERE data.file_count > 16
+    sql_filter = """SELECT * FROM `blah` WHERE data.file_count > 16
                  """
     hit = {'data': {'file_count': 17}}
     miss = {'data': {'file_count': 15}}
@@ -216,7 +216,7 @@ def test_larger_than_operand():
 
 
 def test_select_with_subfields_1():
-    sql_filter = """SELECT device.app_version from `blah`
+    sql_filter = """SELECT device.app_version FROM `blah`
                  """
     hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
     # FIXME: implement 'fail case'
@@ -226,7 +226,7 @@ def test_select_with_subfields_1():
 
 
 def test_select_with_subfields_2():
-    sql_filter = """SELECT device.app_version from `blah` WHERE data.file_count > 16
+    sql_filter = """SELECT device.app_version FROM `blah` WHERE data.file_count > 16
                  """
     hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
     miss = {'data': {'file_count': 15}}
@@ -236,7 +236,7 @@ def test_select_with_subfields_2():
 
 
 def test_select_with_multiple_subfields():
-    sql_filter = """SELECT device.app_version,data.file_count from `blah` WHERE data.file_count > 16
+    sql_filter = """SELECT device.app_version,data.file_count FROM `blah` WHERE data.file_count > 16
                  """
     hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
     miss = {'data': {'file_count': 15}}
@@ -245,4 +245,56 @@ def test_select_with_multiple_subfields():
         "device.app_version": "4.3.2",
         'data.file_count': 17,
     } == match_stream_sql_filter(sql_filter, hit)
+    assert not match_stream_sql_filter(sql_filter, miss)
+
+
+def test_select_with_multiple_subfields_and_space():
+    sql_filter = """SELECT device.app_version, data.file_count FROM `blah` WHERE data.file_count > 16
+                 """
+    hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
+    miss = {'data': {'file_count': 15}}
+
+    assert {
+        "device.app_version": "4.3.2",
+        'data.file_count': 17,
+    } == match_stream_sql_filter(sql_filter, hit)
+    assert not match_stream_sql_filter(sql_filter, miss)
+
+
+def test_select_with_multiple_subfields_and_space_with_aliases_A():
+    sql_filter = """SELECT device.app_version AS app_version, data.file_count AS file_count
+                    FROM `blah` WHERE data.file_count > 16
+                 """
+    hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
+    miss = {'data': {'file_count': 15}}
+
+    assert {"app_version": "4.3.2", 'file_count': 17} == match_stream_sql_filter(
+        sql_filter, hit
+    )
+    assert not match_stream_sql_filter(sql_filter, miss)
+
+
+def test_select_with_multiple_subfields_and_space_with_aliases_B():
+    sql_filter = """SELECT device.app_version AS app_version, data.file_count
+                    FROM `blah` WHERE data.file_count > 16
+                 """
+    hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
+    miss = {'data': {'file_count': 15}}
+
+    assert {"app_version": "4.3.2", 'data.file_count': 17} == match_stream_sql_filter(
+        sql_filter, hit
+    )
+    assert not match_stream_sql_filter(sql_filter, miss)
+
+
+def test_select_with_multiple_subfields_and_space_with_aliases_C():
+    sql_filter = """SELECT device.app_version, data.file_count AS file_count
+                    FROM `blah` WHERE data.file_count > 16
+                 """
+    hit = {'data': {'file_count': 17}, 'device': {'app_version': '4.3.2'}}
+    miss = {'data': {'file_count': 15}}
+
+    assert {"device.app_version": "4.3.2", 'file_count': 17} == match_stream_sql_filter(
+        sql_filter, hit
+    )
     assert not match_stream_sql_filter(sql_filter, miss)
