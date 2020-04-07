@@ -12,16 +12,12 @@ RUN pip install --cache-dir=/opt/pip_cache --user --requirement /tmp/requirement
 # Runtime stage
 FROM python:3.8.2-alpine3.11 as runtime
 RUN addgroup -S app && adduser -S -G app app
-
-RUN apk add --no-cache libstdc++
-RUN apk add --no-cache curl
-RUN apk add --no-cache ca-certificates
-RUN apk add --no-cache zsh
+RUN apk add --no-cache libstdc++ curl ca-certificates zsh ws
 
 COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
 
-RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra
-RUN ln -sf /home/app/.local/bin/rcc /usr/bin/rcc
+RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra &&
+	ln -sf /home/app/.local/bin/rcc /usr/bin/rcc
 
 COPY --chown=app:app . /home/app
 COPY --chown=app:app .zshrc /home/app/.zshrc

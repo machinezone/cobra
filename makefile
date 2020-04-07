@@ -70,7 +70,7 @@ clean:
 # Docker
 #
 NAME   := ${DOCKER_REPO}/cobra
-TAG    := $(shell cat DOCKER_VERSION)
+TAG    := $(shell python tools/compute_version_from_git.py)
 IMG    := ${NAME}:${TAG}
 BUILD  := ${NAME}:build
 PROD   := ${NAME}:production
