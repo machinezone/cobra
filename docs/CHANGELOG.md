@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.9.1] - 2020-04-07
+
+* (server) channel builder / do not crash when processing an empty set of rules
+
 ## [2.9.0] - 2020-03-28
 
 * (server) support field alias in StreamSQL, such as SELECT foo AS foo_alias FROM channel

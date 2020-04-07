@@ -1,0 +1,20 @@
+apps:
+    # health check, default app
+    health:
+        roles:
+            health:
+                secret: e3Ae82633cd59b22daea958bbb82ac92
+                permission: publish_subscribe
+
+        channel_builder:
+            game:
+                kind: compose2
+                separator: _
+                field1: device.game
+                field2: id
+            common:
+                kind: add
+                channel: foo
+            shard:
+                kind: remove
+                prefix: sms_live_shard_v1

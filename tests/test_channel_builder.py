@@ -111,3 +111,22 @@ def test_remove_channel():
 
     assert 'a_channel' in channels
     assert 'sms_live_shard_v1.wiso.9' not in channels
+
+
+def test_no_rules():
+    root = os.path.dirname(os.path.realpath(__file__))
+    dataDir = os.path.join(root, 'test_data', 'apps_config')
+    path = os.path.join(dataDir, 'apps_channel_builder_no_rules.yaml')
+
+    appsConfig = AppsConfig(path)
+    appkey = 'health'
+    rules = appsConfig.getChannelBuilderRules(appkey)
+
+    msg = {'action': 'rtm/publish', 'body': {'channels': ['a_channel']}}
+
+    updatedMsg = updateMsg(rules, msg)
+
+    channels = updatedMsg['body']['channels']
+    assert len(channels) == 1
+
+    assert 'a_channel' in channels

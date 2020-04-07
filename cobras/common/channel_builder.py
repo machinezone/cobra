@@ -8,6 +8,8 @@ from cobras.common.algorithm import extractAttributeFromDict
 
 
 def updateMsg(rules, msg):
+    if len(rules) == 0:
+        return msg
 
     body = msg.get('body')
     if body is None:  # invalid cobra schema
