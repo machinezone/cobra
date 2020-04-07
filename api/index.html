@@ -9,70 +9,57 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Api - cobra</title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="..">cobra</a>
-                </div>
+                <a class="navbar-brand" href="..">cobra</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">General</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">General</a>
                             </li>
-                            <li >
-                                <a href="../CHANGELOG/">Changelog</a>
+                            <li class="navitem">
+                                <a href="../CHANGELOG/" class="nav-link">Changelog</a>
                             </li>
-                            <li class="active">
-                                <a href="./">Api</a>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Api</a>
                             </li>
-                            <li >
-                                <a href="../sdk/">Sdk</a>
+                            <li class="navitem">
+                                <a href="../sdk/" class="nav-link">Sdks</a>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="../CHANGELOG/">
+                            <li class="nav-item">
+                                <a rel="prev" href="../CHANGELOG/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../sdk/">
+                            <li class="nav-item">
+                                <a rel="next" href="../sdk/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -82,79 +69,86 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#overview">Overview</a></li>
-            <li><a href="#message-order-guarantees">Message order guarantees</a></li>
-        <li class="main "><a href="#protocol-data-unit-pdu">Protocol Data Unit (PDU)</a></li>
-            <li><a href="#definition">Definition</a></li>
-            <li><a href="#pdu-encoding">PDU encoding</a></li>
-            <li><a href="#json-pdus">JSON PDUs</a></li>
-            <li><a href="#websocket-for-rtm">WebSocket for RTM</a></li>
-            <li><a href="#pdu-types">PDU types</a></li>
-            <li><a href="#pdu-size">PDU size</a></li>
-            <li><a href="#pdu-fields">PDU fields</a></li>
-            <li><a href="#subscription">Subscription</a></li>
-        <li class="main "><a href="#publish-pdu">Publish PDU</a></li>
-            <li><a href="#request">Request</a></li>
-            <li><a href="#response-ok">Response (OK)</a></li>
-            <li><a href="#response-error">Response (error)</a></li>
-            <li><a href="#unclassified-errors">Unclassified errors</a></li>
-        <li class="main "><a href="#subscribe-pdu">Subscribe PDU</a></li>
-            <li><a href="#position_1">Position</a></li>
-            <li><a href="#subscription_id">subscription_id</a></li>
-            <li><a href="#subscribe-without-streamview-no-filter-field">Subscribe without streamview (no filter field)</a></li>
-            <li><a href="#subscribe-with-streamview-filter-field">Subscribe with streamview (filter field)</a></li>
-            <li><a href="#unclassified-errors_1">Unclassified errors</a></li>
-            <li><a href="#subscribe-specific-errors">Subscribe-specific errors</a></li>
-            <li><a href="#out_of_sync-and-fast_forward">out_of_sync and fast_forward</a></li>
-            <li><a href="#updating-a-subscription">Updating a subscription</a></li>
-        <li class="main "><a href="#subscription-pdus-unsolicited">Subscription PDUs (unsolicited)</a></li>
-            <li><a href="#subscription-data">Subscription data</a></li>
-            <li><a href="#subscription-info">Subscription info</a></li>
-            <li><a href="#subscription-error">Subscription error</a></li>
-            <li><a href="#unsolicited-subscribe-errors">Unsolicited subscribe errors</a></li>
-            <li><a href="#unsolicited-subscribe-info-messages">Unsolicited subscribe info messages</a></li>
-        <li class="main "><a href="#unsubscribe-pdu">Unsubscribe PDU</a></li>
-            <li><a href="#request_3">Request</a></li>
-            <li><a href="#response-ok_3">Response (ok)</a></li>
-            <li><a href="#response-error_3">Response (error)</a></li>
-            <li><a href="#unclassified-errors_2">Unclassified errors</a></li>
-            <li><a href="#unsubscribe-specific-errors">Unsubscribe-specific errors</a></li>
-        <li class="main "><a href="#read-pdu">Read PDU</a></li>
-            <li><a href="#request_4">Request</a></li>
-            <li><a href="#response-ok_4">Response (ok)</a></li>
-            <li><a href="#response-error_4">Response (error)</a></li>
-            <li><a href="#unclassified-errors_3">Unclassified errors</a></li>
-            <li><a href="#read-specific-errors">Read-specific errors</a></li>
-        <li class="main "><a href="#write-pdu">Write PDU</a></li>
-        <li class="main "><a href="#delete-pdu">Delete PDU</a></li>
-            <li><a href="#request_5">Request</a></li>
-            <li><a href="#response-ok_5">Response (ok)</a></li>
-            <li><a href="#response-error_5">Response (error)</a></li>
-            <li><a href="#unclassified-errors_4">Unclassified errors</a></li>
-            <li><a href="#delete-specific-errors">Delete-specific errors</a></li>
-            <li><a href="#using-delete">Using delete</a></li>
-        <li class="main "><a href="#handshake-authenticate-pdus">Handshake &amp; Authenticate PDUs</a></li>
-        <li class="main "><a href="#handshake-pdu">Handshake PDU</a></li>
-            <li><a href="#request_6">Request</a></li>
-            <li><a href="#response-ok_6">Response (ok)</a></li>
-            <li><a href="#response-error_6">Response (error)</a></li>
-            <li><a href="#unclassified-errors_5">Unclassified errors</a></li>
-            <li><a href="#handshake-specific-errors">Handshake-specific errors</a></li>
-        <li class="main "><a href="#authenticate-pdu">Authenticate PDU</a></li>
-            <li><a href="#request_7">Request</a></li>
-            <li><a href="#response-ok_7">Response (ok)</a></li>
-            <li><a href="#response-error_7">Response (error)</a></li>
-            <li><a href="#unclassified-errors_6">Unclassified errors</a></li>
-            <li><a href="#authenticate-specific-errors">Authenticate-specific errors</a></li>
-            <li><a href="#hash-computation">Hash computation</a></li>
-            <li><a href="#hash-computation-example">Hash computation example</a></li>
-        <li class="main "><a href="#error-reference">Error Reference</a></li>
-            <li><a href="#error-types">Error types</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#overview" class="nav-link">Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#protocol-data-unit-pdu" class="nav-link">Protocol Data Unit (PDU)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#publish-pdu" class="nav-link">Publish PDU</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#subscribe-pdu" class="nav-link">Subscribe PDU</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#subscription-pdus-unsolicited" class="nav-link">Subscription PDUs (unsolicited)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#unsubscribe-pdu" class="nav-link">Unsubscribe PDU</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#read-pdu" class="nav-link">Read PDU</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#write-pdu" class="nav-link">Write PDU</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#delete-pdu" class="nav-link">Delete PDU</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#handshake-authenticate-pdus" class="nav-link">Handshake &amp; Authenticate PDUs</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#handshake-pdu" class="nav-link">Handshake PDU</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#authenticate-pdu" class="nav-link">Authenticate PDU</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="2"><a href="#error-reference" class="nav-link">Error Reference</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <h2 id="overview">Overview</h2>
 <p>The RTM protocol is our wire protocol, which enables direct two-way
@@ -1391,6 +1385,7 @@ present, specific to a PDU type.</p>
 </tr>
 </tbody>
 </table></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -1404,19 +1399,19 @@ present, specific to a PDU type.</p>
         <script src="../js/base.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
                 <p>
                     From here you can search these documents. Enter
                     your search terms below.
                 </p>
-                <form role="form">
+                <form>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
@@ -1427,12 +1422,12 @@ present, specific to a PDU type.</p>
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">

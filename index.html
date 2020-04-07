@@ -9,70 +9,57 @@
         
         <link rel="shortcut icon" href="img/favicon.ico">
         <title>cobra</title>
-        <link href="css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/font-awesome.min.css" rel="stylesheet">
         <link href="css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="js/jquery-1.10.2.min.js" defer></script>
-        <script src="js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body class="homepage">
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href=".">cobra</a>
-                </div>
+                <a class="navbar-brand" href=".">cobra</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li class="active">
-                                <a href=".">General</a>
+                            <li class="navitem active">
+                                <a href="." class="nav-link">General</a>
                             </li>
-                            <li >
-                                <a href="CHANGELOG/">Changelog</a>
+                            <li class="navitem">
+                                <a href="CHANGELOG/" class="nav-link">Changelog</a>
                             </li>
-                            <li >
-                                <a href="api/">Api</a>
+                            <li class="navitem">
+                                <a href="api/" class="nav-link">Api</a>
                             </li>
-                            <li >
-                                <a href="sdk/">Sdk</a>
+                            <li class="navitem">
+                                <a href="sdk/" class="nav-link">Sdks</a>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li class="disabled">
-                                <a rel="next" >
+                            <li class="nav-item">
+                                <a rel="prev" class="nav-link disabled">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="CHANGELOG/">
+                            <li class="nav-item">
+                                <a rel="next" href="CHANGELOG/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -82,23 +69,76 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#general">General</a></li>
-        <li class="main "><a href="#news">News</a></li>
-        <li class="main "><a href="#installation">Installation</a></li>
-            <li><a href="#with-pip">With pip</a></li>
-            <li><a href="#with-docker">With docker</a></li>
-            <li><a href="#for-development">For development</a></li>
-        <li class="main "><a href="#usage">Usage</a></li>
-            <li><a href="#cobra-server-and-test-clients">Cobra server and test clients</a></li>
-            <li><a href="#bavarde">bavarde</a></li>
-        <li class="main "><a href="#setup">Setup</a></li>
-        <li class="main "><a href="#contributing">Contributing</a></li>
-        <li class="main "><a href="#thank-you">Thank you</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#general" class="nav-link">General</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#news" class="nav-link">News</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#installation" class="nav-link">Installation</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#with-pip" class="nav-link">With pip</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#with-docker" class="nav-link">With docker</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#for-development" class="nav-link">For development</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#usage" class="nav-link">Usage</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#cobra-server-and-test-clients" class="nav-link">Cobra server and test clients</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#bavarde" class="nav-link">bavarde</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#setup" class="nav-link">Setup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#contributing" class="nav-link">Contributing</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#thank-you" class="nav-link">Thank you</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <h1 id="general">General</h1>
 <p><a href="https://badge.fury.io/py/cobras"><img alt="PyPI version" src="https://badge.fury.io/py/cobras.svg" /></a>
@@ -166,7 +206,7 @@ Commands:
 </code></pre>
 
 <p>To run the server use <code>cobra run</code>. You can run a health-check against the server with <code>cobra health</code>.</p>
-<pre><code>cobra health --url 'ws://jeanserge.com/v2?appkey=_health' --secret A5a3BdEfbc6Df5AAFFcadE7F9Dd7F17E --role health
+<pre><code>cobra health --endpoint ws://jeanserge.com --appkey _health --rolesecret A5a3BdEfbc6Df5AAFFcadE7F9Dd7F17E --rolename health
 </code></pre>
 
 <h2 id="bavarde">bavarde</h2>
@@ -207,6 +247,7 @@ Commands:
 <li><a href="https://redis.io/">Redis</a>, the swiss army knife of the internet which provide a very scalable publish/subscribe feature to dispatch messages while retaining them and allowing lookups of old messages (see [Redis Streams] (https://redis.io/topics/streams-intro).</li>
 <li>The python <a href="https://websockets.readthedocs.io/en/stable/intro.html">websockets</a> library, very elegantly implementing the <a href="https://tools.ietf.org/html/rfc6455">WebSockets</a> protocol using <strong>asyncio</strong>.</li>
 </ul></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -220,19 +261,19 @@ Commands:
         <script src="js/base.js" defer></script>
         <script src="search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
                 <p>
                     From here you can search these documents. Enter
                     your search terms below.
                 </p>
-                <form role="form">
+                <form>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
@@ -243,12 +284,12 @@ Commands:
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">
@@ -288,6 +329,6 @@ Commands:
 </html>
 
 <!--
-MkDocs version : 1.0.4
-Build Date UTC : 2019-12-07 00:59:04
+MkDocs version : 1.1
+Build Date UTC : 2020-04-07 17:35:17
 -->

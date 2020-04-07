@@ -9,70 +9,57 @@
         
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Changelog - cobra</title>
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
 
         <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap-3.0.3.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-
-                <!-- Collapsed navigation -->
-                <div class="navbar-header">
-                    <!-- Expander button -->
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="..">cobra</a>
-                </div>
+                <a class="navbar-brand" href="..">cobra</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
                 <!-- Expanded navigation -->
-                <div class="navbar-collapse collapse">
+                <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
-                            <li >
-                                <a href="..">General</a>
+                            <li class="navitem">
+                                <a href=".." class="nav-link">General</a>
                             </li>
-                            <li class="active">
-                                <a href="./">Changelog</a>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Changelog</a>
                             </li>
-                            <li >
-                                <a href="../api/">Api</a>
+                            <li class="navitem">
+                                <a href="../api/" class="nav-link">Api</a>
                             </li>
-                            <li >
-                                <a href="../sdk/">Sdk</a>
+                            <li class="navitem">
+                                <a href="../sdk/" class="nav-link">Sdks</a>
                             </li>
                         </ul>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
-                            <li >
-                                <a rel="next" href="..">
+                            <li class="nav-item">
+                                <a rel="prev" href=".." class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
-                            <li >
-                                <a rel="prev" href="../api/">
+                            <li class="nav-item">
+                                <a rel="next" href="../api/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -82,29 +69,206 @@
         </div>
 
         <div class="container">
-                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="main active"><a href="#changelog">Changelog</a></li>
-            <li><a href="#261-2019-12-05">[2.6.1] - 2019-12-05</a></li>
-            <li><a href="#260-2019-12-05">[2.6.0] - 2019-12-05</a></li>
-            <li><a href="#255-2019-12-05">[2.5.5] - 2019-12-05</a></li>
-            <li><a href="#254-2019-12-04">[2.5.4] - 2019-12-04</a></li>
-            <li><a href="#253-2019-12-04">[2.5.3] - 2019-12-04</a></li>
-            <li><a href="#252-2019-12-02">[2.5.2] - 2019-12-02</a></li>
-            <li><a href="#251-2019-12-02">[2.5.1] - 2019-12-02</a></li>
-            <li><a href="#name-stmts-miss-cover">Name                                    Stmts   Miss  Cover</a></li>
-            <li><a href="#122-2019-08-09">[1.2.2] - 2019-08-09</a></li>
-            <li><a href="#120-2019-08-09">[1.2.0] - 2019-08-09</a></li>
-            <li><a href="#111-2019-08-07">[1.1.1] - 2019-08-07</a></li>
-            <li><a href="#110-2019-08-03">[1.1.0] - 2019-08-03</a></li>
-            <li><a href="#100-2019-07-31">[1.0.0] - 2019-07-31</a></li>
-            <li><a href="#00196-2019-07-26">[0.0.196] - 2019-07-26</a></li>
-    </ul>
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#changelog" class="nav-link">Changelog</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#291-2020-04-07" class="nav-link">[2.9.1] - 2020-04-07</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#290-2020-03-28" class="nav-link">[2.9.0] - 2020-03-28</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#288-2020-03-25" class="nav-link">[2.8.8] - 2020-03-25</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#287-2020-03-16" class="nav-link">[2.8.7] - 2020-03-16</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#286-2020-03-12" class="nav-link">[2.8.6] - 2020-03-12</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#2617-2020-03-06" class="nav-link">[2.6.17] - 2020-03-06</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#2612-2020-02-03" class="nav-link">[2.6.12] - 2020-02-03</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#2611-2020-01-31" class="nav-link">[2.6.11] - 2020-01-31</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#2610-2020-01-30" class="nav-link">[2.6.10] - 2020-01-30</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#269-2020-01-30" class="nav-link">[2.6.9] - 2020-01-30</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#266-2019-12-31" class="nav-link">[2.6.6] - 2019-12-31</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#265-2019-12-24" class="nav-link">[2.6.5] - 2019-12-24</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#264-2019-12-18" class="nav-link">[2.6.4] - 2019-12-18</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#263-2019-12-16" class="nav-link">[2.6.3] - 2019-12-16</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#262-2019-12-08" class="nav-link">[2.6.2] - 2019-12-08</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#261-2019-12-05" class="nav-link">[2.6.1] - 2019-12-05</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#260-2019-12-05" class="nav-link">[2.6.0] - 2019-12-05</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#255-2019-12-05" class="nav-link">[2.5.5] - 2019-12-05</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#254-2019-12-04" class="nav-link">[2.5.4] - 2019-12-04</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#253-2019-12-04" class="nav-link">[2.5.3] - 2019-12-04</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#252-2019-12-02" class="nav-link">[2.5.2] - 2019-12-02</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#251-2019-12-02" class="nav-link">[2.5.1] - 2019-12-02</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#name-stmts-miss-cover" class="nav-link">Name                                    Stmts   Miss  Cover</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#122-2019-08-09" class="nav-link">[1.2.2] - 2019-08-09</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#120-2019-08-09" class="nav-link">[1.2.0] - 2019-08-09</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#111-2019-08-07" class="nav-link">[1.1.1] - 2019-08-07</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#110-2019-08-03" class="nav-link">[1.1.0] - 2019-08-03</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#100-2019-07-31" class="nav-link">[1.0.0] - 2019-07-31</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#00196-2019-07-26" class="nav-link">[0.0.196] - 2019-07-26</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
 </div></div>
-                <div class="col-md-9" role="main">
+                    <div class="col-md-9" role="main">
 
 <h1 id="changelog">Changelog</h1>
 <p>All changes to this project will be documented in this file.</p>
+<h2 id="291-2020-04-07">[2.9.1] - 2020-04-07</h2>
+<ul>
+<li>(server) channel builder / do not crash when processing an empty set of rules</li>
+</ul>
+<h2 id="290-2020-03-28">[2.9.0] - 2020-03-28</h2>
+<ul>
+<li>(server) support field alias in StreamSQL, such as SELECT foo AS foo_alias FROM channel</li>
+</ul>
+<h2 id="288-2020-03-25">[2.8.8] - 2020-03-25</h2>
+<ul>
+<li>(cobra) add channel builder rule to remove channel starting with a prefix</li>
+</ul>
+<h2 id="287-2020-03-16">[2.8.7] - 2020-03-16</h2>
+<ul>
+<li>(cobra) admin command arguments are --endpoint, --appkey etc... to be consistent with other commands</li>
+</ul>
+<h2 id="286-2020-03-12">[2.8.6] - 2020-03-12</h2>
+<ul>
+<li>(dependencies) update psutils to fix a potential security vulnerability</li>
+</ul>
+<h2 id="2617-2020-03-06">[2.6.17] - 2020-03-06</h2>
+<ul>
+<li>(server) add --message_max_size option to set the max message size</li>
+</ul>
+<h2 id="2612-2020-02-03">[2.6.12] - 2020-02-03</h2>
+<ul>
+<li>do not create a pipeline if we are not using batching publishing</li>
+</ul>
+<h2 id="2611-2020-01-31">[2.6.11] - 2020-01-31</h2>
+<ul>
+<li>unsubscribe requires a permission</li>
+</ul>
+<h2 id="2610-2020-01-30">[2.6.10] - 2020-01-30</h2>
+<ul>
+<li>add new server option to print all asyncio tasks</li>
+</ul>
+<h2 id="269-2020-01-30">[2.6.9] - 2020-01-30</h2>
+<ul>
+<li>server: add user agent to some error messages</li>
+</ul>
+<h2 id="266-2019-12-31">[2.6.6] - 2019-12-31</h2>
+<ul>
+<li>(server) bump aioredis, hiredis, rapidjson and pyyaml dependency</li>
+</ul>
+<h2 id="265-2019-12-24">[2.6.5] - 2019-12-24</h2>
+<ul>
+<li>(server) in the stats collecting code, downgrade an error to a warning when failing to reach redis</li>
+</ul>
+<h2 id="264-2019-12-18">[2.6.4] - 2019-12-18</h2>
+<ul>
+<li>(client) monitor command uses rolename and rolesecret argument names like other commands</li>
+<li>(server) invalid json received message needs to be converted to bytes before it can encoded to base64 for error reporting</li>
+</ul>
+<h2 id="263-2019-12-16">[2.6.3] - 2019-12-16</h2>
+<ul>
+<li>(server) sentry_sdk: always attach a stack trace to sentry error events</li>
+</ul>
+<h2 id="262-2019-12-08">[2.6.2] - 2019-12-08</h2>
+<ul>
+<li>(server) handle termination with SIGTERM properly, as when a service is restarted by kubernete or docker. All connections will be closed with error 1001 when this happen.</li>
+</ul>
 <h2 id="261-2019-12-05">[2.6.1] - 2019-12-05</h2>
 <ul>
 <li>(server) bump sentry_sdk dependency to 0.13.5 + set release and environment while initializing the sentry sdk</li>
@@ -700,6 +864,7 @@ tests/test_validate_redis_position.py .                                         
 <ul>
 <li>Initial release</li>
 </ul></div>
+            </div>
         </div>
 
         <footer class="col-md-12">
@@ -713,19 +878,19 @@ tests/test_validate_redis_position.py .                                         
         <script src="../js/base.js" defer></script>
         <script src="../search/main.js" defer></script>
 
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
-    <div class="modal-dialog">
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
             </div>
             <div class="modal-body">
                 <p>
                     From here you can search these documents. Enter
                     your search terms below.
                 </p>
-                <form role="form">
+                <form>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
@@ -736,12 +901,12 @@ tests/test_validate_redis_position.py .                                         
             </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="Keyboard Shortcuts Modal" aria-hidden="true">
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Keyboard Shortcuts</h4>
             </div>
             <div class="modal-body">
               <table class="table">
