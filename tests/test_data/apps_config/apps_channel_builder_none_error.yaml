@@ -1,0 +1,60 @@
+batch_publish_size: 50
+channel_max_length: 10000
+apps:
+    _admin:
+        roles:
+          admin:
+            permissions:
+            - subscribe
+            - unsubscribe
+            - publish
+            - admin
+            - read
+            - write
+            - delete
+            secret: foo
+    _health:
+      roles:
+        health:
+          permissions:
+          - subscribe
+          - unsubscribe
+          - publish
+          - admin
+          - read
+          - write
+          - delete
+          secret: foo
+    _pubsub:
+      roles:
+        pubsub:
+          permissions:
+          - subscribe
+          - unsubscribe
+          - publish
+          - admin
+          - read
+          - write
+          - delete
+          secret: foo
+      channel_builder:
+        # game:
+        #   kind: compose2
+        #   separator: _
+        #   field1: device.game
+        #   field2: id
+        # common:
+        #   kind: add
+        #   channel: foo
+    _stats:
+      roles:
+        stats:
+          permissions:
+          - subscribe
+          - unsubscribe
+          - publish
+          - admin
+          - read
+          - write
+          - delete
+          secret: foo
