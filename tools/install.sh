@@ -18,6 +18,8 @@ python3 -m venv venv || {
     exit 1
 }
 
+venv/bin/pip3 install --upgrade pip
+
 venv/bin/pip3 install -U cobras || {
     echo "cobra failed to install. You might be missing a C compiler to install hiredis"
     echo "Install XCode, XCode developer tools, clang or gcc"
