@@ -31,6 +31,14 @@ Cobra is actively being developed, check out the [changelog](docs/CHANGELOG.md) 
 
 # Installation
 
+## UNIX one liner
+
+```
+/bin/sh -c "`curl -fsSL https://raw.githubusercontent.com/machinezone/cobra/master/tools/install.sh`"
+```
+
+You can see what the install script is doing first [here](https://github.com/machinezone/cobra/blob/master/tools/install.sh).
+
 ## With pip
 
 ```
