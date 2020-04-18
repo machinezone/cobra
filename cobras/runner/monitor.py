@@ -22,9 +22,11 @@ from cobras.common.apps_config import STATS_APPKEY, getDefaultEndpoint, makeUrl
 @click.option('--hide_nodes', is_flag=True)
 @click.option('--hide_roles', is_flag=True)
 @click.option('--hide_channels', is_flag=True)
+@click.option('--hide_summary', is_flag=True)
 @click.option('--subscribers', is_flag=True)
 @click.option('--role_filter')
 @click.option('--channel_filter')
+@click.option('--metric_filter')
 @click.option('--system', is_flag=True)
 @click.option('--once', is_flag=True)
 @click.option('--tidy', is_flag=True)
@@ -36,9 +38,11 @@ def monitor(
     raw,
     role_filter,
     channel_filter,
+    metric_filter,
     hide_nodes,
     hide_roles,
     hide_channels,
+    hide_summary,
     subscribers,
     system,
     once,
@@ -61,9 +65,11 @@ def monitor(
         raw,
         role_filter,
         channel_filter,
+        metric_filter,
         not hide_nodes,
         not hide_roles,
         not hide_channels,
+        not hide_summary,
         subscribers,
         system,
         once,

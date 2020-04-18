@@ -44,9 +44,11 @@ class MessageHandlerClass:
         self.raw = args['raw']
         self.roleFilter = args['role_filter']
         self.channelFilter = args['channel_filter']
+        self.metricFilter = args['metric_filter']
         self.showNodes = args['show_nodes']
         self.showRoles = args['show_roles']
         self.showChannels = args['show_channels']
+        self.showSumarry = args['show_summary']
         self.subscribers = args['subscribers']
         self.system = args['system']
         self.once = args['once']
@@ -141,8 +143,9 @@ class MessageHandlerClass:
             key: self.humanReadableSize(key, val) for key, val in self.metrics.items()
         }
 
-        print(writeJson(self.metrics))
-        print()
+        if self.showSumarry:
+            print(writeJson(self.metrics))
+            print()
 
         # Print a table with all nodes
         nodeEntries = [self.nodeEntriesHeader]
@@ -237,6 +240,11 @@ class MessageHandlerClass:
         rows = [['Channels'] + list(sorted(self.channels))]
 
         for metric in sorted(self.allChannelMetrics):
+
+            if self.metricFilter is not None:
+                if self.metricFilter not in metric:
+                    continue
+
             metricByChannel = self.allChannelMetrics[metric]
             # print(metric, metricByRole)
 
@@ -263,9 +271,11 @@ def runMonitor(
     raw,
     roleFilter,
     channelFilter,
+    metricFilter,
     showNodes,
     showRoles,
     showChannels,
+    showSumarry,
     subscribers,
     system,
     once,
@@ -289,9 +299,11 @@ def runMonitor(
                 'raw': raw,
                 'role_filter': roleFilter,
                 'channel_filter': channelFilter,
+                'metric_filter': metricFilter,
                 'show_nodes': showNodes,
                 'show_roles': showRoles,
                 'show_channels': showChannels,
+                'show_summary': showSumarry,
                 'subscribers': subscribers,
                 'system': system,
                 'once': once,
