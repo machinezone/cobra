@@ -17,7 +17,7 @@ import click
 from cobras.bavarde.client.client import runClient
 
 DEFAULT_LOCAL_URL = 'ws://127.0.0.1:8765/v2?appkey=_pubsub'
-DEFAULT_URL = 'ws://jeanserge.com/v2?appkey=_pubsub'
+DEFAULT_URL = 'wss://jeanserge.com/v2?appkey=_pubsub'
 
 DEFAULT_ROLE = 'pubsub'
 DEFAULT_SECRET = 'ccc02DE4Ed8CAB9aEfC8De3e13BfBE5E'

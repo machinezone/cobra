@@ -7,11 +7,12 @@ Lot of code borrowed from websockets cli.
 
 import asyncio
 import datetime
+import logging
 import os
 import signal
 import sys
 import uuid
-from typing import Any, Set
+from typing import Any, Set, Dict, List
 
 import click
 import websockets
@@ -86,8 +87,10 @@ class MessageHandlerClass:
         '''Get a connection to the DB'''
         print('Ready to receive messages')
 
-    async def handleMsg(self, message: dict, position: str) -> ActionFlow:
-        self.q.put_nowait((message, position))
+    async def handleMsg(self, messages: List[Dict], position: str) -> ActionFlow:
+        for message in messages:
+            self.q.put_nowait((message, position))
+
         return ActionFlow.CONTINUE
 
 
@@ -166,6 +169,9 @@ async def runClient(
 
             if stop in done:
                 break
+
+    except Exception as e:
+        logging.error(f'Caught exception: {e}')
 
     finally:
         connection = args.get('connection')
