@@ -154,17 +154,22 @@ async def unsafeSubcribeClient(
     '''
     connection = Connection(url, credentials)
     await connection.connect()
-    message = await connection.subscribe(
-        channel,
-        position,
-        fsqlFilter,
-        messageHandlerClass,
-        messageHandlerArgs,
-        subscriptionId=channel,
-        resumeFromLastPosition=resumeFromLastPosition,
-        resumeFromLastPositionId=resumeFromLastPositionId,
-        batchSize=batchSize,
-    )
+
+    try:
+        message = await connection.subscribe(
+            channel,
+            position,
+            fsqlFilter,
+            messageHandlerClass,
+            messageHandlerArgs,
+            subscriptionId=channel,
+            resumeFromLastPosition=resumeFromLastPosition,
+            resumeFromLastPositionId=resumeFromLastPositionId,
+            batchSize=batchSize,
+        )
+    except Exception:
+        message = None
+
     return message
 
 
