@@ -34,9 +34,14 @@ cat <<EOF
 
 cobras is now installed in $PWD/venv/bin/cobra
 
-You can alias it with
+You can create aliases with
 alias cobra='$PWD/venv/bin/cobra'
+alias bavarde='$PWD/venv/bin/bavarde'
 
 or update your PATH
 export PATH=$PWD/venv/bin:\$PATH
+
+Come say hi with:
+
+bavarde client
 EOF
