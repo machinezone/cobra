@@ -24,7 +24,7 @@ from cobras.bavarde.client.client import (
     DEFAULT_SECRET,
 )
 
-DEFAULT_PID = "/tmp/test.pid"
+DEFAULT_PID = "/tmp/bavarde.pid"
 
 
 class MessageHandlerClass:
