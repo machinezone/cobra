@@ -21,6 +21,12 @@ from cobras.client.connection import ActionFlow
 from cobras.client.credentials import createCredentials
 from cobras.common.task_cleanup import addTaskCleanup
 
+DEFAULT_LOCAL_URL = 'ws://127.0.0.1:8765/v2?appkey=_pubsub'
+DEFAULT_URL = 'wss://jeanserge.com/v2?appkey=_pubsub'
+
+DEFAULT_ROLE = 'pubsub'
+DEFAULT_SECRET = 'ccc02DE4Ed8CAB9aEfC8De3e13BfBE5E'
+
 
 def exit_from_event_loop_thread(
     loop: asyncio.AbstractEventLoop, stop: "asyncio.Future[None]"
