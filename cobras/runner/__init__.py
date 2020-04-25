@@ -10,6 +10,7 @@ from pkgutil import walk_packages
 
 import click
 import coloredlogs
+import uvloop
 
 from cobras.common.atexit_profiler import registerProfiler
 
@@ -31,6 +32,8 @@ def main(verbose, profile):
 
 Cobra is a realtime messaging server using Python3, WebSockets and Redis.
     """
+    uvloop.install()
+
     if verbose:
         coloredlogs.install(level='INFO', fmt=LOGGING_FORMAT)
 

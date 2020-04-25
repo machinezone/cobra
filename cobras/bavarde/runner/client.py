@@ -36,7 +36,7 @@ from cobras.bavarde.client.client import (
 @click.option('--dev', '-v', count=True)
 @click.option('--stream_sql')
 def client(url, role, secret, channel, position, username, stream_sql, verbose, dev):
-    '''WRITEME'''
+    '''bavarde chat cli'''
     if os.getenv('DEBUG') is not None or verbose:
         pprint.pprint(locals())
 

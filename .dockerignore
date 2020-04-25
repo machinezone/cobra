@@ -1,6 +1,5 @@
 venv/*
 .git
-tools/
 dist/
 tests/
 attic/
