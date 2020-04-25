@@ -6,7 +6,7 @@ env PIP_DOWNLOAD_CACHE=/opt/pip_cache
 RUN apk add --no-cache gcc g++ musl-dev linux-headers make
 
 # Install dependant packages
-RUN pip install --cache-dir=/opt/pip_cache --user --requirement uvloop==0.14.0
+RUN pip install --cache-dir=/opt/pip_cache --user uvloop==0.14.0
 COPY requirements.txt /tmp
 RUN pip install --cache-dir=/opt/pip_cache --user --requirement /tmp/requirements.txt
 
