@@ -7,6 +7,7 @@ Lot of code borrowed from websockets cli.
 
 import asyncio
 import datetime
+import logging
 import os
 import signal
 import sys
@@ -16,7 +17,7 @@ from typing import Any, Set, Dict, List
 import click
 import websockets
 
-from cobras.client.client import unsafeSubcribeClient
+from cobras.client.client import subscribeClient
 from cobras.client.connection import ActionFlow
 from cobras.client.credentials import createCredentials
 from cobras.common.task_cleanup import addTaskCleanup
@@ -32,9 +33,6 @@ def exit_from_event_loop_thread(
     loop: asyncio.AbstractEventLoop, stop: "asyncio.Future[None]"
 ) -> None:
     loop.stop()
-
-    print('Exiting')
-
     if not stop.done():
         # When exiting the thread that runs the event loop, raise
         # KeyboardInterrupt in the main thread to exit the program.
@@ -122,7 +120,7 @@ async def runClient(
     args = {'verbose': verbose, 'queue': q}
 
     task = asyncio.create_task(
-        unsafeSubcribeClient(
+        subscribeClient(
             url, credentials, channel, position, stream_sql, MessageHandlerClass, args
         )
     )
@@ -178,8 +176,8 @@ async def runClient(
             if stop in done:
                 break
 
-    except Exception:
-        pass
+    except Exception as e:
+        logging.error(f'Caught exception: {e}')
 
     finally:
         connection = args.get('connection')

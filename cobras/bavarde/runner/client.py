@@ -97,7 +97,6 @@ def client(url, role, secret, channel, position, username, stream_sql, verbose, 
             # Since there's no size limit, put_nowait is identical to put.
             loop.call_soon_threadsafe(inputs.put_nowait, message)
     except (KeyboardInterrupt, EOFError):  # ^C, ^D
-        print('About to quit...')
         loop.call_soon_threadsafe(stop.set_result, None)
 
     # Wait for the event loop to terminate.
