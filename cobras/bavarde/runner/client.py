@@ -32,10 +32,13 @@ from cobras.bavarde.client.client import (
 @click.option('--channel', envvar='BAVARDE_DEFAULT_CHANNEL', default='lobby')
 @click.option('--position', default='0-0')
 @click.option('--username', default=getpass.getuser())
+@click.option('--password')
 @click.option('--verbose', '-v', count=True)
 @click.option('--dev', '-v', count=True)
 @click.option('--stream_sql')
-def client(url, role, secret, channel, position, username, stream_sql, verbose, dev):
+def client(
+    url, role, secret, channel, position, username, password, stream_sql, verbose, dev
+):
     '''bavarde chat cli'''
     if os.getenv('DEBUG') is not None or verbose:
         pprint.pprint(locals())
@@ -68,6 +71,7 @@ def client(url, role, secret, channel, position, username, stream_sql, verbose, 
             stream_sql,
             verbose,
             username,
+            password,
             loop,
             inputs,
             stop,

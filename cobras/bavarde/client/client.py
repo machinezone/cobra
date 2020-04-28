@@ -21,6 +21,7 @@ from cobras.client.client import subscribeClient
 from cobras.client.connection import ActionFlow
 from cobras.client.credentials import createCredentials
 from cobras.common.task_cleanup import addTaskCleanup
+from cobras.bavarde.client.encryption import encrypt, decrypt
 
 DEFAULT_LOCAL_URL = 'ws://127.0.0.1:8765/v2?appkey=_pubsub'
 DEFAULT_URL = 'wss://jeanserge.com/v2?appkey=_pubsub'
@@ -109,6 +110,7 @@ async def runClient(
     stream_sql,
     verbose,
     username,
+    password,
     loop,
     inputs,
     stop,
@@ -151,6 +153,9 @@ async def runClient(
                     data = message.get('data', {})
                     user = data.get('user', 'unknown user')
                     text = data.get('text', '<invalid message>')
+                    encrypted = data.get('encrypted', False)
+                    if encrypted:
+                        text = decrypt(text, password)
                     messageId = message.get('id')
 
                     # Use redis position to get a datetime
@@ -169,7 +174,15 @@ async def runClient(
 
                 messageId = uuid.uuid4().hex  # FIXME needed ?
 
-                message = {'data': {'user': username, 'text': text}, 'id': messageId}
+                encrypted = False
+                if password is not None:
+                    text = encrypt(text, password)
+                    encrypted = True
+
+                message = {
+                    'data': {'encrypted': encrypted, 'user': username, 'text': text},
+                    'id': messageId,
+                }
 
                 await args['connection'].publish(channel, message)
 

@@ -23,6 +23,7 @@ from cobras.bavarde.client.client import (
     DEFAULT_ROLE,
     DEFAULT_SECRET,
 )
+from cobras.bavarde.client.encryption import decrypt
 
 DEFAULT_PID = "/tmp/bavarde.pid"
 
@@ -30,6 +31,7 @@ DEFAULT_PID = "/tmp/bavarde.pid"
 class MessageHandlerClass:
     def __init__(self, connection, args):
         args['connection'] = connection
+        self.password = args['password']
 
     async def on_init(self):
         '''Get a connection to the DB'''
@@ -40,6 +42,9 @@ class MessageHandlerClass:
             data = msg.get('data', {})
             user = data.get('user', 'unknown user')
             text = data.get('text', '<invalid message>')
+            encrypted = data.get('encrypted', False)
+            if encrypted:
+                text = decrypt(text, self.password)
 
             # We could extract a time and from the message too
             # We could display a channel
@@ -53,9 +58,9 @@ class MessageHandlerClass:
         return ActionFlow.CONTINUE
 
 
-async def runSubscriber(url, credentials, channel, position):
+async def runSubscriber(url, credentials, channel, position, password):
     stream_sql = None
-    args = {}
+    args = {'password': password}
 
     task = asyncio.create_task(
         subscribeClient(
@@ -68,9 +73,9 @@ async def runSubscriber(url, credentials, channel, position):
 
 
 # FIXME username is ignored right now
-def main(url, role, secret, channel, position, username):
+def main(url, role, secret, channel, position, username, password):
     credentials = createCredentials(role, secret)
-    asyncio.run(runSubscriber(url, credentials, channel, position))
+    asyncio.run(runSubscriber(url, credentials, channel, position, password))
 
 
 @click.command()
@@ -83,9 +88,12 @@ def main(url, role, secret, channel, position, username):
 @click.option('--channel', envvar='BAVARDE_DEFAULT_CHANNEL', default='lobby')
 @click.option('--position', default='$')
 @click.option('--username', default=getpass.getuser())
+@click.option('--password')
 @click.option('--dev', '-v', count=True)
 @click.option('--foreground', '-f', is_flag=True)
-def daemon(pidfile, url, role, secret, channel, position, username, dev, foreground):
+def daemon(
+    pidfile, url, role, secret, channel, position, username, password, dev, foreground
+):
     '''Chat daemon, to get notifications when messages are received'''
 
     click.secho(f'Kill me with kill -9 `cat {pidfile}`', fg='cyan')
@@ -101,6 +109,7 @@ def daemon(pidfile, url, role, secret, channel, position, username, dev, foregro
         channel=channel,
         position=position,
         username=username,
+        password=password,
     )
 
     # Use foreground mode for testing
