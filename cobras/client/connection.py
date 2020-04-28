@@ -142,17 +142,22 @@ class Connection(object):
         leak memory and permit cancellation.
 
         See https://bsergean.github.io/asyncio_leak/index.html
+
+        Update Apr 28 2020 ... revert back to approach 2 in that post,
+        but adding q.task_done(), which might have been the cause of the
+        slow memory leak. Approach 3 in that post lead to very high CPU usage,
+        when doing nothing (bavarde client idling), which would fry my macBook.
+        The problem was discovered with py-spy, and was probably that the sleep
+        where too small, and this ended up being a very busy loop.
         '''
 
         q = self.getQueue(actionId)
         while True:
             try:
-                data = q.get_nowait()
+                data = await asyncio.wait_for(q.get(), timeout=0.1)
                 q.task_done()
                 break
-            except asyncio.QueueEmpty:
-                await asyncio.sleep(0.0001)  # => max 10000 msg/s
-
+            except asyncio.TimeoutError:
                 if self.stop.done():
                     # Reraise the exception which was caught in self.waitForResponses
                     exception = self.stop.result()
