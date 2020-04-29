@@ -20,9 +20,10 @@ coloredlogs.install(level='WARNING', fmt=LOGGING_FORMAT)
 
 @click.option('--verbose', '-v', envvar='COBRA_VERBOSE', is_flag=True)
 @click.option('--profile', envvar='COBRA_PROFILE', is_flag=True)
+@click.option('--uv', '-u', envvar='COBRA_UVLOOP', is_flag=True, help='Use uvloop')
 @click.group()
 @click.version_option()
-def main(verbose, profile):
+def main(verbose, profile, uv):
     """\b
    ___      _
   / __\___ | |__  _ __ __ _
@@ -32,7 +33,8 @@ def main(verbose, profile):
 
 Cobra is a realtime messaging server using Python3, WebSockets and Redis.
     """
-    uvloop.install()
+    if uv:
+        uvloop.install()
 
     if verbose:
         coloredlogs.install(level='INFO', fmt=LOGGING_FORMAT)
