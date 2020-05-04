@@ -37,6 +37,7 @@ Cobra is a realtime messaging server using Python3, WebSockets and Redis.
         uvloop.install()
 
     if verbose:
+        level = 'INFO' if verbose == 1 else 'DEBUG'
         coloredlogs.install(level='INFO', fmt=LOGGING_FORMAT)
 
     if profile:
