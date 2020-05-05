@@ -298,3 +298,31 @@ def test_select_with_multiple_subfields_and_space_with_aliases_C():
         sql_filter, hit
     )
     assert not match_stream_sql_filter(sql_filter, miss)
+
+
+def test_select_field_with_zero_integer_value():
+    sql_filter = """SELECT data.previous_scene_spent_time FROM `blah` """
+
+    hit = {'data': {"previous_scene_spent_time": 0}}
+
+    assert {"data.previous_scene_spent_time": 0} == match_stream_sql_filter(
+        sql_filter, hit
+    )
+
+
+def test_select_field_with_false_boolean_value():
+    sql_filter = """SELECT data.on_application_inactive FROM `blah` """
+
+    hit = {'data': {"on_application_inactive": False}}
+
+    assert {"data.on_application_inactive": False} == match_stream_sql_filter(
+        sql_filter, hit
+    )
+
+
+def test_select_field_with_empty_string_value():
+    sql_filter = """SELECT data.scene_name FROM `blah` """
+
+    hit = {'data': {"scene_name": ""}}
+
+    assert {"data.scene_name": ""} == match_stream_sql_filter(sql_filter, hit)

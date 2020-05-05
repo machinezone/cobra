@@ -21,6 +21,8 @@ def extractAttributeFromDict(subtree, attribute):
 
     fieldsComponents = attribute.split('.')
     for component in fieldsComponents:
-        subtree = subtree.get(component, {}) or {}
+        subtree = subtree.get(component, {})
+        if subtree is None:
+            return None
 
     return subtree
