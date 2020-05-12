@@ -26,7 +26,6 @@ coloredlogs.install(level='WARNING', fmt=LOGGING_FORMAT)
 @click.group()
 @click.version_option()
 def main(verbose, profile, uv):
->>>>>>> add ability to select redis library used
     """\b
    ___      _
   / __\___ | |__  _ __ __ _
