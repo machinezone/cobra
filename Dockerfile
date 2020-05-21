@@ -15,22 +15,8 @@ COPY requirements.txt /tmp
 RUN pip install --cache-dir=/opt/pip_cache --user --requirement /tmp/requirements.txt
 
 # Runtime stage
-<<<<<<< HEAD
 FROM bitnami/python:latest as runtime
 RUN adduser --disabled-password --gecos '' app
-=======
-FROM python:3.8.1-alpine3.11 as runtime
-RUN addgroup -S app && adduser -S -G app app
-
-RUN apk add --no-cache libstdc++
-RUN apk add --no-cache curl
-RUN apk add --no-cache ca-certificates
-<<<<<<< HEAD
-RUN apk add --no-cache git
->>>>>>> call out explicit version of aredis fork using a sha
-=======
-# RUN apk add --no-cache git
->>>>>>> aredis branch fixes
 
 COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
 
