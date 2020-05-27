@@ -1,0 +1,45 @@
+name: unittest
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install redis
+      run: |
+        brew install redis
+        brew services start redis
+        # sudo apt-get install redis-server
+        # sudo apt install build-essential
+        # curl -O http://download.redis.io/redis-stable.tar.gz
+        # tar xzvf redis-stable.tar.gz
+        # cd redis-stable
+        # make
+        # sudo make install
+        # sudo systemctl restart redis
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. We want to use the black formatter
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+    - name: Test with pytest
+      timeout-minutes: 5
+      run: |
+        pip install --requirement tests/requirements.txt
+        echo "0.0.1" > DOCKER_VERSION
+        pip install -e .
+        pip install "file://`pwd`#egg=cobras[dev]"
+        py.test -v --timeout=60 --disable-warnings tests/*.py
