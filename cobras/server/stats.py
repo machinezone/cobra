@@ -12,6 +12,7 @@ import os
 import platform
 import time
 import logging
+import sys
 
 from cobras.common.memory_usage import getContainerMemoryLimit, getProcessUsedMemory
 
@@ -194,6 +195,11 @@ class ServerStats:
             uptime = str(datetime.timedelta(seconds=uptime))
             uptime, _, _ = uptime.partition('.')  # skip the milliseconds part
 
+            if sys.version_info[:2] < (3, 7):
+                tasks = asyncio.Task.all_tasks()
+            else:
+                tasks = asyncio.all_tasks()
+
             message = {
                 'node': self.node,
                 'prod': os.getenv('COBRA_PROD') is not None,
@@ -206,7 +212,7 @@ class ServerStats:
                         'container_memory_limit_bytes': getContainerMemoryLimit(),  # noqa
                         'uptime': uptime,
                         'uptime_minutes': uptimeMinutes,
-                        'tasks': len(asyncio.all_tasks()),
+                        'tasks': len(tasks),
                         'idle_connections': self.idleConnections,
                     },
                 },

@@ -79,7 +79,11 @@ class MemoryDebugger:
             self.log()
 
     def printTasksStats(self):
-        tasks = asyncio.all_tasks()
+        if sys.version_info[:2] < (3, 7):
+            tasks = asyncio.Task.all_tasks()
+        else:
+            tasks = asyncio.all_tasks()
+
         self.log('#{} tasks'.format(len(tasks)))
 
         if self.printAllTasks:

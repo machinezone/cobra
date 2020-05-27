@@ -75,7 +75,10 @@ async def runSubscriber(url, credentials, channel, position, password):
 # FIXME username is ignored right now
 def main(url, role, secret, channel, position, username, password):
     credentials = createCredentials(role, secret)
-    asyncio.run(runSubscriber(url, credentials, channel, position, password))
+
+    asyncio.get_event_loop().run_until_complete(
+        runSubscriber(url, credentials, channel, position, password)
+    )
 
 
 @click.command()

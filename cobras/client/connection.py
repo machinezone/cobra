@@ -9,6 +9,7 @@ import copy
 import itertools
 import rapidjson as json
 import logging
+import sys
 from enum import Flag, auto
 
 import websockets
@@ -60,7 +61,11 @@ class Connection(object):
         self.websocket = await websockets.connect(self.url)
         self.task = asyncio.ensure_future(self.waitForResponses())
         addTaskCleanup(self.task)
-        self.stop = asyncio.get_running_loop().create_future()
+
+        if sys.version_info[:2] < (3, 7):
+            self.stop = asyncio.get_event_loop().create_future()
+        else:
+            self.stop = asyncio.get_running_loop().create_future()
 
         role = self.creds['role']
         if role is None:
