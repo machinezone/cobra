@@ -126,8 +126,13 @@ async def clientCoroutine(connection, channel, subscriberTask):
 
     await connection.close()
 
-    # wait 100ms
-    await asyncio.sleep(0.5)
+    # wait 8 seconds max
+    for i in range(80):
+        await asyncio.sleep(0.1)
+
+        if subscriberTask.done():
+            break
+
     subscriberTask.cancel()
     messageHandler = subscriberTask.result()
 
