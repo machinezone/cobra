@@ -306,7 +306,7 @@ async def handleSubscribe(
     # We need to create a new connection as reading from it will be blocking
     redisClient = app['redis_clients'].makeRedisClient()
 
-    task = asyncio.create_task(
+    task = asyncio.ensure_future(
         redisSubscriber(
             redisClient,
             appChannel,

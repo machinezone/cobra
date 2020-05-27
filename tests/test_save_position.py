@@ -65,7 +65,7 @@ class MessageHandlerClass:
         return ActionFlow.SAVE_POSITION
 
 
-def startSubscriber(url, credentials, channel, resumeFromLastPositionId):
+async def startSubscriber(url, credentials, channel, resumeFromLastPositionId):
     # fetch last position first
     position = '$'
     stream_sql = None
@@ -73,7 +73,7 @@ def startSubscriber(url, credentials, channel, resumeFromLastPositionId):
 
     args = {"ids": set()}
 
-    subscriberTask = asyncio.get_event_loop().create_task(
+    subscriberTask = asyncio.ensure_future(
         subscribeClient(
             url,
             credentials,
@@ -108,7 +108,12 @@ async def disconnectSubscriptionConnection(connection):
             await connection.adminCloseConnection(openedConnection)
 
 
-async def clientCoroutine(connection, channel, subscriberTask):
+async def clientCoroutine(
+    connection, channel, url, credentials, resumeFromLastPositionId
+):
+    subscriberTask = await startSubscriber(
+        url, credentials, channel, resumeFromLastPositionId
+    )
     await connection.connect()
 
     # wait 100ms so that the subscriber is ready.
@@ -154,8 +159,7 @@ def test_save_position(runner):
     uniqueId = uuid.uuid4().hex[:8]
     channel = 'test_save_position_channel::' + uniqueId
     resumeFromLastPositionId = 'last_position_id::' + uniqueId
-    subscriberTask = startSubscriber(url, creds, channel, resumeFromLastPositionId)
 
     asyncio.get_event_loop().run_until_complete(
-        clientCoroutine(connection, channel, subscriberTask)
+        clientCoroutine(connection, channel, url, creds, resumeFromLastPositionId)
     )

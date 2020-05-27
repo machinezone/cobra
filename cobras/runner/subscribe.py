@@ -32,10 +32,10 @@ class MessageHandlerClass:
     async def on_init(self):
         if not self.args['disable_debug_memory']:
             memoryDebugger = MemoryDebugger(noTraceMalloc=True)
-            self.memoryDebuggerTask = asyncio.create_task(memoryDebugger.run())
+            self.memoryDebuggerTask = asyncio.ensure_future(memoryDebugger.run())
             addTaskCleanup(self.memoryDebuggerTask)
 
-        self.statsTask = asyncio.create_task(self.printStats())
+        self.statsTask = asyncio.ensure_future(self.printStats())
         addTaskCleanup(self.statsTask)
 
     async def printStats(self):

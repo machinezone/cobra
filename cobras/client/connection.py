@@ -58,7 +58,7 @@ class Connection(object):
 
     async def connect(self):
         self.websocket = await websockets.connect(self.url)
-        self.task = asyncio.create_task(self.waitForResponses())
+        self.task = asyncio.ensure_future(self.waitForResponses())
         addTaskCleanup(self.task)
         self.stop = asyncio.get_running_loop().create_future()
 

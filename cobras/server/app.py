@@ -268,7 +268,7 @@ class AppRunner:
         self.app['stats'] = serverStats
 
         if self.enableStats:
-            self.serverStatsTask = asyncio.create_task(serverStats.run())
+            self.serverStatsTask = asyncio.ensure_future(serverStats.run())
             addTaskCleanup(self.serverStatsTask)
 
         if self.app.get('memory_debugger'):
@@ -278,7 +278,7 @@ class AppRunner:
             )
             self.app['memory_debugger'] = memoryDebugger
 
-            self.memoryDebuggerTask = asyncio.create_task(memoryDebugger.run())
+            self.memoryDebuggerTask = asyncio.ensure_future(memoryDebugger.run())
             addTaskCleanup(self.memoryDebuggerTask)
 
     async def cleanup(self):

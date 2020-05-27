@@ -62,7 +62,7 @@ async def runSubscriber(url, credentials, channel, position, password):
     stream_sql = None
     args = {'password': password}
 
-    task = asyncio.create_task(
+    task = asyncio.ensure_future(
         subscribeClient(
             url, credentials, channel, position, stream_sql, MessageHandlerClass, args
         )

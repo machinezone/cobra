@@ -121,7 +121,7 @@ async def runClient(
 
     args = {'verbose': verbose, 'queue': q}
 
-    task = asyncio.create_task(
+    task = asyncio.ensure_future(
         subscribeClient(
             url, credentials, channel, position, stream_sql, MessageHandlerClass, args
         )
