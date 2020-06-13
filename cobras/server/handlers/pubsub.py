@@ -243,6 +243,7 @@ async def handleSubscribe(
                 response['body'].update(
                     {
                         'redis_node': client.host,  # FIXME(redis cluster)
+                        'redis_client_id': client.clientId,
                         'stream_exists': streamExists,
                         'stream_length': streamLength,
                     }

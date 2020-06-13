@@ -1,6 +1,10 @@
 # Changelog
 All changes to this project will be documented in this file.
 
+## [2.9.83] - 2020-06-12
+
+* (server) capture the redis client id when making a subscription, for debugging
+
 ## [2.9.1] - 2020-04-07
 
 * (server) channel builder / do not crash when processing an empty set of rules

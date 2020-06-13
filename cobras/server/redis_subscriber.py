@@ -59,6 +59,14 @@ async def redisSubscriber(
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
             client = None
 
+    if client:
+        # get the client id
+        try:
+            await client.getClientId()
+        except Exception as e:
+            logging.error(f"{logPrefix} cannot retreive redis client id: {e}")
+            client = None
+
     try:
         await messageHandler.on_init(client, streamExists, streamLength=0)  # FIXME
     except Exception as e:

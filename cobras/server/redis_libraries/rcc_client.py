@@ -25,16 +25,19 @@ class RedisClientRcc(object):
         self.redis = RedisClient(self.url, self.password)
 
         self.host = host
+        self.clientId = None
 
     def __del__(self):
         self.close()
 
     def close(self):
-        # FIXME we should call aclose for justredis
         pass
 
     async def connect(self):
         pass
+
+    async def getClientId(self):
+        self.clientId = await self.redis.send('CLIENT', 'ID')
 
     async def ping(self):
         return await self.redis.send('PING')
