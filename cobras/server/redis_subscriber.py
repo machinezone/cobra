@@ -30,7 +30,7 @@ class RedisSubscriberMessageHandlerClass(ABC):
         pass  # pragma: no cover
 
     @abstractmethod
-    async def on_init(self, client, streamExists: bool, streamLength: int):
+    async def on_init(self, initInfo: dict):
         pass  # pragma: no cover
 
     @abstractmethod
@@ -50,25 +50,28 @@ async def redisSubscriber(
     logPrefix = f'subscriber[{stream}]: {client}'
 
     streamExists = False
+    redisHost = client.host
+    clientId = -1
 
     if client:
         # query the stream size
         try:
             streamExists = await client.exists(stream)
+            clientId = await client.getClientId()
+            redisHost = await client.getHostForKey(stream)
         except Exception as e:
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")
             client = None
 
-    if client:
-        # get the client id
-        try:
-            await client.getClientId()
-        except Exception as e:
-            logging.error(f"{logPrefix} cannot retreive redis client id: {e}")
-            client = None
+    initInfo = {
+        'success': client is not None,
+        'redis_node': redisHost,
+        'redis_client_id': clientId,
+        'stream_exists': streamExists,
+    }
 
     try:
-        await messageHandler.on_init(client, streamExists, streamLength=0)  # FIXME
+        await messageHandler.on_init(initInfo)
     except Exception as e:
         logging.error(f'{logPrefix} cannot initialize message handler: {e}')
         client = None

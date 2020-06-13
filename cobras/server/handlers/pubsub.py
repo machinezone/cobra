@@ -228,9 +228,11 @@ async def handleSubscribe(
         def log(self, msg):
             self.state.log(msg)
 
-        async def on_init(self, client, streamExists, streamLength):
+        async def on_init(self, initInfo):
             response = self.subscribeResponse
-            if client is None:
+            response['body'].update(initInfo)
+
+            if not initInfo['success']:
                 msgId = response['id']
                 response = {
                     'action': 'rtm/subscribe/error',
@@ -239,17 +241,8 @@ async def handleSubscribe(
                         'error': 'subscribe error: server cannot connect to redis'
                     },
                 }
-            else:
-                response['body'].update(
-                    {
-                        'redis_node': client.host,  # FIXME(redis cluster)
-                        'redis_client_id': client.clientId,
-                        'stream_exists': streamExists,
-                        'stream_length': streamLength,
-                    }
-                )
 
-            # Send response. By now
+            # Send response.
             await self.state.respond(self.ws, response)
 
         async def handleMsg(self, msg: dict, position: str, payloadSize: int) -> bool:

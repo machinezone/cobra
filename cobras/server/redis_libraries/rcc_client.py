@@ -25,7 +25,6 @@ class RedisClientRcc(object):
         self.redis = RedisClient(self.url, self.password)
 
         self.host = host
-        self.clientId = None
 
     def __del__(self):
         self.close()
@@ -37,7 +36,22 @@ class RedisClientRcc(object):
         pass
 
     async def getClientId(self):
-        self.clientId = await self.redis.send('CLIENT', 'ID')
+        return await self.redis.send('CLIENT', 'ID')
+
+    async def getHostForKey(self, key):
+        if not self.redis.cluster:
+            return f'{self.redis.host}:{self.redis.port}'
+
+        slot = await self.redis.send('CLUSTER', 'KEYSLOT', key)
+        slots = await self.redis.send('CLUSTER', 'SLOTS')
+
+        for slotInfo in slots:
+            if slotInfo[0] <= slot <= slotInfo[1]:
+                host = slotInfo[2][0].decode()
+                port = slotInfo[2][1]
+                return f'{host}:{port}'
+
+        return 'unknown-host'
 
     async def ping(self):
         return await self.redis.send('PING')
