@@ -83,6 +83,10 @@
             
             <li class="nav-item" data-level="1"><a href="#changelog" class="nav-link">Changelog</a>
               <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#2983-2020-06-12" class="nav-link">[2.9.83] - 2020-06-12</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-level="2"><a href="#291-2020-04-07" class="nav-link">[2.9.1] - 2020-04-07</a>
               <ul class="nav flex-column">
               </ul>
@@ -208,6 +212,10 @@
 
 <h1 id="changelog">Changelog</h1>
 <p>All changes to this project will be documented in this file.</p>
+<h2 id="2983-2020-06-12">[2.9.83] - 2020-06-12</h2>
+<ul>
+<li>(server) capture the redis client id when making a subscription, for debugging</li>
+</ul>
 <h2 id="291-2020-04-07">[2.9.1] - 2020-04-07</h2>
 <ul>
 <li>(server) channel builder / do not crash when processing an empty set of rules</li>
@@ -892,7 +900,7 @@ tests/test_validate_redis_position.py .                                         
                 </p>
                 <form>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
                     </div>
                 </form>
                 <div id="mkdocs-search-results"></div>
