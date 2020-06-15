@@ -9,6 +9,7 @@ import http
 import importlib
 import rapidjson as json
 import logging
+import platform
 import time
 import traceback
 import zlib
@@ -302,6 +303,10 @@ class AppRunner:
         )
 
         ServerProtocol.appsConfig = self.app['apps_config']
+        extraHeaders = {
+            "X-Cobra-Node": platform.uname().node,
+            "X-Cobra-Version": getVersion(),
+        }
 
         if block:
             async with websockets.serve(
@@ -313,6 +318,7 @@ class AppRunner:
                 ping_timeout=None,
                 ping_interval=None,
                 max_size=self.messageMaxSize,
+                extra_headers=extraHeaders,
             ) as self.server:
                 await stop
                 await self.cleanup()
@@ -326,6 +332,7 @@ class AppRunner:
                 ping_timeout=None,
                 ping_interval=None,
                 max_size=self.messageMaxSize,
+                extra_headers=extraHeaders,
             )
 
     def run(self, stop):
