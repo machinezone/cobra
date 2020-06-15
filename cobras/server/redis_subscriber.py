@@ -57,7 +57,7 @@ async def redisSubscriber(
         # query the stream size
         try:
             streamExists = await client.exists(stream)
-            clientId = await client.getClientId()
+            clientId = await client.getClientIdForKey(stream)
             redisHost = await client.getHostForKey(stream)
         except Exception as e:
             logging.error(f"{logPrefix} cannot retreive stream metadata: {e}")

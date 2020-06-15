@@ -35,14 +35,24 @@ class RedisClientRcc(object):
     async def connect(self):
         pass
 
-    async def getClientId(self):
-        return await self.redis.send('CLIENT', 'ID')
+    async def getClientIdForKey(self, key):
+        return await self.redis.send('CLIENT', 'ID', key=key)
 
     async def getHostForKey(self, key):
-        if not self.redis.cluster:
+        # Check whether redis is running in cluster mode or not
+        try:
+            info = await self.redis.send('INFO')
+        except Exception:
             return f'{self.redis.host}:{self.redis.port}'
 
+        if info.get('cluster_enabled') == '0':
+            return f'{self.redis.host}:{self.redis.port}'
+
+        # Redis is running in cluster mode.
+        # 1. get the slot for a key
         slot = await self.redis.send('CLUSTER', 'KEYSLOT', key)
+
+        # 2. find which node is handling a slot
         slots = await self.redis.send('CLUSTER', 'SLOTS')
 
         for slotInfo in slots:
@@ -51,6 +61,7 @@ class RedisClientRcc(object):
                 port = slotInfo[2][1]
                 return f'{host}:{port}'
 
+        # this should not happen, unless the cluster is being reconfigured
         return 'unknown-host'
 
     async def ping(self):
