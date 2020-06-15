@@ -13,7 +13,7 @@ from cobras.common.cobra_types import JsonDict
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.throttle import Throttle
 from cobras.server.connection_state import ConnectionState
-from cobras.server.redis_subscriber import (
+from rcc.subscriber import (
     RedisSubscriberMessageHandlerClass,
     redisSubscriber,
     validatePosition,
@@ -232,7 +232,7 @@ async def handleSubscribe(
             response = self.subscribeResponse
             response['body'].update(initInfo)
 
-            if not initInfo['success']:
+            if not initInfo.get('success', False):
                 msgId = response['id']
                 response = {
                     'action': 'rtm/subscribe/error',
@@ -302,7 +302,7 @@ async def handleSubscribe(
 
     task = asyncio.ensure_future(
         redisSubscriber(
-            redisClient,
+            redisClient.redis,
             appChannel,
             position,
             MessageHandlerClass,
