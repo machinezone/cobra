@@ -280,9 +280,10 @@ async def handleSubscribe(
                     "position": position,
                 },
             }
-            self.state.log(f"> {json.dumps(pdu)} at position {position}")
+            serializedPdu = json.dumps(pdu)
+            self.state.log(f"> {serializedPdu} at position {position}")
 
-            await self.ws.send(json.dumps(pdu))
+            await self.ws.send(serializedPdu)
 
             self.cnt += len(self.messages)
             self.cntPerSec += len(self.messages)
