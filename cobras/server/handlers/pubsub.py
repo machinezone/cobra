@@ -200,6 +200,8 @@ async def handleSubscribe(
         "action": "rtm/subscribe/ok",
         "id": pdu.get('id', 1),
         "body": {
+            # FIXME: we should set the position by querying
+            # the redis stream, inside the MessageHandler
             "position": "1519190184:559034812775",
             "subscription_id": subscriptionId,
         },
