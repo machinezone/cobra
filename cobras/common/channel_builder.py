@@ -68,6 +68,7 @@ def updateMsg(rules, msg):
         elif kind == 'remove':
             prefix = rule.get('prefix')
             channels = {chan for chan in channels if not chan.startswith(prefix)}
+            channels = list(channels)
 
         else:
             logging.warning(f'Invalid rule kind \'{kind}\'')

@@ -18,3 +18,6 @@ apps:
             shard:
                 kind: remove
                 prefix: sms_live_shard_v1
+            common2:
+                kind: add
+                channel: bar

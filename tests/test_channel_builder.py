@@ -26,11 +26,12 @@ def test_compose2():
     updatedMsg = updateMsg(rules, msg)
 
     channels = updatedMsg['body']['channels']
-    assert len(channels) == 3
+    assert len(channels) == 4
 
     assert 'sms_republished_v1_neo' in channels
     assert 'ody_engine_fps_id' in channels
     assert 'foo' in channels
+    assert 'bar' in channels
 
 
 def test_some_empty_fields():
@@ -67,10 +68,11 @@ def test_some_empty_fields():
     updatedMsg = updateMsg(rules, msg)
 
     channels = updatedMsg['body']['channels']
-    assert len(channels) == 2
+    assert len(channels) == 3
 
     assert 'a_channel' in channels
     assert 'foo' in channels
+    assert 'bar' in channels
 
 
 def test_remove_channel():
@@ -107,10 +109,11 @@ def test_remove_channel():
     updatedMsg = updateMsg(rules, msg)
 
     channels = updatedMsg['body']['channels']
-    assert len(channels) == 2
+    assert len(channels) == 3
 
     assert 'a_channel' in channels
     assert 'sms_live_shard_v1.wiso.9' not in channels
+    assert 'bar' in channels
 
 
 def test_no_rules():
