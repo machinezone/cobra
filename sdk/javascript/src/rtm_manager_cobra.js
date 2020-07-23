@@ -1,5 +1,5 @@
 
-var SatoriClient = require('./cobra_connection')
+var CobraClient = require('./cobra_connection')
 
 
 class RTMManager {
@@ -15,7 +15,7 @@ class RTMManager {
     console.log(`role name: ${conf.rolename}`)
     console.log(`role secret: ${conf.rolesecret}`)
 
-    this.client = new SatoriClient(conf)
+    this.client = new CobraClient(conf)
 
     this.client.on('authenticated', (_) => {
       console.log('Authenticated to RTM!')

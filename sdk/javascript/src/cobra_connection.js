@@ -2,7 +2,7 @@
 var isNode = require('detect-node')
 var crypto = require('crypto')
 
-class SatoriClient {
+class CobraClient {
   constructor(config) {
     this.url = `${config.endpoint}/v2?appkey=${config.appkey}`
     this.role = config.rolename
@@ -165,4 +165,4 @@ class SatoriClient {
   }
 }
 
-module.exports = SatoriClient
+module.exports = CobraClient
