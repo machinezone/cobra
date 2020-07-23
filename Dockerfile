@@ -1,35 +1,23 @@
-# Build stage
-FROM bitnami/python:latest as build
-env PIP_DOWNLOAD_CACHE=/opt/pip_cache
+FROM python:3.8.3-alpine3.12
 
-ENV DEBIAN_FRONTEND noninteractive
+COPY requirements.txt /tmp
 
 # Install build dependencies
-RUN apt-get -y install g++ make
+RUN apk add --no-cache g++ musl-dev linux-headers make && \
+    pip install --requirement /tmp/requirements.txt && \
+    apk del g++ musl-dev linux-headers make
 
-# Install dependant packages
-RUN pip install --cache-dir=/opt/pip_cache --user uvloop==0.14.0
-COPY requirements.txt /tmp
-# RUN apk add --no-cache git
-# RUN pip install --cache-dir=/opt/pip_cache --user git+https://github.com/bsergean/aredis.git@6668469#egg=aredis
-RUN pip install --cache-dir=/opt/pip_cache --user --requirement /tmp/requirements.txt
+RUN addgroup -S app && adduser -S -G app app
+RUN apk add --no-cache zsh redis
 
-# Runtime stage
-FROM bitnami/python:latest as runtime
-RUN adduser --disabled-password --gecos '' app
-
-COPY --chown=app:app --from=build /opt/pip_cache /opt/pip_cache
-
-RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra && \
-	ln -sf /home/app/.local/bin/rcc /usr/bin/rcc && \
-	ln -sf /home/app/.local/bin/bavarde /usr/bin/bavarde
+RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra
 
 COPY --chown=app:app . /home/app
+COPY --chown=app:app .zshrc /home/app/.zshrc
 USER app
 
 WORKDIR /home/app
-# RUN pip install --cache-dir=/opt/pip_cache --user -e git+https://github.com/bsergean/aredis.git@6668469#egg=aredis
-RUN pip install --cache-dir=/opt/pip_cache --user -e .
+RUN pip install --user -e .
 
 EXPOSE 8765
 CMD ["cobra", "run"]
