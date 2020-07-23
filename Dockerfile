@@ -8,7 +8,7 @@ RUN apk add --no-cache g++ musl-dev linux-headers make && \
     apk del g++ musl-dev linux-headers make
 
 RUN addgroup -S app && adduser -S -G app app
-RUN apk add --no-cache zsh redis
+RUN apk add --no-cache zsh redis libstdc++
 
 RUN ln -sf /home/app/.local/bin/cobra /usr/bin/cobra
 
