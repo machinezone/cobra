@@ -1,7 +1,6 @@
 
 var RTMManager = require('./rtm_manager_cobra')
 var truncate = require('./truncate')
-var uuid = require('uuid')
 
 
 class BavardeChat {
