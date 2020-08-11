@@ -26,7 +26,6 @@
   },
   "devDependencies": {
     "eslint": "^7.6.0",
-    "http-server": "^0.12.3",
     "watchify": "^3.9.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
