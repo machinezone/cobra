@@ -13,8 +13,6 @@ import coloredlogs
 
 from cobras.common.atexit_profiler import registerProfiler
 
-from cobras.common.atexit_profiler import registerProfiler
-
 LOGGING_FORMAT = '%(asctime)s %(levelname)s %(message)s'
 coloredlogs.install(level='WARNING', fmt=LOGGING_FORMAT)
 

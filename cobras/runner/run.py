@@ -80,6 +80,7 @@ from cobras.server.redis_clients import DEFAULT_REDIS_LIBRARY
     envvar='COBRA_MESSAGE_MAX_SIZE',
     default=getDefaultMessageMaxSize(),
 )
+@click.option('--pidfile', envvar='COBRA_PID_FILE')
 def run(
     host,
     port,
@@ -103,6 +104,7 @@ def run(
     redis_startup_probing_timeout,
     environment,
     message_max_size,
+    pidfile,
 ):
     '''Run the cobra server
 
@@ -121,6 +123,11 @@ def run(
             environment=environment,
             attach_stacktrace=True,
         )
+
+    if pidfile:
+        pid = str(os.getpid())
+        with open(pidfile, 'w') as f:
+            f.write(pid)
 
     if apps_config_path_content:
         apps_config_path = generateAppsConfig(apps_config_path_content)
