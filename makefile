@@ -14,6 +14,8 @@ dev: update_version
 	pip install --requirement tests/requirements.txt
 	pip install -e .
 	pip install "file://`pwd`#egg=cobras[dev]"
+	pip install pre-commit
+	pre-commit install
 
 release:
 	git push ; make upload
