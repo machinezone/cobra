@@ -25,15 +25,6 @@ class RedisClientRcc(object):
 
         self.host = host
 
-    def __del__(self):
-        self.close()
-
-    def close(self):
-        pass
-
-    async def connect(self):
-        pass
-
     async def getClientIdForKey(self, key):
         return await self.redis.send('CLIENT', 'ID', key=key)
 

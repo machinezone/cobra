@@ -241,9 +241,7 @@ class AppRunner:
 
                 try:
                     redis = self.redisClients.makeRedisClient()
-                    await redis.connect()
                     await redis.ping()
-                    redis.close()
                     break
                 except Exception:
                     if time.time() - start > timeout:

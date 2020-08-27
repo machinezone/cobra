@@ -21,7 +21,3 @@ class RedisClients(object):
 
     def getRedisClient(self, appkey):
         return self.clients.get(appkey)
-
-    def closeRedis(self):
-        # FIXME / close all
-        print('closeRedis not implemented ... FIXME')
