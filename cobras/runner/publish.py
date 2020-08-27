@@ -6,7 +6,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import asyncio
 import datetime
 import functools
-import rapidjson as json
+import json
 import logging
 import os
 import random

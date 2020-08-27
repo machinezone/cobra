@@ -5,7 +5,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 FIXME: Should be renamed
 '''
 
-import rapidjson as json
+import json
 
 
 def computeEventTimeDeltas(events: str) -> list:

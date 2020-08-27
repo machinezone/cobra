@@ -7,7 +7,7 @@ import datetime
 import functools
 import http
 import importlib
-import rapidjson as json
+import json
 import logging
 import platform
 import time

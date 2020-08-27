@@ -6,7 +6,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 import logging
 import asyncio
 import functools
-import rapidjson as json
+import json
 
 import websockets
 

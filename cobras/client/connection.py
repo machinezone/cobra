@@ -7,7 +7,7 @@ import asyncio
 import collections
 import copy
 import itertools
-import rapidjson as json
+import json
 import logging
 import sys
 from enum import Flag, auto

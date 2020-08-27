@@ -4,7 +4,7 @@ Copyright (c) 2018-2019 Machine Zone, Inc. All rights reserved.
 '''
 
 import base64
-import rapidjson as json
+import json
 import logging
 from typing import Dict
 
