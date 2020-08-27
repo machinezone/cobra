@@ -9,11 +9,10 @@ from rcc.client import RedisClient
 
 
 class RedisClientRcc(object):
-    def __init__(self, url, password, cluster, library):
+    def __init__(self, url, password, cluster):
         self.url = url
         self.password = password
         self.cluster = cluster
-        self.library = library
 
         netloc = urlparse(url).netloc
         host, _, port = netloc.partition(':')

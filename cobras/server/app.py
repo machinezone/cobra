@@ -166,7 +166,6 @@ class AppRunner:
         redisUrls,
         redisPassword,
         redisCluster,
-        redisLibrary,
         appsConfigPath,
         debugMemory,
         debugMemoryNoTracemalloc,
@@ -191,13 +190,11 @@ class AppRunner:
         self.app['redis_urls'] = redisUrls
         self.app['redis_password'] = redisPassword
         self.app['redis_cluster'] = redisCluster
-        self.app['redis_library'] = redisLibrary
 
         self.host = host
         self.port = port
         self.redisUrls = redisUrls
         self.redisPassword = redisPassword
-        self.redisLibrary = redisLibrary
         self.plugins = plugins
         self.enableStats = enableStats
         self.probeRedisOnStartup = probeRedisOnStartup
@@ -210,7 +207,7 @@ class AppRunner:
         # Create app redis connection handler, one per apps to avoid one busy
         # app blocking others
         self.redisClients = RedisClients(
-            redisUrls, redisPassword, redisCluster, redisLibrary, appsConfig
+            redisUrls, redisPassword, redisCluster, appsConfig
         )
         self.app['redis_clients'] = self.redisClients
 
