@@ -62,7 +62,7 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes)
     try:
         pdu: JsonDict = json.loads(msg)
     except json.JSONDecodeError:
-        msgEncoded = base64.b64encode(msg.encode())
+        msgEncoded = base64.b64encode(msg.encode()).encode()
         errMsg = f'malformed json pdu for agent "{ws.userAgent}" '
         errMsg += f'base64: {msgEncoded} raw: {msg}'
         await badFormat(state, ws, app, errMsg)

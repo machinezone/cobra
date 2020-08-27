@@ -4,6 +4,7 @@ Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 '''
 
 from urllib.parse import urlparse
+from hashlib import sha1
 
 from rcc.client import RedisClient
 
@@ -59,7 +60,16 @@ class RedisClientRcc(object):
 
     async def xadd(self, stream, field, data, maxLen):
         return await self.redis.send(
-            'XADD', stream, 'MAXLEN', '~', maxLen, b'*', field, data
+            'XADD',
+            stream,
+            'MAXLEN',
+            '~',
+            maxLen,
+            b'*',
+            field,
+            data,
+            b'sha1',
+            sha1(data.encode()).hexdigest(),
         )
 
     async def exists(self, key):
