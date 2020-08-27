@@ -18,6 +18,7 @@ from urllib.parse import parse_qs, urlparse
 
 import websockets
 from sentry_sdk import configure_scope
+from sentry_sdk.hub import Hub
 
 from cobras.common.apps_config import STATS_APPKEY, AppsConfig
 from cobras.common.memory_debugger import MemoryDebugger
@@ -52,8 +53,9 @@ async def cobraHandler(websocket, path, app, redisUrls: str):
 
     userAgent = websocket.requestHeaders.get('User-Agent', 'unknown-user-agent')
 
-    with configure_scope() as scope:
-        scope.set_tag("user_agent", userAgent)
+    with Hub(Hub.current):
+        with configure_scope() as scope:
+            scope.set_tag("user_agent", userAgent)
 
     state: ConnectionState = ConnectionState(appkey, userAgent)
     state.log('appkey {}'.format(state.appkey))
