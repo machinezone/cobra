@@ -46,16 +46,19 @@ def parseAppKey(path):
     return appkey
 
 
-async def cobraHandler(websocket, path, app, redisUrls: str):
-    start = time.time()
-    msgCount = 0
-    appkey = parseAppKey(path)  # appkey must have been validated
-
+async def cobraHandlerWrapper(websocket, path, app, redisUrls: str):
     userAgent = websocket.requestHeaders.get('User-Agent', 'unknown-user-agent')
 
     with Hub(Hub.current):
         with configure_scope() as scope:
             scope.set_tag("user_agent", userAgent)
+            await cobraHandler(websocket, path, app, redisUrls, userAgent)
+
+
+async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
+    start = time.time()
+    msgCount = 0
+    appkey = parseAppKey(path)  # appkey must have been validated
 
     state: ConnectionState = ConnectionState(appkey, userAgent)
     state.log('appkey {}'.format(state.appkey))
@@ -305,7 +308,7 @@ class AppRunner:
         await self.init_app()
 
         handler = functools.partial(
-            cobraHandler, app=self.app, redisUrls=self.redisUrls
+            cobraHandlerWrapper, app=self.app, redisUrls=self.redisUrls
         )
 
         ServerProtocol.appsConfig = self.app['apps_config']
