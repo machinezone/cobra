@@ -138,7 +138,7 @@ async def handleWrite(
     response = {
         "action": f"rtm/write/ok",
         "id": pdu.get('id', 1),
-        "body": {"stream": streamId},
+        "body": {"stream": streamId.decode()},
     }
     await state.respond(ws, response)
 
