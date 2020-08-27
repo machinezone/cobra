@@ -47,9 +47,7 @@ class ConnectionState:
             await ws.send(response)
         except websockets.exceptions.ConnectionClosed as e:
             action = data.get('action')
-            logging.warning(
-                f'Trying to write action {action} in a closed connection: {e}'
-            )
+            logging.info(f'Trying to write action {action} in a closed connection: {e}')
 
     def __repr__(self):
         return f"[{self.connection_id}::{self.role}::{self.userAgent}]"
