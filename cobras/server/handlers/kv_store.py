@@ -44,7 +44,7 @@ async def kvStoreRead(redis, stream: str, position: Optional[str], logger):
 
 # FIXME error handling
 async def handleRead(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
 
     body = pdu.get('body', {})
@@ -81,7 +81,7 @@ async def handleRead(
 
 
 async def handleWrite(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     # Missing message
     message = pdu.get('body', {}).get('message')
@@ -144,7 +144,7 @@ async def handleWrite(
 
 
 async def handleDelete(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     # Missing channel
     channel = pdu.get('body', {}).get('channel')

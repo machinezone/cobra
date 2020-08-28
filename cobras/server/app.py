@@ -77,6 +77,10 @@ async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
     try:
         async for message in websocket:
             msgCount += 1
+
+            if isinstance(message, bytes):
+                message = message.decode()
+
             await processCobraMessage(state, websocket, app, message)
             if not state.ok:
                 raise Exception(state.error)
@@ -227,7 +231,7 @@ class AppRunner:
         self.app['channel_max_length'] = appsConfig.getChannelMaxLength()
         self.server = None
 
-    async def waitForAllConnectionsToBeReady(self, timeout: int):
+    async def waitForAllConnectionsToBeReady(self, timeout: float):
         start = time.time()
 
         urls = self.app['redis_urls'].split(';')

@@ -14,7 +14,7 @@ from cobras.server.connection_state import ConnectionState
 # Admin operations
 #
 async def handleAdminGetConnections(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     action = pdu['action']
     connections = list(app['connections'].keys())
@@ -28,7 +28,7 @@ async def handleAdminGetConnections(
 
 
 async def handleAdminCloseConnection(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     action = pdu['action']
     body = pdu.get('body', {})
@@ -81,7 +81,7 @@ async def toggleFileLogging(state: ConnectionState, app: Dict, params: JsonDict)
 
 # FIXME (should close current connection)
 async def handleAdminCloseAllConnection(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     action = pdu['action']
 

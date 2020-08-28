@@ -22,7 +22,7 @@ from cobras.server.stream_sql import InvalidStreamSQLError, StreamSqlFilter
 
 
 async def handlePublish(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     '''Here we don't write back a result to the client for efficiency.
     Client doesn't really needs it.
@@ -105,7 +105,7 @@ async def handlePublish(
 
 
 async def handleSubscribe(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     '''
     Client doesn't really needs it.
@@ -163,7 +163,7 @@ async def handleSubscribe(
         await state.respond(ws, response)
         return
 
-    if hasFilter:
+    if hasFilter and streamSQLFilter is not None:
         channel = streamSQLFilter.channel
 
     position = body.get('position')
@@ -333,7 +333,7 @@ async def handleSubscribe(
 
 
 async def handleUnSubscribe(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     '''
     Cancel a subscription

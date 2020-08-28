@@ -15,7 +15,7 @@ from cobras.common.version import getVersion
 
 
 async def handleHandshake(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     authMethod = pdu.get('body', {}).get('method')
     if authMethod != 'role_secret':
@@ -49,7 +49,7 @@ async def handleHandshake(
 
 
 async def handleAuth(
-    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: bytes
+    state: ConnectionState, ws, app: Dict, pdu: JsonDict, serializedPdu: str
 ):
     try:
         secret = app['apps_config'].getRoleSecret(state.appkey, state.role)

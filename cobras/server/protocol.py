@@ -57,18 +57,20 @@ ACTION_HANDLERS_LUT = {
 }
 
 
-async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes):
+async def processCobraMessage(
+    state: ConnectionState, ws, app: Dict, serializedPdu: str
+):
 
     try:
-        pdu: JsonDict = json.loads(msg)
+        pdu: JsonDict = json.loads(serializedPdu)
     except json.JSONDecodeError:
-        msgEncoded = base64.b64encode(msg.encode()).encode()
+        msgEncoded = base64.b64encode(serializedPdu.encode()).decode()
         errMsg = f'malformed json pdu for agent "{ws.userAgent}" '
-        errMsg += f'base64: {msgEncoded} raw: {msg}'
+        errMsg += f'base64: {msgEncoded} raw: {serializedPdu}'
         await badFormat(state, ws, app, errMsg)
         return
 
-    state.log(f"< {msg}")
+    state.log(f"< {serializedPdu}")
 
     action = pdu.get('action')
     if action is None:
@@ -105,4 +107,4 @@ async def processCobraMessage(state: ConnectionState, ws, app: Dict, msg: bytes)
         return
 
     # proceed with handling action
-    await handler(state, ws, app, pdu, msg)
+    await handler(state, ws, app, pdu, serializedPdu)
