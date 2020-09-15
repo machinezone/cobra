@@ -66,6 +66,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
     # For debugging
     websocket.userAgent = userAgent
     websocket.connection_id = state.connection_id
+    websocket.connection_state = state
 
     key = state.connection_id
     app['connections'][key] = (state, websocket)
@@ -150,7 +151,8 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
         except zlib.error as e:
             headers = json.dumps({k: v for (k, v) in self.requestHeaders.raw_items()})
             logging.error(
-                'Error in zlib for %s, %s, %s, %s',
+                'Error in zlib for role %s, %s, %s, %s, %s',
+                self.connection_state.role,
                 self.connection_id,
                 self.userAgent,
                 headers,
