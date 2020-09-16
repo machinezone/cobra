@@ -23,7 +23,6 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
     port = getFreePort()
     redisPassword = None
     redisCluster = False
-    plugins = 'republish'
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause / FIXME(unused)
 
@@ -43,7 +42,6 @@ def makeRunner(debugMemory=False, enableStats=False, redisUrls=None):
         redisCluster,
         appsConfigPath,
         debugMemory,
-        plugins,
         enableStats,
         maxSubscriptions,
         idleTimeout,

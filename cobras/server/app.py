@@ -6,7 +6,6 @@ import asyncio
 import datetime
 import functools
 import http
-import importlib
 import json
 import logging
 import platform
@@ -176,7 +175,6 @@ class AppRunner:
         debugMemory,
         debugMemoryNoTracemalloc,
         debugMemoryPrintAllTasks,
-        plugins,
         enableStats,
         maxSubscriptions,
         idleTimeout,
@@ -201,7 +199,6 @@ class AppRunner:
         self.port = port
         self.redisUrls = redisUrls
         self.redisPassword = redisPassword
-        self.plugins = plugins
         self.enableStats = enableStats
         self.probeRedisOnStartup = probeRedisOnStartup
         self.redisStartupProbingTimeout = redisStartupProbingTimeout
@@ -222,12 +219,6 @@ class AppRunner:
         except ValueError as e:
             logging.error(f'Invalid apps config file: {e}')
             pass
-
-        try:
-            if plugins is not None:
-                self.app['plugins'] = importlib.import_module(plugins)
-        except ImportError:
-            logging.error(f'failure to import {plugins}')
 
         self.app['batch_publish_size'] = appsConfig.getBatchPublishSize()
         self.app['channel_max_length'] = appsConfig.getChannelMaxLength()

@@ -38,7 +38,6 @@ from cobras.server.app import AppRunner
 )
 @click.option('--apps_config_path_content', envvar='COBRA_APPS_CONFIG_CONTENT')
 @click.option('--prod', envvar='COBRA_PROD', is_flag=True)
-@click.option('--plugins', envvar='COBRA_PLUGINS')
 @click.option('--debug_memory', envvar='COBRA_DEBUG_MEMORY', is_flag=True)
 @click.option(
     '--debug_memory_no_tracemalloc',
@@ -88,7 +87,6 @@ def run(
     debug_memory,
     debug_memory_no_tracemalloc,
     debug_memory_print_all_tasks,
-    plugins,
     sentry,
     sentry_url,
     prod,
@@ -149,7 +147,6 @@ def run(
         debug_memory,
         debug_memory_no_tracemalloc,
         debug_memory_print_all_tasks,
-        plugins,
         not no_stats,
         max_subscriptions,
         idle_timeout,

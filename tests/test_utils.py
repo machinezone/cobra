@@ -23,7 +23,6 @@ def makeRunner(
     host = 'localhost'
     port = getFreePort()
     redisPassword = None
-    plugins = 'republish'
     maxSubscriptions = -1
     idleTimeout = 10  # after 10 seconds it's a lost cause / FIXME(unused)
     debugMemoryNoTracemalloc = False
@@ -52,7 +51,6 @@ def makeRunner(
         debugMemory,
         debugMemoryNoTracemalloc,
         debugMemoryPrintAllTasks,
-        plugins,
         enableStats,
         maxSubscriptions,
         idleTimeout,
