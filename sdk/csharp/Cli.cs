@@ -31,11 +31,11 @@ public class CobraCli
         var cobraConnection = new CobraConnection(cobraConfig);
         await cobraConnection.Connect(cancellationToken);
 
+        string channel = "disney";
         string line;
         while ((line = Console.ReadLine()) != null)
         {
-            // Console.WriteLine(line);
-            await cobraConnection.Publish(line);
+            await cobraConnection.Publish(channel, line, cancellationToken);
         }
     }
 }

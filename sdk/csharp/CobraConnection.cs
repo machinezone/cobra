@@ -100,7 +100,7 @@ namespace Cobra
     }
 
     //
-    // Auth request
+    // Auth response
     //
     public class AuthResponsePdu
     {
@@ -108,13 +108,31 @@ namespace Cobra
         public int id { get; set; }
     }
 
+    //
+    // Publish message
+    //
+    public class PublishPdu
+    {
+        public string action { get; set; }
+        public int id { get; set; }
+        public PublishBody body { get; set; }
+    }
+
+    public class PublishBody
+    {
+        public string channel { get; set; }
+        public string message { get; set; }
+    }
+
     public class CobraConnection
     {
         CobraConfig config;
         ClientWebSocket ws;
+        int id;
 
         public CobraConnection(CobraConfig cobraConfig)
         {
+            id = 0;
             config = cobraConfig;
 
             ws = new ClientWebSocket();
@@ -152,7 +170,7 @@ namespace Cobra
             var handshakePdu = new HandshakePdu
             {
                 action = "auth/handshake",
-                id = 0,
+                id = id++,
                 body = new HandshakeBody
                 {
                     method = "role_secret",
@@ -219,7 +237,7 @@ namespace Cobra
             var authPdu = new AuthPdu
             {
                 action = "auth/authenticate",
-                id = 1,
+                id = id++,
                 body = new AuthBody
                 {
                     method = "role_secret",
@@ -242,7 +260,7 @@ namespace Cobra
             }
             catch (System.Net.WebSockets.WebSocketException e)
             {
-                throw new CobraException("Handshake send error", e);
+                throw new CobraException("Auth send error", e);
             }
 
             //
@@ -292,8 +310,39 @@ namespace Cobra
             }
         }
 
-        public async Task Publish(string str)
+        public async Task Publish(string channel,
+                                  string message,
+                                  CancellationToken cancellationToken)
         {
+            var publishPdu = new PublishPdu
+            {
+                action = "rtm/publish",
+                id = id++,
+                body = new PublishBody
+                {
+                    channel = channel,
+                    message = message
+                }
+            };
+
+            byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(publishPdu);
+            var str = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            Console.WriteLine(str);
+
+            try
+            {
+                await ws.SendAsync(new System.ArraySegment<byte>(bytes),
+                                   WebSocketMessageType.Text,
+                                   true, cancellationToken).ConfigureAwait(false);
+            }
+            catch (System.Net.WebSockets.WebSocketException e)
+            {
+                throw new CobraException("Publish send error", e);
+            }
+
+            // We ignore the response at this point
+            var response = await this.ReceiveAsync(cancellationToken);
+            Console.WriteLine(response);
         }
     }
 }
