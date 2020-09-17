@@ -91,6 +91,7 @@ namespace Cobra
             //   }
             // }
 
+            /*
             var handshakeBodyData = new HandshakeBodyData
             {
                 role = config.rolename,
@@ -106,6 +107,19 @@ namespace Cobra
             {
                 action = "auth/handshake",
                 body = handshakeBody
+            };
+            */
+            var handshakePdu = new HandshakePdu
+            {
+                action = "auth/handshake",
+                body = new HandshakeBody
+                {
+                    method = "role_secret",
+                    data = new HandshakeBodyData
+                    {
+                        role = config.rolename
+                    }
+                }
             };
 
             byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(handshakePdu);
