@@ -38,6 +38,7 @@ namespace Cobra
     public class HandshakePdu
     {
         public string action { get; set; }
+        public int id { get; set; }
         public HandshakeBody body { get; set; }
     }
 
@@ -73,6 +74,36 @@ namespace Cobra
         public string version { get; set; }
         public string connection_id { get; set; }
         public string node { get; set; }
+    }
+
+    //
+    // Auth request
+    //
+    public class AuthPdu
+    {
+        public string action { get; set; }
+        public int id { get; set; }
+        public AuthBody body { get; set; }
+    }
+
+    public class AuthBody
+    {
+        public string method { get; set; }
+        public AuthBodyCredentials credentials { get; set; }
+    }
+
+    public class AuthBodyCredentials
+    {
+        public string hash { get; set; }
+    }
+
+    //
+    // Auth request
+    //
+    public class AuthResponsePdu
+    {
+        public string action { get; set; }
+        public int id { get; set; }
     }
 
     public class CobraConnection
@@ -119,6 +150,7 @@ namespace Cobra
             var handshakePdu = new HandshakePdu
             {
                 action = "auth/handshake",
+                id = 0,
                 body = new HandshakeBody
                 {
                     method = "role_secret",
@@ -149,7 +181,7 @@ namespace Cobra
             //
             // {
             //   "action": "auth/handshake/ok",
-            //   "id": 1,
+            //   "id": 0,
             //   "body": {
             //     "data": {
             //       "nonce": "MTYxMjc1MzMwOTM2MjY4OTY0MDg=",
@@ -170,6 +202,62 @@ namespace Cobra
             //
             // 3. Send Auth request
             //
+            // {
+            //   "action": "auth/authenticate",
+            //   "body": {
+            //     "method": "role_secret",
+            //     "credentials": {
+            //       "hash": "exv9g4YXR3uPKZGpoHif1w=="
+            //     }
+            //   },
+            //   "id": 1
+            // }
+            //
+            var hash = this.ComputeAuthHash(nonce);
+            var authPdu = new AuthPdu
+            {
+                action = "auth/authenticate",
+                id = 1,
+                body = new AuthBody
+                {
+                    method = "role_secret",
+                    credentials = new AuthBodyCredentials
+                    {
+                        hash = hash
+                    }
+                }
+            };
+
+            bytes = JsonSerializer.SerializeToUtf8Bytes(authPdu);
+            str = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            Console.WriteLine(str);
+
+            try
+            {
+                await ws.SendAsync(new System.ArraySegment<byte>(bytes),
+                                   WebSocketMessageType.Text,
+                                   true, cancellationToken).ConfigureAwait(false);
+            }
+            catch (System.Net.WebSockets.WebSocketException e)
+            {
+                throw new CobraException("Handshake send error", e);
+            }
+
+            //
+            // 4. Get auth response
+            //
+            var authResponseStr = await this.ReceiveAsync(cancellationToken);
+
+            // FIXME: decoding error handling
+            var authResponse = JsonSerializer.Deserialize<AuthResponsePdu>(authResponseStr);
+            // var nonce = handshakeResponse.body.data.nonce;
+            // Console.WriteLine(nonce);
+            Console.WriteLine(authResponse.action);
+
+            if (authResponse.action != "auth/handshake/ok")
+            {
+                throw new CobraException("Authentication error", new Exception());
+            }
         }
 
         public async Task<string> ReceiveAsync(CancellationToken token)
@@ -180,6 +268,12 @@ namespace Cobra
                                                CancellationToken.None).ConfigureAwait(false);
             var str = Encoding.UTF8.GetString(data, 0, result.Count);
             return str;
+        }
+
+        public string ComputeAuthHash(string nonce)
+        {
+            // FIXME: write me
+            return "foo";
         }
 
         public async Task Publish(string str)
