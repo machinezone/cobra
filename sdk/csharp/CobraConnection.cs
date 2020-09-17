@@ -160,14 +160,26 @@ namespace Cobra
             //   }
             // }
             //
+            var handshakeResponseStr = await this.ReceiveAsync(cancellationToken);
+
+            // FIXME: decoding error handling
+            var handshakeResponse = JsonSerializer.Deserialize<HandshakeResponsePdu>(handshakeResponseStr);
+            var nonce = handshakeResponse.body.data.nonce;
+            Console.WriteLine(nonce);
+
+            //
+            // 3. Send Auth request
+            //
+        }
+
+        public async Task<string> ReceiveAsync(CancellationToken token)
+        {
+            // FIXME hard-coded to 512 / it's ok as responses are very small
             byte[] data = new byte[512];
             var result = await ws.ReceiveAsync(new ArraySegment<byte>(data),
                                                CancellationToken.None).ConfigureAwait(false);
-            str = Encoding.UTF8.GetString(data, 0, result.Count);
-
-            var handshakeResponse = JsonSerializer.Deserialize<HandshakeResponsePdu>(str);
-            // Send authentication message
-            Console.WriteLine(handshakeResponse.body.data.nonce);
+            var str = Encoding.UTF8.GetString(data, 0, result.Count);
+            return str;
         }
 
         public async Task Publish(string str)
