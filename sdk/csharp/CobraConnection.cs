@@ -10,6 +10,8 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Security.Cryptography; // For md5
+
 
 namespace Cobra
 {
@@ -213,7 +215,7 @@ namespace Cobra
             //   "id": 1
             // }
             //
-            var hash = this.ComputeAuthHash(nonce);
+            var hash = this.ComputeAuthHash(config.rolesecret, nonce);
             var authPdu = new AuthPdu
             {
                 action = "auth/authenticate",
@@ -250,14 +252,14 @@ namespace Cobra
 
             // FIXME: decoding error handling
             var authResponse = JsonSerializer.Deserialize<AuthResponsePdu>(authResponseStr);
-            // var nonce = handshakeResponse.body.data.nonce;
-            // Console.WriteLine(nonce);
-            Console.WriteLine(authResponse.action);
 
-            if (authResponse.action != "auth/handshake/ok")
-            {
-                throw new CobraException("Authentication error", new Exception());
-            }
+            // FIXME / validate return value
+            // if (authResponse.action != "auth/handshake/ok")
+            // {
+            //     Console.WriteLine("ERROR");
+            //     Console.WriteLine(authResponse.action);
+            //     // throw new CobraException("Authentication error", new Exception());
+            // }
         }
 
         public async Task<string> ReceiveAsync(CancellationToken token)
@@ -270,10 +272,24 @@ namespace Cobra
             return str;
         }
 
-        public string ComputeAuthHash(string nonce)
+        //
+        // def computeHash(secret: bytes, nonce: bytes) -> str:
+        //     binary_hash = hmac.new(secret, nonce, hashlib.md5).digest()
+        //     ascii_hash = base64.b64encode(binary_hash)
+        //
+        //     h = ascii_hash.decode('ascii')
+        //     return h
+        //
+        public string ComputeAuthHash(string secret, string nonce)
         {
-            // FIXME: write me
-            return "foo";
+            var secretBin = Encoding.UTF8.GetBytes(secret);
+            var nonceBin = Encoding.UTF8.GetBytes(nonce);
+            using (var hmac = new HMACMD5(secretBin))
+            {
+                var hashBin = hmac.ComputeHash(nonceBin);
+                var hash = Convert.ToBase64String(hashBin);
+                return hash;
+            }
         }
 
         public async Task Publish(string str)
