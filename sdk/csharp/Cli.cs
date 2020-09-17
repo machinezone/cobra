@@ -14,32 +14,28 @@ public class CobraCli
 {
     public static async Task Main()
     {
-        Action<string> logger = (msg) =>
-        {
-            Console.WriteLine(msg);
-        };
-
         var cobraConfig = new CobraConfig
         {
             //
             // uncomment this to test against a local cobra server
-            endpoint = "ws://localhost:8765",
-            // endpoint = "wss://bavarde.jeanserge.com"
+            // endpoint = "ws://localhost:8765",
+            endpoint = "wss://bavarde.jeanserge.com",
             //
-            appkey = "blah",
-            rolename = "foo",
-            rolesecret = "bar",
+            appkey = "_pubsub",
+            rolename = "pubsub",
+            rolesecret = "ccc02DE4Ed8CAB9aEfC8De3e13BfBE5E",
         };
 
         var cancellationToken = CancellationToken.None;
 
-        var cobraConnection = new CobraConnection();
-        await cobraConnection.Connect(cobraConfig, logger, cancellationToken);
+        var cobraConnection = new CobraConnection(cobraConfig);
+        await cobraConnection.Connect(cancellationToken);
 
         string line;
         while ((line = Console.ReadLine()) != null)
         {
-            Console.WriteLine(line);
+            // Console.WriteLine(line);
+            await cobraConnection.Publish(line);
         }
     }
 }
