@@ -52,6 +52,29 @@ namespace Cobra
         public string role { get; set; }
     }
 
+    //
+    // Handshake response
+    //
+    public class HandshakeResponsePdu
+    {
+        public string action { get; set; }
+        public int id { get; set; }
+        public HandshakeResponseBody body { get; set; }
+    }
+
+    public class HandshakeResponseBody
+    {
+        public HandshakeResponseBodyData data { get; set; }
+    }
+
+    public class HandshakeResponseBodyData
+    {
+        public string nonce { get; set; }
+        public string version { get; set; }
+        public string connection_id { get; set; }
+        public string node { get; set; }
+    }
+
     public class CobraConnection
     {
         CobraConfig config;
@@ -80,35 +103,19 @@ namespace Cobra
                 throw new CobraException("Connection error to " + url, e);
             }
 
-            // Send Handshake message
-            // let request = {
-            //   'action':'auth/handshake',
-            //   'body': {
-            //     'method':'role_secret',
-            //     'data':{
-            //       'role': this.role
+            //
+            // 1. Send Handshake message
+            //
+            // {
+            //   "action": "auth/handshake",
+            //   "body": {
+            //     "method": "role_secret",
+            //     "data": {
+            //       "role": "pubsub"
             //     }
             //   }
             // }
-
-            /*
-            var handshakeBodyData = new HandshakeBodyData
-            {
-                role = config.rolename,
-            };
-
-            var handshakeBody = new HandshakeBody
-            {
-                method = "role_secret",
-                data = handshakeBodyData
-            };
-
-            var handshakePdu = new HandshakePdu
-            {
-                action = "auth/handshake",
-                body = handshakeBody
-            };
-            */
+            //
             var handshakePdu = new HandshakePdu
             {
                 action = "auth/handshake",
@@ -137,7 +144,30 @@ namespace Cobra
                 throw new CobraException("Handshake send error", e);
             }
 
+            //
+            // 2. Get handshake response
+            //
+            // {
+            //   "action": "auth/handshake/ok",
+            //   "id": 1,
+            //   "body": {
+            //     "data": {
+            //       "nonce": "MTYxMjc1MzMwOTM2MjY4OTY0MDg=",
+            //       "version": "2.9.93",
+            //       "connection_id": "671e0795c542",
+            //       "node": "localhost"
+            //     }
+            //   }
+            // }
+            //
+            byte[] data = new byte[512];
+            var result = await ws.ReceiveAsync(new ArraySegment<byte>(data),
+                                               CancellationToken.None).ConfigureAwait(false);
+            str = Encoding.UTF8.GetString(data, 0, result.Count);
+
+            var handshakeResponse = JsonSerializer.Deserialize<HandshakeResponsePdu>(str);
             // Send authentication message
+            Console.WriteLine(handshakeResponse.body.data.nonce);
         }
 
         public async Task Publish(string str)
