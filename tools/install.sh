@@ -15,6 +15,9 @@ echo "Creating a python virtualenv to install cobra without dirtying your system
 cd sandbox/cobra
 python3 -m venv venv || {
     echo "Cannot create a virtualenv"
+    echo
+    echo "On Debian/Ubuntu systems, you will need to install libpython-dev
+    echo "  sudo apt-get install python3-venv"
     exit 1
 }
 
@@ -23,6 +26,9 @@ venv/bin/pip3 install --upgrade pip
 venv/bin/pip3 install -U cobras || {
     echo "cobra failed to install. You might be missing a C compiler to install hiredis"
     echo "Install XCode, XCode developer tools, clang or gcc"
+    echo
+    echo "On Debian/Ubuntu systems, you will need to install libpython-dev
+    echo "  sudo apt-get install python3-dev"
     exit 1
 }
 
