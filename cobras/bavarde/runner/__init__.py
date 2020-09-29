@@ -8,7 +8,6 @@ from pkgutil import walk_packages
 
 import click
 import coloredlogs
-import uvloop
 
 from cobras.common.atexit_profiler import registerProfiler
 
@@ -30,8 +29,6 @@ Bavarde is a chat app written on top of cobra
 
     if profile:
         registerProfiler()
-
-    uvloop.install()
 
 
 for loader, module_name, is_pkg in walk_packages(__path__, __name__ + '.'):
