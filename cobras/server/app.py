@@ -19,7 +19,7 @@ import websockets
 from sentry_sdk import configure_scope
 from sentry_sdk.hub import Hub
 
-from cobras.common.apps_config import STATS_APPKEY, AppsConfig
+from cobras.common.apps_config import STATS_APPKEY, PULSAR_APPKEY, AppsConfig
 from cobras.common.memory_debugger import MemoryDebugger
 from cobras.common.task_cleanup import addTaskCleanup
 from cobras.common.version import getVersion
@@ -28,13 +28,20 @@ from cobras.server.connection_state import ConnectionState
 from cobras.server.protocol import processCobraMessage
 from cobras.server.stats import ServerStats
 from cobras.server.redis_clients import RedisClients
+from cobras.server.pulsar import processPulsarMessage
 
 
 def parseAppKey(path):
     '''
     Parse url
     path = /v2?appkey=FFFFFFFFFFFFEEEEEEEEEEEEE
+
+    Pulsar urls
+    /ws/v2/producer/persistent/public/default/atopic
     '''
+    if path.startswith('/ws/v2/producer'):
+        return PULSAR_APPKEY
+
     parseResult = urlparse(path)
     args = parse_qs(parseResult.query)
     appkey = args.get('appkey')
@@ -81,7 +88,11 @@ async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
             if isinstance(message, bytes):
                 message = message.decode()
 
-            await processCobraMessage(state, websocket, app, message)
+            if appkey == PULSAR_APPKEY:
+                await processPulsarMessage(state, websocket, app, message, path)
+            else:
+                await processCobraMessage(state, websocket, app, message)
+
             if not state.ok:
                 raise Exception(state.error)
 
@@ -124,7 +135,6 @@ class ServerProtocol(websockets.WebSocketServerProtocol):
     appsConfig = None
 
     async def process_request(self, path, request_headers):
-
         if path == '/health/':
             return http.HTTPStatus.OK, [], b'OK\n'
 

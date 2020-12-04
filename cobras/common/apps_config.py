@@ -20,6 +20,7 @@ STATS_APPKEY = '_stats'
 HEALTH_APPKEY = '_health'
 ADMIN_APPKEY = '_admin'
 PUBSUB_APPKEY = '_pubsub'
+PULSAR_APPKEY = '_pulsar'
 
 
 class AppsConfig:
@@ -101,7 +102,13 @@ class AppsConfig:
     def generateDefaultConfig(self):
         self.data['apps'] = {}
 
-        for app in [STATS_APPKEY, HEALTH_APPKEY, ADMIN_APPKEY, PUBSUB_APPKEY]:
+        for app in [
+            STATS_APPKEY,
+            HEALTH_APPKEY,
+            ADMIN_APPKEY,
+            PUBSUB_APPKEY,
+            PULSAR_APPKEY,
+        ]:
 
             # Create an app with a user/role
             self.data['apps'][app] = {}
