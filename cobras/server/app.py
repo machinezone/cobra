@@ -39,7 +39,7 @@ def parseAppKey(path):
     Pulsar urls
     /ws/v2/producer/persistent/public/default/atopic
     '''
-    if path.startswith('/ws/v2/producer'):
+    if path.startswith('/ws/v2/'):
         return PULSAR_APPKEY
 
     parseResult = urlparse(path)
@@ -67,7 +67,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
     appkey = parseAppKey(path)  # appkey must have been validated
 
     state: ConnectionState = ConnectionState(appkey, userAgent)
-    state.log('appkey {}'.format(state.appkey))
+    state.log(f'appkey {state.appkey} path {path}')
 
     # For debugging
     websocket.userAgent = userAgent
@@ -82,19 +82,22 @@ async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
     state.log(f'(open) connections {connectionCount}')
 
     try:
-        async for message in websocket:
-            msgCount += 1
-
-            if isinstance(message, bytes):
-                message = message.decode()
-
-            if appkey == PULSAR_APPKEY:
-                await processPulsarMessage(state, websocket, app, message, path)
-            else:
-                await processCobraMessage(state, websocket, app, message)
+        if appkey == PULSAR_APPKEY:
+            await processPulsarMessage(state, websocket, app, path)
 
             if not state.ok:
                 raise Exception(state.error)
+        else:
+            async for message in websocket:
+                msgCount += 1
+
+                if isinstance(message, bytes):
+                    message = message.decode()
+
+                await processCobraMessage(state, websocket, app, message)
+
+                if not state.ok:
+                    raise Exception(state.error)
 
     except websockets.exceptions.ProtocolError as e:
         print(e)

@@ -72,17 +72,16 @@ class RedisClientRcc(object):
             sha1(data.encode()).hexdigest(),
         )
 
+    async def xaddRaw(self, stream, maxLen, *args):
+        return await self.redis.send('XADD', stream, 'MAXLEN', '~', maxLen, b'*', *args)
+
     async def exists(self, key):
         return await self.redis.send('EXISTS', key)
 
-    async def xread(self, streams):
-        args = ['XREAD', 'BLOCK', b'0', b'STREAMS']
-        for item in streams.items():
-            args.append(item[0])
-            args.append(item[1])
-
-        result = await self.redis.send(*args)
-        return result
+    async def xread(self, stream, streamId):
+        return await self.redis.send(
+            'XREAD', 'BLOCK', b'0', b'STREAMS', stream, streamId
+        )
 
     async def delete(self, key):
         return await self.redis.send('DEL', key)
