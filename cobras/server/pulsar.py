@@ -122,6 +122,12 @@ async def handleConsumerMessage(state: ConnectionState, ws, app: Dict, path: str
 
 
 async def processPulsarMessage(state: ConnectionState, ws, app: Dict, path: str):
+    try:
+        state.role = path.split('/')[3]
+    except Exception:
+        await badFormat(state, ws, app, f'Invalid endpoint: {path}')
+        return
+
     if path.startswith('/ws/v2/producer'):
         async for serializedPdu in ws:
             try:
@@ -137,6 +143,7 @@ async def processPulsarMessage(state: ConnectionState, ws, app: Dict, path: str)
 
             await handleProducerMessage(state, ws, app, pdu, serializedPdu, path)
     elif path.startswith('/ws/v2/consumer'):
+        state.role = 'consumer'
         await handleConsumerMessage(state, ws, app, path)
     else:
         await badFormat(state, ws, app, f'Invalid endpoint: {path}')
