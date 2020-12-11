@@ -84,14 +84,17 @@ async def handleConsumerMessage(state: ConnectionState, ws, app: Dict, path: str
 
     redis = app['redis_clients'].makeRedisClient()
 
+    lastId = '$'
+
     while True:
         try:
             stream = '{}::{}'.format(state.appkey, chan)
-            messages = await redis.xread(stream, '$')
+            messages = await redis.xread(stream, lastId)
 
             messages = messages[stream.encode()]
 
             for message in messages:
+                lastId = message[0].decode()
                 streamId = message[0].decode()
                 body = message[1]
 
@@ -99,7 +102,7 @@ async def handleConsumerMessage(state: ConnectionState, ws, app: Dict, path: str
                 response["payload"] = body[b'payload'].decode()
                 response["messageId"] = streamId
 
-                if b'context' in response:
+                if b'context' in body:
                     response["context"] = body[b'context'].decode()
 
                 await state.respond(ws, response)
