@@ -26,6 +26,7 @@ class ConnectionState:
 
         self.nonce = None
         self.error = 'na'
+        self.msgCount = 0
 
         tempdir = tempfile.gettempdir()
         self.path = os.path.join(tempdir, f'log_{self.connection_id}')

@@ -63,7 +63,6 @@ async def cobraHandlerWrapper(websocket, path, app, redisUrls: str):
 
 async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
     start = time.time()
-    msgCount = 0
     appkey = parseAppKey(path)  # appkey must have been validated
 
     state: ConnectionState = ConnectionState(appkey, userAgent)
@@ -89,7 +88,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
                 raise Exception(state.error)
         else:
             async for message in websocket:
-                msgCount += 1
+                state.msgCount += 1
 
                 if isinstance(message, bytes):
                     message = message.decode()
@@ -125,7 +124,7 @@ async def cobraHandler(websocket, path, app, redisUrls: str, userAgent: str):
         uptimeStr = str(datetime.timedelta(seconds=uptime))
         uptimeStr, _, _ = uptimeStr.partition('.')  # skip the milliseconds
 
-        status = f'(close) uptime {uptimeStr} msgcount {msgCount}'
+        status = f'(close) uptime {uptimeStr} msgcount {state.msgCount}'
         status += ' connections {}'.format(len(app['connections']))
         state.log(status)
 

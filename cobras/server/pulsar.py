@@ -92,7 +92,6 @@ async def handleConsumerMessage(state: ConnectionState, ws, app: Dict, path: str
             messages = messages[stream.encode()]
 
             for message in messages:
-                # import pdb ; pdb.set_trace()
                 streamId = message[0].decode()
                 body = message[1]
 
@@ -130,6 +129,7 @@ async def processPulsarMessage(state: ConnectionState, ws, app: Dict, path: str)
 
     if path.startswith('/ws/v2/producer'):
         async for serializedPdu in ws:
+            state.msgCount += 1
             try:
                 pdu: JsonDict = json.loads(serializedPdu)
             except json.JSONDecodeError:
