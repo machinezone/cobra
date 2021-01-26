@@ -18,6 +18,7 @@
 #include <ixbots/IXCobraToStatsdBot.h>
 #include <ixbots/IXCobraToStdoutBot.h>
 #include <ixcobra/IXCobraMetricsPublisher.h>
+#include <ixcobra/IXCobraVersion.h>
 #include <ixcore/utils/IXCoreLogger.h>
 #include <ixwebsocket/IXUserAgent.h>
 
@@ -611,7 +612,10 @@ int main(int argc, char** argv)
     }
     else if (version)
     {
-        std::cout << "ws " << ix::userAgent() << std::endl;
+        std::cout << "cobra_cli "
+                  << IX_COBRA_VERSION
+                  << " "
+                  << ix::userAgent() << std::endl;
     }
     else
     {

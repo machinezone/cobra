@@ -1,39 +1,50 @@
-FROM alpine:3.12 as build
+# Build time
+FROM ubuntu:focal as build
 
-RUN apk add --no-cache \
-    gcc g++ musl-dev linux-headers \
-    cmake mbedtls-dev make zlib-dev python3-dev ninja git
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
 
-RUN addgroup -S app && \
-    adduser -S -G app app && \
-    chown -R app:app /opt && \
-    chown -R app:app /usr/local
+RUN apt-get -y install g++
+RUN apt-get -y install libssl-dev
+RUN apt-get -y install libz-dev
+RUN apt-get -y install make
+RUN apt-get -y install cmake
+RUN apt-get -y install python
 
-# There is a bug in CMake where we cannot build from the root top folder
-# So we build from /opt
-COPY --chown=app:app . /opt
-WORKDIR /opt
+COPY . .
 
-USER app
-RUN make -f makefile.dev ws_mbedtls_install && \
-    sh tools/trim_repo_for_docker.sh
+RUN mkdir build
+WORKDIR /opt/build
+RUN conan install ..
+RUN cmake -GNinja ..
+RUN ninja
 
-FROM alpine:3.12 as runtime
+# Runtime
+FROM ubuntu:focal as runtime
 
-RUN apk add --no-cache libstdc++ mbedtls ca-certificates python3 strace && \
-    addgroup -S app && \
-    adduser -S -G app app
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
+# Runtime
+RUN apt-get install -y libssl1.1
+RUN apt-get install -y ca-certificates
+RUN ["update-ca-certificates"]
 
+# Debugging
+RUN apt-get install -y strace
+RUN apt-get install -y procps
+RUN apt-get install -y htop
+
+RUN adduser --disabled-password --gecos '' app
 COPY --chown=app:app --from=build /usr/local/bin/ws /usr/local/bin/ws
-
-# COPY --chown=app:app --from=build /opt /opt
-
-RUN chmod +x /usr/local/bin/ws && \
-    ldd /usr/local/bin/ws
+RUN chmod +x /usr/local/bin/ws
+RUN ldd /usr/local/bin/ws
 
 # Now run in usermode
 USER app
 WORKDIR /home/app
 
+COPY --chown=app:app ws/snake/appsConfig.json .
+COPY --chown=app:app ws/cobraMetricsSample.json .
+
 ENTRYPOINT ["ws"]
-EXPOSE 8008
+CMD ["--help"]

@@ -6,9 +6,6 @@ set (CMAKE_CXX_STANDARD 17)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-#
-# uvw-http-server
-#
 add_executable(cobra_cli)
 
 target_sources(cobra_cli PRIVATE

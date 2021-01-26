@@ -27,8 +27,8 @@ brew:
 # Docker default target. We've had problems with OpenSSL and TLS 1.3 (on the
 # server side ?) and I can't work-around it easily, so we're using mbedtls on
 # Linux for the SSL backend, which works great.
-ws_mbedtls_install:
-	mkdir -p build && (cd build ; cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel -DUSE_ZLIB=OFF -DUSE_PYTHON=1 -DUSE_TLS=1 -DUSE_WS=1 -DUSE_MBED_TLS=1 .. ; ninja install)
+cobra_mbedtls_install:
+	mkdir -p build && (cd build ; conan build .. ; cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel .. ; ninja install)
 
 ws:
 	mkdir -p build && (cd build ; cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DUSE_PYTHON=1 -DUSE_TLS=1 -DUSE_WS=1 .. && ninja install)
@@ -68,7 +68,7 @@ xcode_openssl:
 
 .PHONY: docker
 
-NAME   := ${DOCKER_REPO}/ws
+NAME   := ${DOCKER_REPO}/cobra_cli
 TAG    := $(shell sh tools/extract_version.sh)
 IMG    := ${NAME}:${TAG}
 LATEST := ${NAME}:latest
