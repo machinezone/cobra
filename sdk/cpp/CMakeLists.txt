@@ -30,6 +30,7 @@ target_sources(cobra_cli PRIVATE
 
 find_package(Python COMPONENTS Development)
 target_link_libraries(cobra_cli ${CONAN_LIBS} ${Python_LIBRARIES})
+target_compile_definitions(cobra_cli PRIVATE IXBOTS_USE_PYTHON)
 
 target_include_directories(cobra_cli PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/
@@ -41,3 +42,5 @@ target_include_directories(cobra_cli PRIVATE
   ${Python_INCLUDE_DIRS}
   >
 )
+
+install(TARGETS cobra_cli RUNTIME DESTINATION bin)

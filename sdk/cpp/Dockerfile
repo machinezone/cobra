@@ -1,31 +1,30 @@
 # Build time
 FROM ubuntu:focal as build
 
-ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 
 RUN apt-get -y install g++
-RUN apt-get -y install libssl-dev
-RUN apt-get -y install libz-dev
-RUN apt-get -y install make
+RUN apt-get -y install ninja-build
 RUN apt-get -y install cmake
-RUN apt-get -y install python
+RUN apt-get -y install python3-dev
+RUN apt-get -y install python3-pip
+RUN pip3 install conan==1.31.2  # Match homebrew version of conan as of 2021, January 28th
 
-COPY . .
+COPY . /opt
+WORKDIR /opt
 
 RUN mkdir build
 WORKDIR /opt/build
-RUN conan install ..
-RUN cmake -GNinja ..
-RUN ninja
+# We need to specify the compiler here or we'll have weird linking errors
+RUN conan install -s compiler=gcc -s compiler.version=9 -s compiler.libcxx=libstdc++11 --build=missing ..
+RUN cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel ..
+RUN ninja install
 
 # Runtime
 FROM ubuntu:focal as runtime
 
-ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 # Runtime
-RUN apt-get install -y libssl1.1
 RUN apt-get install -y ca-certificates
 RUN ["update-ca-certificates"]
 
@@ -33,18 +32,18 @@ RUN ["update-ca-certificates"]
 RUN apt-get install -y strace
 RUN apt-get install -y procps
 RUN apt-get install -y htop
+RUN apt-get install -y python3-dev
 
 RUN adduser --disabled-password --gecos '' app
-COPY --chown=app:app --from=build /usr/local/bin/ws /usr/local/bin/ws
-RUN chmod +x /usr/local/bin/ws
-RUN ldd /usr/local/bin/ws
+COPY --chown=app:app --from=build /usr/local/bin/cobra_cli /usr/local/bin/cobra_cli
+RUN chmod +x /usr/local/bin/cobra_cli
+RUN ldd /usr/local/bin/cobra_cli
 
 # Now run in usermode
 USER app
 WORKDIR /home/app
 
-COPY --chown=app:app ws/snake/appsConfig.json .
-COPY --chown=app:app ws/cobraMetricsSample.json .
+COPY --chown=app:app cli/cobraMetricsSample.json .
 
-ENTRYPOINT ["ws"]
+ENTRYPOINT ["cobra_cli"]
 CMD ["--help"]
