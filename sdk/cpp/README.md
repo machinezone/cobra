@@ -34,3 +34,19 @@ Subcommands:
   cobra_to_sentry             Cobra to sentry
   cobra_metrics_to_redis      Cobra metrics to redis
 ```
+
+# Docker
+
+
+## Build
+
+```
+$ env DOCKER_REPO=local make docker
+```
+
+## Run
+
+```
+$ docker run local/cobra_cli:2.9.100 --version
+cobra_cli 2.9.100 ixwebsocket/11.0.4 linux ssl/mbedtls 2.16.3 zlib 1.2.11
+```
