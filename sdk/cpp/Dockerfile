@@ -1,4 +1,5 @@
 # Build time
+# focal == ubuntu 2020.04
 FROM ubuntu:focal as build
 
 RUN apt-get update
@@ -25,6 +26,7 @@ FROM ubuntu:focal as runtime
 
 RUN apt-get update
 # Runtime
+RUN apt-get install -y python3
 RUN apt-get install -y ca-certificates
 RUN ["update-ca-certificates"]
 
@@ -32,7 +34,6 @@ RUN ["update-ca-certificates"]
 RUN apt-get install -y strace
 RUN apt-get install -y procps
 RUN apt-get install -y htop
-RUN apt-get install -y python3-dev
 
 RUN adduser --disabled-password --gecos '' app
 COPY --chown=app:app --from=build /usr/local/bin/cobra_cli /usr/local/bin/cobra_cli
