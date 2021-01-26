@@ -31,7 +31,8 @@ target_sources(cobra_cli PRIVATE
   ixsentry/ixsentry/IXSentryClient.cpp
 )
 
-target_link_libraries(cobra_cli ${CONAN_LIBS})
+find_package(Python COMPONENTS Development)
+target_link_libraries(cobra_cli ${CONAN_LIBS} ${Python_LIBRARIES})
 
 target_include_directories(cobra_cli PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/
@@ -40,5 +41,6 @@ target_include_directories(cobra_cli PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/ixbots
   ${CMAKE_CURRENT_SOURCE_DIR}/ixcobra
   ${CMAKE_CURRENT_SOURCE_DIR}/ixsentry
+  ${Python_INCLUDE_DIRS}
   >
 )

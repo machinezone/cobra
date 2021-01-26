@@ -1,5 +1,5 @@
 /*
- *  ws.cpp
+ *  cobra_cli.cpp
  *  Author: Benjamin Sergeant
  *  Copyright (c) 2019-2021 Machine Zone, Inc. All rights reserved.
  */
@@ -39,96 +39,10 @@
 
 namespace
 {
-    std::pair<bool, std::vector<uint8_t>> load(const std::string& path)
-    {
-        std::vector<uint8_t> memblock;
-
-        std::ifstream file(path);
-        if (!file.is_open()) return std::make_pair(false, memblock);
-
-        file.seekg(0, file.end);
-        std::streamoff size = file.tellg();
-        file.seekg(0, file.beg);
-
-        memblock.resize((size_t) size);
-        file.read((char*) &memblock.front(), static_cast<std::streamsize>(size));
-
-        return std::make_pair(true, memblock);
-    }
-
-    std::pair<bool, std::string> readAsString(const std::string& path)
-    {
-        auto res = load(path);
-        auto vec = res.second;
-        return std::make_pair(res.first, std::string(vec.begin(), vec.end()));
-    }
-
-    // Assume the file exists
-    std::string readBytes(const std::string& path)
-    {
-        std::vector<uint8_t> memblock;
-        std::ifstream file(path);
-
-        file.seekg(0, file.end);
-        std::streamoff size = file.tellg();
-        file.seekg(0, file.beg);
-
-        memblock.resize(size);
-
-        file.read((char*) &memblock.front(), static_cast<std::streamsize>(size));
-
-        std::string bytes(memblock.begin(), memblock.end());
-        return bytes;
-    }
-
-    std::string truncate(const std::string& str, size_t n)
-    {
-        if (str.size() < n)
-        {
-            return str;
-        }
-        else
-        {
-            return str.substr(0, n) + "...";
-        }
-    }
-
     bool fileExists(const std::string& fileName)
     {
         std::ifstream infile(fileName);
         return infile.good();
-    }
-
-    std::string extractFilename(const std::string& path)
-    {
-        std::string::size_type idx;
-
-        idx = path.rfind('/');
-        if (idx != std::string::npos)
-        {
-            std::string filename = path.substr(idx + 1);
-            return filename;
-        }
-        else
-        {
-            return path;
-        }
-    }
-
-    std::string removeExtension(const std::string& path)
-    {
-        std::string::size_type idx;
-
-        idx = path.rfind('.');
-        if (idx != std::string::npos)
-        {
-            std::string filename = path.substr(0, idx);
-            return filename;
-        }
-        else
-        {
-            return path;
-        }
     }
 } // namespace
 
