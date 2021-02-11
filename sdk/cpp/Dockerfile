@@ -27,6 +27,7 @@ FROM ubuntu:focal as runtime
 RUN apt-get update
 # Runtime
 RUN apt-get install -y python3
+RUN apt-get install -y python3-dev      # necessary to include libpython
 RUN apt-get install -y ca-certificates
 RUN ["update-ca-certificates"]
 
