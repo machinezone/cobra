@@ -12,7 +12,15 @@ all: brew
 
 install: brew
 
-#
+# installs all deps required for building the project
+deps:
+ifeq ($(shell uname),Darwin)
+	sudo port install ninja
+endif
+	python3 -m pip install conan
+	type conan && echo "done" || echo "\n\n\tcould not find 'conan'. Ensure python's bin/ directory is in your path\n\n"
+	type conan
+
 # Use -DCMAKE_INSTALL_PREFIX= to install into another location
 # on osx it is good practice to make /usr/local user writable
 # sudo chown -R `whoami`/staff /usr/local
@@ -22,7 +30,7 @@ install: brew
 # Default rule does not use python as that requires first time users to have Python3 installed
 #
 brew:
-	mkdir -p build && (cd build ; conan build .. ; cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel .. ; ninja install)
+	mkdir -p build && (cd build ; conan install .. ; conan build .. ; cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel .. ; ninja install)
 
 .PHONY: docker
 
