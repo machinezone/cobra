@@ -29,19 +29,12 @@ set(IXCRYPTO_INCLUDE_DIRS
 
 target_include_directories( ixcrypto PUBLIC ${IXCRYPTO_INCLUDE_DIRS} )
 
-# hmac computation needs a crypto library
+# hmac computation needs a crypto library which will be mbedtls on non
+# apple platforms
 
-target_compile_definitions(ixcrypto PUBLIC IXCRYPTO_USE_TLS)
-if (USE_MBED_TLS)
+if (NOT APPLE)
     find_package(MbedTLS REQUIRED)
     target_include_directories(ixcrypto PUBLIC ${MBEDTLS_INCLUDE_DIRS})
     target_link_libraries(ixcrypto ${MBEDTLS_LIBRARIES})
     target_compile_definitions(ixcrypto PUBLIC IXCRYPTO_USE_MBED_TLS)
-elseif (USE_OPEN_SSL)
-    find_package(OpenSSL REQUIRED)
-    add_definitions(${OPENSSL_DEFINITIONS})
-    message(STATUS "OpenSSL: " ${OPENSSL_VERSION})
-    include_directories(${OPENSSL_INCLUDE_DIR})
-    target_link_libraries(ixcrypto ${OPENSSL_LIBRARIES})
-    target_compile_definitions(ixcrypto PUBLIC IXCRYPTO_USE_OPEN_SSL)
 endif()

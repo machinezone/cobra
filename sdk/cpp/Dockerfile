@@ -2,7 +2,7 @@
 # focal == ubuntu 2020.04
 FROM ubuntu:focal as build
 
-RUN apt-get update
+RUN apt update
 
 RUN apt-get -y install g++
 RUN apt-get -y install ninja-build
@@ -24,7 +24,7 @@ RUN ninja install
 # Runtime
 FROM ubuntu:focal as runtime
 
-RUN apt-get update
+RUN apt update
 # Runtime
 RUN apt-get install -y python3
 RUN apt-get install -y python3-dev      # necessary to include libpython
