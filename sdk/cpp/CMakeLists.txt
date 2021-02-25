@@ -3,9 +3,18 @@ project (cobra_cli)
 
 set (CMAKE_CXX_STANDARD 14)
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9.0")
+    message(FATAL_ERROR "Insufficient gcc version. Minimun supported version is 4.9.0")
+  else()
+    add_definitions( -DHAVE_STD_REGEX=1 )
+  endif()
+else()
+  add_definitions( -DHAVE_STD_REGEX=1 )
+endif()
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
-
 add_executable(cobra_cli)
 
 target_sources(cobra_cli PRIVATE
