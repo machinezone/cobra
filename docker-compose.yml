@@ -8,7 +8,7 @@ services:
     # Monitor traffic with
     # cobra monitor --rolesecret Fcbd6cdF2FB00AED8c4bcedAaC0e25f1
     #
-    image: ${DOCKER_REPO}/cobra:${TAG}
+    image: bsergean/cobra:build
     ports:
       - "8765:8765"
     environment:
@@ -18,16 +18,15 @@ services:
       - COBRA_HOST=0.0.0.0
       - COBRA_PORT=8765
       - COBRA_VERBOSE=1
-      - COBRA_APPS_CONFIG_CONTENT=H4sICHrZZl0AAy5jb2JyYS55YW1sAM2SS47DIAxA9z0FFxgJSElJdySBa4z4GAUpbSNM1etPmFkMixwgXtnPku0n2W4b3i+EfNvwSM+aEZJfK+BfSkjDa2yQHwkxvZ74D78Ivh36nBw0bHu7NeHSkN9ZTZ3Bhqb85FTaAQFWaACCz1DupBM22IkKGrmkxijBIu+GKPnMVc9UX20WsGtZDnTaxkl8nGM3HYc5DiNEarTvpbbUREavszJsqj777v2kA5+2cRIfRbWRXBkIo+DaAuvdzXVhlMFPWjhffbDYggc6DT+JjfEu9D4YbkZKlZ6lvzoPQe0fCFxEdvkBCOnNtEIDAAA=
+      - COBRA_APPS_CONFIG_CONTENT=H4sICLIpO2AAA2ZvbwDNkkuOgzAMQPc9RS4wUhIaGroLkFxjlI8jIlGK4qBef2BmMVlwALyynyXbT7JdV3zeCPm24ZWWIyMkv2fAv5SQih+xQn4lxPRe8B9+Edwc+pwcVGxbzui6uTnhVJHfDVWdwYaq/ORU6gEBZqgAgs9QnqQRNtiBChq5pMYowSJvuij5yFXLVHs4TmDnMp1I1o1LWzrHHjp2Y+x6iNRo30ptqYmM3kdl2HBY7rv3k04s68alLRXVRnJlIPSCawusdQ/XhF4GP2jh/GGJxRY8kaz4pR2Nd6H1wXDTU6r0KP3deQhq/2HgIrLbD2womVuaAwAA
       - PYTHONUNBUFFERED=1
-      - COBRA_PLUGINS=republish
       - PYTHONPATH=/etc/secret-volume
     healthcheck:
       #
       # Run healthcheck externally with:
       # cobra health --rolesecret bb17Ef9Df9Bef0FEc68Ea0Ff104DAF1C
       #
-      interval: 5s
+      interval: 30s
     volumes:
       #
       # To run in an environment similar to kubernete:
