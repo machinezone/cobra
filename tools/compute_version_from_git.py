@@ -12,7 +12,7 @@ def computeVersion():
     else:
         patch = 0
 
-    version = f'{majorMinor}.{patch}'
+    version = majorMinor + '.' + patch
     return version
 
 

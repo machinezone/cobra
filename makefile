@@ -86,8 +86,6 @@ docker_tag:
 	docker tag ${IMG} ${PROD}
 	docker push ${PROD}
 	docker push ${IMG}
-	oc import-image -n cobra-live cobra:production
-	oc import-image -n cobra-internal cobra:production
 
 docker: update_version
 	git clean -dfx -e venv -e cobras.egg-info/ -e DOCKER_VERSION
@@ -105,7 +103,6 @@ docker_bavarde_push:
 	docker tag ${IMG} ${PROD}
 	docker push ${PROD}
 	docker push ${IMG}
-	oc import-image cobra:production
 
 docker_push: docker_tag
 
