@@ -8,7 +8,7 @@ services:
     # Monitor traffic with
     # cobra monitor --rolesecret Fcbd6cdF2FB00AED8c4bcedAaC0e25f1
     #
-    image: bsergean/cobra:build
+    image: bsergean/cobra:production
     ports:
       - "8765:8765"
     environment:
