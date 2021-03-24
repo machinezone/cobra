@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.14)
 project (cobra_cli)
 
-set (CMAKE_CXX_STANDARD 14)
+set (CMAKE_CXX_STANDARD 11)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9.0")
