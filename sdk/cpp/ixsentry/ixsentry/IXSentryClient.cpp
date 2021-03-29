@@ -142,6 +142,15 @@ namespace ix
         //  ]
         //
         Json::Value tags(Json::arrayValue);
+        //
+        // "extra": [
+        //   [
+        //     "a",
+        //     "b"
+        //   ],
+        //  ]
+        //
+        Json::Value extra(Json::arrayValue);
 
         payload["platform"] = "python";
         payload["sdk"]["name"] = "ws";
@@ -197,14 +206,33 @@ namespace ix
             }
         }
 
+        // extract the "extra" parameters if they exist
+        if (msg["data"].isMember("extra"))
+        {
+            auto members = msg["data"]["extra"].getMemberNames();
+
+            for (auto member : members)
+            {
+                Json::Value value;
+                extra.append(member);
+                extra.append(msg["data"]["extra"][member]);
+                extra.append(value);
+            }
+        }
+
         Json::Value exception;
         exception["stacktrace"]["frames"] = parseLuaStackTrace(stack);
         exception["value"] = message;
 
         payload["exception"].append(exception);
 
-        Json::Value extra;
-        extra["cobra_event"] = msg;
+        // the full raw, unprocessed event
+        Json::Value cobra_event;
+        cobra_event.append("cobra_event");
+        cobra_event.append(msg);
+        extra.append(cobra_event);
+
+        payload["extra"] = extra;
 
         // Builtin tags
         Json::Value gameTag;
