@@ -150,7 +150,7 @@ namespace ix
         //   ],
         //  ]
         //
-        Json::Value extra(Json::arrayValue);
+        Json::Value extra(Json::objectValue);
 
         payload["platform"] = "python";
         payload["sdk"]["name"] = "ws";
@@ -210,13 +210,9 @@ namespace ix
         if (msg["data"].isMember("extra"))
         {
             auto members = msg["data"]["extra"].getMemberNames();
-
             for (auto member : members)
             {
-                Json::Value value;
-                extra.append(member);
-                extra.append(msg["data"]["extra"][member]);
-                extra.append(value);
+                extra[member] = msg["data"]["extra"][member];
             }
         }
 
@@ -227,11 +223,7 @@ namespace ix
         payload["exception"].append(exception);
 
         // the full raw, unprocessed event
-        Json::Value cobra_event;
-        cobra_event.append("cobra_event");
-        cobra_event.append(msg);
-        extra.append(cobra_event);
-
+        extra["cobra_event"] = msg;
         payload["extra"] = extra;
 
         // Builtin tags
