@@ -13,11 +13,11 @@
 #include <iostream>
 #include <ixcrypto/IXHMac.h>
 #include <ixwebsocket/IXSocketTLSOptions.h>
+#include <ixwebsocket/IXUniquePtr.h>
 #include <ixwebsocket/IXWebSocket.h>
 #include <sstream>
 #include <stdexcept>
 #include <memory>
-
 
 namespace ix
 {
@@ -99,7 +99,7 @@ namespace ix
         if (_eventCallback)
         {
             _eventCallback(
-                std::make_unique<CobraEvent>(eventType, errorMsg, headers, subscriptionId, msgId, connectionId));
+                ix::make_unique<CobraEvent>(eventType, errorMsg, headers, subscriptionId, msgId, connectionId));
         }
     }
 
