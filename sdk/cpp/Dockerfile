@@ -9,7 +9,7 @@ RUN apt-get -y install ninja-build
 RUN apt-get -y install cmake
 RUN apt-get -y install python3-dev
 RUN apt-get -y install python3-pip
-RUN pip3 install conan==1.31.2  # Match homebrew version of conan as of 2021, January 28th
+RUN pip3 install conan==1.33.0  # Match the version defined in Makefile deps:
 
 COPY . /opt
 WORKDIR /opt

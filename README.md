@@ -148,6 +148,12 @@ To run in production you will need a redis (version > 5) instance. Here are envi
   value: BIGBLOGOFDATA
 ```
 
+# Users
+
+If your company or project is using this library, feel free to open an issue or PR to amend this list.
+
+- Machine Zone
+
 # Thank you
 
 There would be no cobra without some other amazing open-source projects and tech. Here are 3 very remarkable ones.

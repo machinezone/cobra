@@ -17,7 +17,7 @@ deps:
 ifeq ($(shell uname),Darwin)
 	sudo port install ninja
 endif
-	python3 -m pip install conan
+	python3 -m pip install conan==1.33.0
 	type conan && echo "done" || echo "\n\n\tcould not find 'conan'. Ensure python's bin/ directory is in your path\n\n"
 	type conan
 
