@@ -13,19 +13,11 @@
 #include <iostream>
 #include <ixcrypto/IXHMac.h>
 #include <ixwebsocket/IXSocketTLSOptions.h>
+#include <ixwebsocket/IXUniquePtr.h>
 #include <ixwebsocket/IXWebSocket.h>
 #include <sstream>
 #include <stdexcept>
 #include <memory>
-
-namespace internal
-{
-    template<typename T, typename... Args>
-    std::unique_ptr<T> make_unique(Args&&... args)
-    {
-        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-    }
-} // namespace internal
 
 namespace ix
 {
@@ -107,7 +99,7 @@ namespace ix
         if (_eventCallback)
         {
             _eventCallback(
-                internal::make_unique<CobraEvent>(eventType, errorMsg, headers, subscriptionId, msgId, connectionId));
+                ix::make_unique<CobraEvent>(eventType, errorMsg, headers, subscriptionId, msgId, connectionId));
         }
     }
 
