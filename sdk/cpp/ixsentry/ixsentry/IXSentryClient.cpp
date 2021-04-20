@@ -26,20 +26,25 @@ namespace ix
         , _httpClient(std::make_shared<HttpClient>(true))
     {
 #ifdef HAVE_STD_REGEX
-        const std::regex dsnRegex("(http[s]?)://([^:]+):([^@]+)@([^/]+)/([0-9]+)");
+        // regex supports 2 DSN formats
+        // The deprecated DSN format includes a secret key which is no longer required
+        // https://1234abcdef:4321abcdef@o12345.ingest.sentry.io/57612
+        // https://1234abcdef@o12345.ingest.sentry.io/57612
+
+        const std::regex dsnRegex("(http[s]?://([a-f0-9]+)(:([^@]+))?@[^/]+)/([0-9]+)");
         std::smatch group;
 
         if (std::regex_match(dsn, group, dsnRegex) && group.size() == 6)
         {
             _validDsn = true;
-
-            const auto scheme = group.str(1);
-            const auto host = group.str(4);
+            const auto base_url = group.str(1);
             const auto project_id = group.str(5);
-            _url = scheme + "://" + host + "/api/" + project_id + "/store/";
+            _url = base_url + "/api/" + project_id + "/store/";
 
             _publicKey = group.str(2);
-            _secretKey = group.str(3);
+            _secretKey = group.str(4);
+        } else {
+            CoreLogger::error("Failed to parse sentry_key from DSN: " + dsn);
         }
 #endif
     }
