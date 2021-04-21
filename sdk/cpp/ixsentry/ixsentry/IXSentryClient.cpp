@@ -242,6 +242,9 @@ namespace ix
         userIdTag.append(msg["device"]["user_id"]);
         tags.append(userIdTag);
 
+        // set the User context
+        payload["user"]["id"] = msg["device"]["user_id"];
+
         Json::Value environmentTag;
         environmentTag.append("environment");
         environmentTag.append(msg["device"]["environment"]);
