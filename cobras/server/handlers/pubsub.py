@@ -202,7 +202,7 @@ async def handleSubscribe(
         "body": {
             # FIXME: we should set the position by querying
             # the redis stream, inside the MessageHandler
-            "position": "1519190184:559034812775",
+            "position": "1519190184-559034812775",
             "subscription_id": subscriptionId,
         },
     }
@@ -342,7 +342,7 @@ async def handleUnSubscribe(
 
     subscriptionId = body.get('subscription_id')
     if subscriptionId is None:
-        errMsg = f'Body Missing subscriptionId'
+        errMsg = 'Body Missing subscriptionId'
         logging.warning(errMsg)
         response = {
             "action": "rtm/unsubscribe/error",
