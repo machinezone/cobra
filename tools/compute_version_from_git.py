@@ -10,7 +10,7 @@ def computeVersion():
     if len(parts) > 1:
         patch = parts[1]
     else:
-        patch = 0
+        patch = "0"
 
     version = majorMinor + '.' + patch
     return version

@@ -4,6 +4,7 @@ Copyright (c) 2020 Machine Zone, Inc. All rights reserved.
 '''
 
 import logging
+import random
 from cobras.common.algorithm import extractAttributeFromDict
 
 
@@ -31,6 +32,8 @@ def updateMsg(rules, msg):
         channels.append(channel)
 
     # Now loop through each rules in the app config
+    # TODO extract the rule validation so it only executes once to sanitize the input
+    # instead of every time we update a message
     for ruleName, rule in rules.items():
         if not isinstance(ruleName, str):
             logging.warning(f'Invalid rule name \'{ruleName}\', should be a string')
@@ -41,6 +44,9 @@ def updateMsg(rules, msg):
             continue
 
         kind = rule.get('kind')
+        if not isinstance(kind, str):
+            logging.warning(f'Invalid rule kind \'{kind}\', should be a string')
+            continue
 
         if kind == 'compose2':
             separator = rule.get('separator')
@@ -61,8 +67,29 @@ def updateMsg(rules, msg):
                 channel = f'{field1}{separator}{field2}'
             channels.append(channel)
 
+        elif kind == 'add_shard':
+            shards = rule.get('shards')
+            if not (isinstance(kind, (int, str)) and str(shards).isdigit()):
+                logging.warning(
+                    f'Invalid {kind} rule, " \
+                                "\'shards\' should be a positive integer, got {shards}'
+                )
+                continue
+
+            channel = rule.get('channel')
+            if not isinstance(channel, str):
+                logging.warning(f'Invalid {kind} rule, \'channel\' should be a string')
+                continue
+
+            shard = random.randrange(start=0, stop=shards)
+            channels.append(channel.format(shard=shard))
+
         elif kind == 'add':
             channel = rule.get('channel')
+            if not isinstance(channel, str):
+                logging.warning(f'Invalid {kind} rule, \'channel\' should be a string')
+                continue
+
             channels.append(channel)
 
         elif kind == 'remove':

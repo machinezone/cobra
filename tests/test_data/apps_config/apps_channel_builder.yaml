@@ -21,3 +21,7 @@ apps:
             common2:
                 kind: add
                 channel: bar
+            super_channel:
+                kind: add_shard
+                shards: 4
+                channel: subscriber_republished_{shard}
