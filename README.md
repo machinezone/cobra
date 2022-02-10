@@ -73,7 +73,7 @@ git clone <url>
 cd cobra
 python3 -m venv venv
 source venv/bin/activate
-make dev
+make dev    # please also install redis to execute tests
 make test
 ```
 
