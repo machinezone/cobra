@@ -17,9 +17,11 @@ deps:
 ifeq ($(shell uname),Darwin)
 	sudo port install ninja
 endif
-	python3 -m pip install conan==1.33.0
+	python3 -m pip install conan==1.43.0
 	type conan && echo "done" || echo "\n\n\tcould not find 'conan'. Ensure python's bin/ directory is in your path\n\n"
 	type conan
+	conan remote clean
+	conan remote add conancenter https://center.conan.io False -f
 
 # Use -DCMAKE_INSTALL_PREFIX= to install into another location
 # on osx it is good practice to make /usr/local user writable
@@ -30,7 +32,7 @@ endif
 # Default rule does not use python as that requires first time users to have Python3 installed
 #
 brew:
-	mkdir -p build && (cd build ; conan install .. ; conan build .. ; cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel .. ; ninja install)
+	mkdir -p build && (cd build ; conan install --build=missing .. ; conan build .. ; cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel .. ; ninja install)
 
 .PHONY: docker
 
