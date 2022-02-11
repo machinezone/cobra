@@ -37,9 +37,11 @@ flake:
 	flake8 --max-line-length=88 `find cobras -name '*.py'`
 
 test:
+	echo "Make sure redis is running before starting tests!...\n\n\n"
 	py.test -n 4 --disable-warnings tests/*.py
 
 test_server:
+	echo "Make sure redis is running before starting tests!...\n\n\n"
 	./venv/bin/py.test --disable-warnings tests/test_app.py::test_server
 	# ./venv/bin/py.test tests/test_app.py::test_server_mem
 

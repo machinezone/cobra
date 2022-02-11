@@ -4,13 +4,15 @@
 
 Install cmake, conan, ninja and a C++ compiler (XCode/clang or gcc or ...).
 
+```
+make deps
+```
+
 # Build
 
-1. mkdir build
-2. cd build
-3. conan install .. # build packages as needed, see output
-4. cmake -GNinja ..
-5. ninja
+```
+make brew
+```
 
 # Usage
 
