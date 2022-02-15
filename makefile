@@ -80,20 +80,26 @@ TAG    := $(shell python tools/compute_version_from_git.py)
 IMG    := ${NAME}:${TAG}
 BUILD  := ${NAME}:build
 PROD   := ${NAME}:production
+STAGE  := ${NAME}:staging
 
 bump:
 	python tools/bump_docker_version.py
 
-docker_tag:
+push_prod:
 	docker tag ${IMG} ${PROD}
-	docker push ${PROD}
 	docker push ${IMG}
+	docker push ${PROD}
+
+push_stage:
+	docker tag ${IMG} ${STAGE}
+	docker push ${IMG}
+	docker push ${STAGE}
 
 docker: update_version
 	git clean -dfx -e venv -e cobras.egg-info/ -e DOCKER_VERSION
 	docker build -t ${IMG} .
 	docker tag ${IMG} ${BUILD}
-	docker tag ${IMG} ${PROD}
+	docker tag ${IMG} ${STAGE}
 
 docker_bavarde:
 	git clean -dfx -e venv -e cobras.egg-info/
