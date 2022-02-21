@@ -1,0 +1,17 @@
+# PR Update Polling
+# Must be present in .github/workflows for master branch and each branch needed
+# Documentation: https://confluence.addsrv.com/display/BUILD/GitHub+Jenkins+Polling
+
+name: PullRequestUpdateTrigger
+
+on:  
+  pull_request:
+    types: [synchronize]
+
+jobs:
+  build:
+    runs-on: jenkins-polling
+
+    steps:
+      - name: Run PullRequestJenkinsPoller
+        run: /opt/python3/bin/python3 /var/lib/jenkins-buildscripts/tools/jenkinspoller/PullRequestJenkinsPoller.py --reponame ${{ github.event.repository.name }} --refname ${{ github.event.pull_request.head.ref }} --reftarget ${{ github.event.pull_request.base.ref }} --mode update

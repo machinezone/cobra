@@ -1,0 +1,16 @@
+# Commit Push Polling
+# Must be present in .github/workflows for master branch and each branch needed
+# Documentation: https://confluence.addsrv.com/display/BUILD/GitHub+Jenkins+Polling
+
+name: CommitTrigger
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: jenkins-polling
+
+    steps:
+      - name: Run GitJenkinsPoller
+        run: /opt/python3/bin/python3 /var/lib/jenkins-buildscripts/tools/jenkinspoller/GitJenkinsPoller.py --reponame ${{ github.event.repository.name }} --refname ${{ github.event.ref }} --oldrev ${{ github.event.before }} --newrev ${{ github.event.after }}
