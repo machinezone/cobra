@@ -27,8 +27,8 @@
   "devDependencies": {
     "eslint": "^7.6.0",
     "watchify": "^3.9.0",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   },
   "scripts": {
     "start": "make",
