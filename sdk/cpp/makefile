@@ -15,9 +15,9 @@ install: brew
 # installs all deps required for building the project
 deps:
 ifeq ($(shell uname),Darwin)
-	sudo port install ninja
+	sudo brew install ninja
 endif
-	python3 -m pip install conan==1.43.0
+	python3 -m pip install conan==1.56.0   # Match the version defined in Dockerfile
 	type conan && echo "done" || echo "\n\n\tcould not find 'conan'. Ensure python's bin/ directory is in your path\n\n"
 	type conan
 	conan remote clean
