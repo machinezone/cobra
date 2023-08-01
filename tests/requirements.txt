@@ -1,6 +1,6 @@
 codecov==2.0.15
 coverage==4.5.3
-cryptography==3.3.2
+cryptography==41.0.3
 flake8
 pytest==5.0.1
 pytest-cov==2.7.1
